@@ -96,24 +96,34 @@ def manage_sermons():
         date = request.form.get('date')
         series = request.form.get('series')
         description = request.form.get('description')
-        audio_url = None
-
-        # Handle audio upload
+        audio_url = request.form.get('audio_url') or ''
+        
+        # Handle audio upload - check file size first
         audio_file = request.files.get('audio_file')
         if audio_file and audio_file.filename:
+            # Cloudinary free tier limit is 100MB. We'll warn if >40MB on free Render.
+            audio_file.seek(0, 2)  # Seek to end
+            file_size = audio_file.tell()
+            audio_file.seek(0)  # Reset to beginning
+            
+            if file_size > 40 * 1024 * 1024:  # 40MB limit for Render free tier
+                sermons = supabase_get('sermons', {'order': 'date.desc'})
+                return render_template('admin/sermons.html', sermons=sermons, 
+                                      error="File too large. Max 40MB on current plan. Please compress the MP3.")
+            
             result = upload_audio(audio_file, folder='generation/sermons')
             audio_url = result['url']
-
+        
         supabase_insert('sermons', {
             'title': title,
             'speaker': speaker,
             'date': date,
             'series': series,
             'description': description,
-            'audio_url': audio_url or request.form.get('audio_url') or ''
+            'audio_url': audio_url
         })
         return redirect(url_for('admin.manage_sermons'))
-
+    
     sermons = supabase_get('sermons', {'order': 'date.desc'})
     return render_template('admin/sermons.html', sermons=sermons)
 
