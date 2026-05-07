@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leadership — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin">TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin/sermons">Sermons</a>
+            <a href="/admin/leadership" class="active">Leadership</a>
+            <a href="/admin/testimonials">Testimonials</a>
+            <a href="/admin/events">Events</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    <main class="admin-main">
+        <h1>Add Leader</h1>
+        <form method="POST" enctype="multipart/form-data" class="admin-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" name="title" placeholder="Senior Pastor, Elder..." required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea name="bio" rows="3" placeholder="Short bio"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Photo</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Display Order</label>
+                    <input type="number" name="display_order" value="0" min="0">
+                </div>
+            </div>
+            <button type="submit" class="btn-save">Add Leader</button>
+        </form>
+
+        <hr class="admin-divider">
+
+        <h2>Current Leaders</h2>
+        {% if leaders %}
+        <div class="admin-grid">
+            {% for leader in leaders %}
+            <div class="admin-card-small">
+                {% if leader.image_url %}
+                <img src="{{ leader.image_url }}" alt="{{ leader.name }}" class="admin-thumb">
+                {% endif %}
+                <h4>{{ leader.name }}</h4>
+                <p class="gold-text">{{ leader.title }}</p>
+                <form method="POST" action="/admin/leadership/{{ leader.id }}/delete" onsubmit="return confirm('Delete {{ leader.name }}?')">
+                    <button type="submit" class="btn-delete small">Remove</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">No leaders added yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

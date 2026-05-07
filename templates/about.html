@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">About Us</h1>
+        <p class="page-subtitle">The story of The Generation Family</p>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-content">
+                <h2>Who We Are</h2>
+                <p>The Generation Family is a spiritual and growth family dedicated to raising a generation rooted in faith, growing in love, and living with purpose. We believe in the power of community, the transformative love of God, and the potential within every individual.</p>
+                <p>Founded with a vision to impact lives across cities, we have grown into a vibrant community of believers passionate about faith, family, and purpose.</p>
+                
+                <div class="about-mvv">
+                    <div class="about-mvv-item">
+                        <h3><i class="fas fa-cross gold-text"></i> Our Mission</h3>
+                        <p>{{ settings.get('mission', '') }}</p>
+                    </div>
+                    <div class="about-mvv-item">
+                        <h3><i class="fas fa-eye gold-text"></i> Our Vision</h3>
+                        <p>{{ settings.get('vision', '') }}</p>
+                    </div>
+                    <div class="about-mvv-item">
+                        <h3><i class="fas fa-heart gold-text"></i> Our Values</h3>
+                        <p>{{ settings.get('values', '') }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-sidebar">
+                <div class="about-stats">
+                    <div class="about-stat">
+                        <span class="stat-number gold-text">{{ settings.get('lives_impacted', '0') }}</span>
+                        <span class="stat-label">Lives Impacted</span>
+                    </div>
+                    <div class="about-stat">
+                        <span class="stat-number gold-text">{{ settings.get('years_in_existence', '0') }}</span>
+                        <span class="stat-label">Years in Ministry</span>
+                    </div>
+                    <div class="about-stat">
+                        <span class="stat-number gold-text">{{ settings.get('cities', '0') }}</span>
+                        <span class="stat-label">Cities Reached</span>
+                    </div>
+                    <div class="about-stat">
+                        <span class="stat-number gold-text">{{ settings.get('meetings_held', '0') }}</span>
+                        <span class="stat-label">Meetings Held</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if leadership %}
+<section class="about-leadership">
+    <div class="container">
+        <h2 class="section-heading">Our Leadership</h2>
+        <div class="leadership-grid">
+            {% for leader in leadership %}
+            <div class="leader-card">
+                <div class="leader-img">
+                    {% if leader.image_url %}
+                    <img src="{{ leader.image_url }}" alt="{{ leader.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text={{ leader.name[:1] }}" alt="{{ leader.name }}">
+                    {% endif %}
+                </div>
+                <h4>{{ leader.name }}</h4>
+                <p>{{ leader.title }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

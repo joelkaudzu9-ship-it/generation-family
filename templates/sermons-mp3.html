@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Sermons MP3</h1>
+        <p class="page-subtitle">Download and listen to sermons on the go</p>
+    </div>
+</section>
+
+<section class="sermons-section">
+    <div class="container">
+        {% if sermons %}
+        <div class="sermons-list">
+            {% for sermon in sermons %}
+            <div class="sermon-card">
+                <div class="sermon-info">
+                    <h3>{{ sermon.title }}</h3>
+                    <div class="sermon-meta">
+                        {% if sermon.speaker %}<span><i class="fas fa-user gold-text"></i> {{ sermon.speaker }}</span>{% endif %}
+                        {% if sermon.date %}<span><i class="fas fa-calendar gold-text"></i> {{ sermon.date }}</span>{% endif %}
+                    </div>
+                </div>
+                {% if sermon.audio_url %}
+                <div class="sermon-audio">
+                    <audio controls>
+                        <source src="{{ sermon.audio_url }}" type="audio/mpeg">
+                    </audio>
+                    <a href="{{ sermon.audio_url }}" download class="btn-gold small">Download MP3</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-headphones"></i>
+            <h3>Sermon MP3s Coming Soon</h3>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

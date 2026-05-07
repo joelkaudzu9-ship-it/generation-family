@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Ministries</h1>
+        <p class="page-subtitle">Find your place to grow, serve, and connect</p>
+    </div>
+</section>
+
+<section class="ministries-section-page">
+    <div class="container">
+        {% if ministries %}
+        <div class="ministries-grid">
+            {% for ministry in ministries %}
+            <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
+                <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
+                <h4>{{ ministry.name }}</h4>
+                {% if ministry.description %}<p>{{ ministry.description }}</p>{% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-church"></i>
+            <h3>Ministries Coming Soon</h3>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

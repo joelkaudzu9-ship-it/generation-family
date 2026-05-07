@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Programs & Events</h1>
+        <p class="page-subtitle">Join us for upcoming services, conferences, and community gatherings</p>
+    </div>
+</section>
+
+<section class="events-section">
+    <div class="container">
+        {% if events %}
+        <div class="events-grid">
+            {% for event in events %}
+            <div class="event-card">
+                {% if event.image_url %}
+                <div class="event-image">
+                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
+                </div>
+                {% endif %}
+                <div class="event-details">
+                    <h3>{{ event.title }}</h3>
+                    <div class="event-meta">
+                        {% if event.event_date %}<span><i class="fas fa-calendar gold-text"></i> {{ event.event_date }}</span>{% endif %}
+                        {% if event.event_time %}<span><i class="fas fa-clock gold-text"></i> {{ event.event_time }}</span>{% endif %}
+                        {% if event.location %}<span><i class="fas fa-map-marker-alt gold-text"></i> {{ event.location }}</span>{% endif %}
+                    </div>
+                    {% if event.description %}<p>{{ event.description }}</p>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>Events Coming Soon</h3>
+            <p>Stay tuned for upcoming programs and gatherings.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Blog & News</h1>
+        <p class="page-subtitle">Stories, updates, and reflections from our community</p>
+    </div>
+</section>
+
+<section class="blog-section">
+    <div class="container">
+        {% if posts %}
+        <div class="blog-grid">
+            {% for post in posts %}
+            <article class="blog-card">
+                {% if post.image_url %}
+                <div class="blog-image">
+                    <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                <div class="blog-details">
+                    <span class="blog-category gold-text">{{ post.category }}</span>
+                    <h3>{{ post.title }}</h3>
+                    <p class="blog-excerpt">{{ post.excerpt or post.content[:120] ~ '...' }}</p>
+                    <span class="blog-date">{{ post.created_at[:10] if post.created_at }}</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-newspaper"></i>
+            <h3>Posts Coming Soon</h3>
+            <p>Check back for news, stories, and reflections.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

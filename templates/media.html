@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Media</h1>
+        <p class="page-subtitle">Sermons, merchandise, and reading resources</p>
+    </div>
+</section>
+
+<section class="resources-section">
+    <div class="container">
+        <div class="resources-grid">
+            <a href="/resources/sermons-mp3" class="resource-card">
+                <i class="fas fa-headphones"></i>
+                <h3>Sermons MP3</h3>
+                <p>Download and listen to life-changing messages</p>
+            </a>
+            <a href="/resources/apparel" class="resource-card">
+                <i class="fas fa-tshirt"></i>
+                <h3>Apparel</h3>
+                <p>Generation Family branded clothing and merchandise</p>
+            </a>
+            <a href="/resources/books" class="resource-card">
+                <i class="fas fa-book"></i>
+                <h3>Books</h3>
+                <p>Faith-building books and resources</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

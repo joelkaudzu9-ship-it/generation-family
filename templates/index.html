@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-slideshow">
+        <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1511649475669-e288648b2339?w=1600');"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600');"></div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1600');"></div>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <p class="hero-eyebrow">Welcome Home</p>
+        <h1 class="hero-title">The Generation<br>Family</h1>
+        <p class="hero-subtitle">{{ settings.get('hero_tagline', 'A Spiritual & Growth Family') }} — Raising a generation rooted in faith, growing in love, living with purpose.</p>
+        <div class="hero-buttons">
+            <a href="/about" class="btn-gold">Discover More</a>
+            <a href="/contact" class="btn-outline">Join Us Sunday</a>
+        </div>
+    </div>
+    <div class="hero-dots">
+        <span class="hero-dot active"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+    </div>
+</section>
+
+<!-- Mission / Vision / Values -->
+<section class="mvv">
+    <div class="container">
+        <div class="mvv-grid">
+            <div class="mvv-card">
+                <div class="mvv-icon"><i class="fas fa-cross"></i></div>
+                <h3>Our Mission</h3>
+                <p>{{ settings.get('mission', 'To raise a generation of believers rooted in faith, growing in love, and living with purpose.') }}</p>
+            </div>
+            <div class="mvv-card">
+                <div class="mvv-icon"><i class="fas fa-eye"></i></div>
+                <h3>Our Vision</h3>
+                <p>{{ settings.get('vision', 'To see every member become a vessel of transformation in their family, community, and the world.') }}</p>
+            </div>
+            <div class="mvv-card">
+                <div class="mvv-icon"><i class="fas fa-heart"></i></div>
+                <h3>Our Values</h3>
+                <p>{{ settings.get('values', 'Faith. Family. Integrity. Service. Excellence. Love.') }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Numbers -->
+<section class="impact">
+    <div class="container">
+        <h2 class="section-heading">Our Impact</h2>
+        <div class="impact-grid">
+            <div class="impact-card">
+                <span class="impact-number">{{ settings.get('lives_impacted', '2500+') }}</span>
+                <span class="impact-label">Lives Impacted</span>
+            </div>
+            <div class="impact-card">
+                <span class="impact-number">{{ settings.get('years_in_existence', '12') }}</span>
+                <span class="impact-label">Years in Ministry</span>
+            </div>
+            <div class="impact-card">
+                <span class="impact-number">{{ settings.get('cities', '5') }}</span>
+                <span class="impact-label">Cities Reached</span>
+            </div>
+            <div class="impact-card">
+                <span class="impact-number">{{ settings.get('meetings_held', '1200+') }}</span>
+                <span class="impact-label">Meetings Held</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Senior Leadership -->
+<section class="leadership">
+    <div class="container">
+        <h2 class="section-heading">Our Leadership</h2>
+        <div class="leadership-grid">
+            {% if leadership %}
+                {% for leader in leadership %}
+                <div class="leader-card">
+                    <div class="leader-img">
+                        {% if leader.image_url %}
+                        <img src="{{ leader.image_url }}" alt="{{ leader.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text={{ leader.name[:1] }}" alt="{{ leader.name }}">
+                        {% endif %}
+                    </div>
+                    <h4>{{ leader.name }}</h4>
+                    <p>{{ leader.title }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="leader-card">
+                    <div class="leader-img">
+                        <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text=?" alt="Leader">
+                    </div>
+                    <h4>Coming Soon</h4>
+                    <p>Leadership details will be added shortly.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Ministries -->
+<section class="ministries">
+    <div class="container">
+        <h2 class="section-heading">Our Ministries</h2>
+        <div class="ministries-grid">
+            {% if ministries %}
+                {% for ministry in ministries %}
+                <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
+                    <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
+                    <h4>{{ ministry.name }}</h4>
+                </a>
+                {% endfor %}
+            {% else %}
+                <a href="#" class="ministry-card">
+                    <div class="ministry-icon"><i class="fas fa-church"></i></div>
+                    <h4>Ministries coming soon</h4>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-heading">Testimonies</h2>
+        {% if testimonials %}
+        <div class="testimonial-slider">
+            {% for testimonial in testimonials %}
+            <div class="testimonial-slide {% if loop.first %}active{% endif %}">
+                <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
+                <p class="testimonial-author">— {{ testimonial.name }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="testimonial-dots">
+            {% for testimonial in testimonials %}
+            <span class="t-dot {% if loop.first %}active{% endif %}"></span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="testimonial-slider">
+            <div class="testimonial-slide active">
+                <p class="testimonial-quote">"Testimonials will appear here soon. Share your story with us!"</p>
+                <p class="testimonial-author">— The Generation Family</p>
+            </div>
+        </div>
+        <div class="testimonial-dots">
+            <span class="t-dot active"></span>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Grow With Us?</h2>
+        <p>Join a community of believers passionate about faith, family, and purpose.</p>
+        <div class="cta-buttons">
+            <a href="/contact" class="btn-gold">Contact Us</a>
+            <a href="#" class="btn-outline">Subscribe</a>
+            <a href="/sermons" class="btn-outline">Listen to Sermons</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

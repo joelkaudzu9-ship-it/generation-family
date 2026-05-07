@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Generation Family | TGF 2026</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Side Social Icons -->
+    <div class="side-socials">
+        <a href="#" class="side-icon whatsapp" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="side-icon email" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        <a href="#" class="side-icon facebook" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="side-icon instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="side-icon linkedin" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="side-icon tiktok" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo-area">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TGF Logo" class="logo-img">
+                <div class="logo-text">
+                    <span class="logo-name">The Generation Family</span>
+                    <span class="logo-tagline">{{ settings.get('year_theme', 'TGF 2026') }}</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="desktop-nav">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <div class="nav-dropdown">
+                    <a href="/ministries">Ministries <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-panel">
+                        <a href="/ministries/children">Children</a>
+                        <a href="/ministries/youth">Youth</a>
+                        <a href="/ministries/men">Men's Fellowship</a>
+                        <a href="/ministries/women">Women's Ministry</a>
+                        <a href="/ministries/worship">Worship Team</a>
+                        <a href="/ministries/prayer">Prayer Ministry</a>
+                    </div>
+                </div>
+                <a href="/programs">Programs</a>
+                <a href="/sermons">Sermons</a>
+                <a href="/giving">Giving</a>
+                <div class="nav-dropdown">
+                    <a href="/resources">Resources <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-panel">
+                        <span class="dropdown-label">Canvas</span>
+                        <a href="/resources/tgf-music">TGF Music</a>
+                        <a href="/resources/tgf-drama">TGF Drama</a>
+                        <a href="/resources/tgf-poems">Poems & Spoken Word</a>
+                        <span class="dropdown-label">Media</span>
+                        <a href="/resources/sermons-mp3">Sermons MP3</a>
+                        <a href="/resources/apparel">Apparel</a>
+                        <a href="/resources/books">Books</a>
+                    </div>
+                </div>
+                <a href="/blog">Blog</a>
+                <a href="/contact">Contact</a>
+                <a href="/faqs">FAQs</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="search-toggle" aria-label="Search"><i class="fas fa-search"></i></button>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search bar (hidden by default) -->
+        <div class="search-bar" id="searchBar">
+            <input type="text" placeholder="Search...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span class="gold-text">Menu</span>
+            <button class="mobile-menu-close" id="mobileClose">&times;</button>
+        </div>
+        <div class="mobile-menu-body">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-btn">Ministries <i class="fas fa-plus"></i></button>
+                <div class="mobile-accordion-content">
+                    <a href="/ministries/children">Children</a>
+                    <a href="/ministries/youth">Youth</a>
+                    <a href="/ministries/men">Men's Fellowship</a>
+                    <a href="/ministries/women">Women's Ministry</a>
+                    <a href="/ministries/worship">Worship Team</a>
+                    <a href="/ministries/prayer">Prayer Ministry</a>
+                </div>
+            </div>
+            
+            <a href="/programs">Programs</a>
+            <a href="/sermons">Sermons</a>
+            <a href="/giving">Giving</a>
+            
+            <div class="mobile-accordion">
+                <button class="mobile-accordion-btn">Resources <i class="fas fa-plus"></i></button>
+                <div class="mobile-accordion-content">
+                    <span class="mobile-sub-label">Canvas</span>
+                    <a href="/resources/tgf-music">TGF Music</a>
+                    <a href="/resources/tgf-drama">TGF Drama</a>
+                    <a href="/resources/tgf-poems">Poems & Spoken Word</a>
+                    <span class="mobile-sub-label">Media</span>
+                    <a href="/resources/sermons-mp3">Sermons MP3</a>
+                    <a href="/resources/apparel">Apparel</a>
+                    <a href="/resources/books">Books</a>
+                </div>
+            </div>
+            
+            <a href="/blog">Blog / News / Testimonials</a>
+            <a href="/contact">Contact Us</a>
+            <a href="/faqs">FAQs</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid container">
+            <div class="footer-col">
+                <h4>The Generation Family</h4>
+                <p>A spiritual and growth family, raising a generation rooted in faith.</p>
+                <div class="footer-socials">
+                    <a href="https://facebook.com/TheGenerationFamily" target="_blank" rel="noopener"><i class="fab fa-facebook"></i></a>
+                    <a href="https://instagram.com/TheGenerationFamily" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    <a href="https://youtube.com/@TheGenerationFamily" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                    <a href="https://tiktok.com/@TheGenerationFamily" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/sermons">Sermons</a></li>
+                    <li><a href="/giving">Giving</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p><i class="fas fa-map-marker-alt"></i> {{ settings.get('church_address', '[Address]') }}</p>
+                <p><i class="fas fa-phone"></i> {{ settings.get('church_phone', '[Phone]') }}</p>
+                <p><i class="fas fa-envelope"></i> {{ settings.get('church_email', 'gizmokzu@gmail.com') }}</p>
+            </div>
+            <div class="footer-col">
+                <h4>Stay Connected</h4>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" name="email" id="newsletterEmail" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <span class="newsletter-msg" id="newsletterMsg"></span>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>&copy; 2026 The Generation Family. All rights reserved.</p>
+            <p><a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="/admin" style="color:#555;">Admin</a></p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

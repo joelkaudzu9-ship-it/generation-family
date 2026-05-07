@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2>TGF Admin</h2>
+        <div class="admin-nav-links">
+            <a href="/admin/settings">Settings</a>
+            <a href="/admin/sermons">Sermons</a>
+            <a href="/admin/leadership">Leadership</a>
+            <a href="/admin/testimonials">Testimonials</a>
+            <a href="/admin/events">Events</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    <main class="admin-main">
+        <h1>Dashboard</h1>
+        <p>Welcome back. Choose a section from the menu to manage content.</p>
+        <div class="admin-cards">
+            <a href="/admin/settings" class="admin-card">
+                <span class="admin-card-icon">⚙️</span>
+                <h3>Site Settings</h3>
+                <p>Mission, vision, contact info, impact numbers</p>
+            </a>
+            <a href="/admin/sermons" class="admin-card">
+                <span class="admin-card-icon">🎙️</span>
+                <h3>Sermons</h3>
+                <p>Upload MP3s, add sermon details</p>
+            </a>
+            <a href="/admin/leadership" class="admin-card">
+                <span class="admin-card-icon">👥</span>
+                <h3>Leadership</h3>
+                <p>Add leaders, upload photos</p>
+            </a>
+            <a href="/admin/testimonials" class="admin-card">
+                <span class="admin-card-icon">💬</span>
+                <h3>Testimonials</h3>
+                <p>Manage testimonies</p>
+            </a>
+            <a href="/admin/events" class="admin-card">
+                <span class="admin-card-icon">📅</span>
+                <h3>Events</h3>
+                <p>Add upcoming programs and events</p>
+            </a>
+            <a href="/admin/newsletter" class="admin-card">
+                <span class="admin-card-icon">📨</span>
+                <h3>Send Newsletter</h3>
+                <p>Compose and send emails to all subscribers</p>
+            </a>
+        </div>
+    </main>
+</body>
+</html>

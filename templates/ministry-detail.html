@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">{{ ministry.name if ministry else 'Ministry' }}</h1>
+    </div>
+</section>
+
+<section class="ministry-detail-section">
+    <div class="container">
+        {% if ministry %}
+        <div class="ministry-detail-content">
+            <div class="ministry-detail-icon">
+                <i class="fas {{ ministry.icon }}"></i>
+            </div>
+            <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
+            <a href="/contact" class="btn-gold">Get Involved</a>
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-search"></i>
+            <h3>Ministry Not Found</h3>
+            <p><a href="/ministries">View all ministries</a></p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

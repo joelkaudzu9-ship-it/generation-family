@@ -1,0 +1,82 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': f'Bearer {SUPABASE_KEY}',
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+}
+
+def supabase_get(table, params=None):
+    """Fetch records from a Supabase table."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
+    response = requests.get(url, headers=HEADERS, params=params)
+    response.raise_for_status()
+    return response.json()
+
+def supabase_get_one(table, record_id):
+    """Fetch a single record by ID."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{record_id}"
+    response = requests.get(url, headers=HEADERS)
+    response.raise_for_status()
+    data = response.json()
+    return data[0] if data else None
+
+def supabase_insert(table, data):
+    """Insert a record into a Supabase table."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
+    response = requests.post(url, headers=HEADERS, json=data)
+    response.raise_for_status()
+    return response.json()
+
+def supabase_update(table, record_id, data):
+    """Update a record by ID."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{record_id}"
+    headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': f'Bearer {SUPABASE_KEY}',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+    }
+    response = requests.patch(url, headers=headers, json=data)
+    if response.status_code not in [200, 201, 204]:
+        print(f"Supabase update error: {response.status_code} - {response.text}")
+        response.raise_for_status()
+    return True
+
+def supabase_delete(table, record_id):
+    """Delete a record by ID."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{record_id}"
+    response = requests.delete(url, headers=HEADERS)
+    response.raise_for_status()
+    return True
+
+# Time-saving shortcuts
+def get_leadership():
+    return supabase_get('leadership', {'order': 'display_order.asc'})
+
+def get_ministries():
+    return supabase_get('ministries', {'order': 'display_order.asc'})
+
+def get_sermons():
+    return supabase_get('sermons', {'order': 'date.desc'})
+
+def get_testimonials():
+    return supabase_get('testimonials', {'is_approved': 'eq.true'})
+
+def get_events():
+    return supabase_get('events', {'order': 'event_date.asc'})
+
+def get_site_settings():
+    settings = supabase_get('site_settings')
+    return {item['setting_key']: item['setting_value'] for item in settings}
+
+def get_blog_posts():
+    return supabase_get('blog_posts', {'published': 'eq.true', 'order': 'created_at.desc'})
