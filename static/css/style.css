@@ -1749,3 +1749,245 @@ a {
         text-align: center;
     }
 }
+
+/* ==================== LOADER ==================== */
+.loader-wrapper {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loader-wrapper.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader {
+    text-align: center;
+}
+
+.loader-ring {
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loader-text {
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ==================== PAGE TRANSITIONS ==================== */
+main {
+    animation: pageIn 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes pageIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== GLASS MORPHISM ==================== */
+.glass {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 20px;
+}
+
+.glass-card {
+    background: rgba(15, 15, 15, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.glass-card:hover {
+    background: rgba(25, 25, 25, 0.8);
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.1);
+}
+
+/* ==================== SKELETON LOADERS ==================== */
+.skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 12px;
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.skeleton-text.short { width: 60%; }
+.skeleton-text.medium { width: 80%; }
+
+.skeleton-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+}
+
+.skeleton-card {
+    padding: 30px;
+    border-radius: 16px;
+    background: #111;
+    border: 1px solid #1a1a1a;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ==================== CUSTOM SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-light);
+}
+
+/* ==================== GLOW EFFECTS ==================== */
+.glow-hover {
+    transition: box-shadow 0.4s ease;
+}
+
+.glow-hover:hover {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.15), 0 0 60px rgba(212, 175, 55, 0.05);
+}
+
+.btn-gold {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gold::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.btn-gold:hover::after {
+    opacity: 1;
+}
+
+/* ==================== CARD SHINE ==================== */
+.shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    transform: skewX(-25deg);
+    transition: left 0.6s ease;
+}
+
+.shine:hover::before {
+    left: 125%;
+}
+
+/* ==================== SMOOTH SCROLL ==================== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ==================== NOTIFICATION BELL ==================== */
+.notif-bell {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid #333;
+    color: var(--gray-light);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-bell:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.notif-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: #e74c3c;
+    border-radius: 50%;
+    display: none;
+}
+
+.notif-dot.active {
+    display: block;
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+}
