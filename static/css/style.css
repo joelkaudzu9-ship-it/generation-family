@@ -89,8 +89,8 @@ a {
 
 /* ==================== HEADER ==================== */
 .header {
-    position: sticky;
-    top: 0;
+    position: sticky !important;
+    top: 0 !important;
     z-index: 999;
     background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(12px);
@@ -668,13 +668,39 @@ a {
     background: var(--black);
 }
 
+/* ==================== SECTION HERO HEADINGS ==================== */
 .section-heading {
     font-family: var(--font-display);
     text-align: center;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-size: clamp(2rem, 5vw, 3rem);
     color: var(--gold);
     margin-bottom: 48px;
     letter-spacing: 1px;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+}
+
+.section-heading::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
 }
 
 .impact-grid {
@@ -2739,4 +2765,127 @@ html {
     .live-stream-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ==================== MODAL ==================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 36px 30px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+.modal-overlay.active .modal-box {
+    transform: scale(1);
+}
+
+.modal-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--white);
+    margin-bottom: 10px;
+}
+
+.modal-message {
+    color: var(--gray);
+    font-size: 0.88rem;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-actions .btn-cancel {
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid #333;
+    color: var(--gray);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.modal-actions .btn-cancel:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.modal-actions .btn-delete {
+    padding: 12px 24px;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.modal-actions .btn-delete:hover {
+    background: #c0392b;
+}
+
+.mobile-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.mobile-search i {
+    color: #555;
+    font-size: 0.85rem;
+}
+
+.mobile-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.mobile-search input::placeholder {
+    color: #555;
 }

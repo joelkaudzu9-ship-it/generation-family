@@ -57,7 +57,7 @@
             {% for img in hero_images %}
             <div class="hero-admin-card">
                 <img src="{{ img.image_url }}" alt="Hero image" class="hero-admin-img">
-                <form method="POST" action="/admin/hero" onsubmit="return confirm('Remove this image?')" class="hero-delete-form">
+                <form method="POST" action="/admin/hero" class="delete-form hero-delete-form" data-name="this hero image">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="image_id" value="{{ img.id }}">
                     <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i> Remove</button>

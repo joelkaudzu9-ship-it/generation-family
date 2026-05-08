@@ -98,7 +98,7 @@
                 <p class="gold-text">{{ leader.title }}</p>
                 <div class="admin-card-actions">
                     <a href="/admin/leadership/{{ leader.id }}/edit" class="btn-edit small"><i class="fas fa-edit"></i> Edit</a>
-                    <form method="POST" action="/admin/leadership/{{ leader.id }}/delete" onsubmit="return confirm('Delete {{ leader.name }}?')" style="display:inline;">
+                    <form method="POST" action="/admin/leadership/{{ leader.id }}/delete" class="delete-form" data-name="{{ leader.name }}" style="display:inline;">
                         <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
                     </form>
                 </div>

@@ -106,7 +106,7 @@
                                 </button>
                             </form>
                             {% if user.role != 'admin' %}
-                            <form method="POST" action="/admin/users" onsubmit="return confirm('Delete {{ user.display_name }}?')" style="display:inline;">
+                            <form method="POST" action="/admin/users" class="delete-form" data-name="{{ user.display_name }}" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                 <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>

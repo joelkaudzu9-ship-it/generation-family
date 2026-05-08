@@ -93,18 +93,6 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
     });
 });
 
-// ==================== SEARCH TOGGLE ====================
-const searchToggle = document.querySelector('.search-toggle');
-const searchBar = document.getElementById('searchBar');
-if (searchToggle && searchBar) {
-    searchToggle.addEventListener('click', () => {
-        searchBar.classList.toggle('active');
-        if (searchBar.classList.contains('active')) {
-            searchBar.querySelector('input').focus();
-        }
-    });
-}
-
 // ==================== HERO SLIDESHOW ====================
 const slides = document.querySelectorAll('.hero-slide');
 const dotsContainer = document.querySelector('.hero-dots');
@@ -393,3 +381,55 @@ if (countdownTimer) {
         setInterval(updateCountdown, 60000); // Update every minute
     }
 }
+
+// ==================== CONFIRMATION MODAL ====================
+function showConfirm(title, message, onConfirm) {
+    const modal = document.getElementById('confirmModal');
+    const titleEl = document.getElementById('confirmTitle');
+    const messageEl = document.getElementById('confirmMessage');
+    const cancelBtn = document.getElementById('confirmCancel');
+    const okBtn = document.getElementById('confirmOk');
+    
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    modal.classList.add('active');
+    
+    function close() {
+        modal.classList.remove('active');
+        cancelBtn.removeEventListener('click', close);
+        okBtn.removeEventListener('click', handleConfirm);
+    }
+    
+    function handleConfirm() {
+        close();
+        onConfirm();
+    }
+    
+    cancelBtn.addEventListener('click', close);
+    okBtn.addEventListener('click', handleConfirm);
+    
+    // Close on overlay click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) close();
+    });
+}
+
+// ==================== DELETE FORM HANDLER ====================
+document.addEventListener('click', function(e) {
+    const deleteBtn = e.target.closest('.delete-form button') || e.target.closest('form[action*="/delete"]')?.querySelector('button');
+    
+    if (deleteBtn) {
+        const form = deleteBtn.closest('form');
+        if (form.classList.contains('delete-form') || form.action.includes('/delete')) {
+            e.preventDefault();
+            const name = form.dataset.name || 'this item';
+            showConfirm(
+                'Delete ' + name + '?',
+                'This action cannot be undone.',
+                function() {
+                    form.submit();
+                }
+            );
+        }
+    }
+});

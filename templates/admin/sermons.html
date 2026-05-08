@@ -110,7 +110,7 @@
                         <td>{% if sermon.audio_url %}<span class="badge badge-success"><i class="fas fa-check"></i> Yes</span>{% else %}<span class="badge">—</span>{% endif %}</td>
                         <td class="actions-cell">
                             <a href="/admin/sermons/{{ sermon.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <form method="POST" action="/admin/sermons/{{ sermon.id }}/delete" onsubmit="return confirm('Delete this sermon?')" style="display:inline;">
+                            <form method="POST" action="/admin/sermons/{{ sermon.id }}/delete" class="delete-form" data-name="{{ sermon.title }}" style="display:inline;">
                                 <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>

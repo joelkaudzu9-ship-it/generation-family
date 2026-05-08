@@ -112,7 +112,7 @@
                         <td><code>{{ ministry.slug }}</code></td>
                         <td class="actions-cell">
                             <a href="/admin/ministries/{{ ministry.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <form method="POST" action="/admin/ministries/{{ ministry.id }}/delete" onsubmit="return confirm('Delete {{ ministry.name }}?')" style="display:inline;">
+                            <form method="POST" action="/admin/ministries/{{ ministry.id }}/delete" class="delete-form" data-name="{{ ministry.name }}" style="display:inline;">
                                 <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
