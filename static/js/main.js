@@ -251,27 +251,25 @@ tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)
 // ==================== PROFESSIONAL BACK BUTTON HANDLING ====================
 (function() {
     
-    // Only intercept back button for overlays — never for page navigation
     window.addEventListener('popstate', function(event) {
         
-        // Close mobile menu if open (don't push new state — just close it)
+        // Close mobile menu AND overlay if open
         if (mobileMenu && mobileMenu.classList.contains('active')) {
-            closeMenu();
-            // Push a replacement state so the back button doesn't keep closing the menu
+            closeMenu(); // This already removes overlay + menu + resets body scroll
             history.replaceState({ menuClosed: true }, '', window.location.href);
             return;
         }
         
         // Close confirmation modal if open
         const confirmModal = document.getElementById('confirmModal');
-        if (confirmModal && confirmModal.classList.contains('active')) {
-            confirmModal.classList.remove('active');
+        if (confirmModal && confirmModal.style.visibility === 'visible') {
+            confirmModal.style.opacity = '0';
+            confirmModal.style.visibility = 'hidden';
             history.replaceState({ modalClosed: true }, '', window.location.href);
             return;
         }
         
-        // If nothing to close, let the browser handle it naturally
-        // This will go to the previous page or leave the site
+        // Otherwise let browser navigate normally
     });
     
 })();
