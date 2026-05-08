@@ -12,9 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    
 
-        <!-- Loading Screen -->
+    <!-- Loading Screen -->
     <div class="loader-wrapper" id="loaderWrapper">
         <div class="loader">
             <div class="loader-ring"></div>
@@ -23,6 +22,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <!-- Side Social Icons -->
     <div class="side-socials">
@@ -35,7 +39,7 @@
     </div>
 
     <!-- Header -->
-    <header class="header">
+    <header class="header" id="header">
         <div class="header-inner">
             <a href="/" class="logo-area">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TGF Logo" class="logo-img">
@@ -84,11 +88,6 @@
             <div class="header-actions">
                 <button class="search-toggle" aria-label="Search"><i class="fas fa-search"></i></button>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
-                                <!-- Notification bell for future real-time updates -->
-                <button class="notif-bell" id="notifBell" style="display:none;" aria-label="Notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notif-dot"></span>
-                </button>
                     <span></span>
                     <span></span>
                     <span></span>
@@ -96,7 +95,7 @@
             </div>
         </div>
 
-        <!-- Search bar (hidden by default) -->
+        <!-- Search bar -->
         <div class="search-bar" id="searchBar">
             <input type="text" placeholder="Search...">
             <button><i class="fas fa-search"></i></button>
@@ -189,7 +188,6 @@
                     <input type="email" name="email" id="newsletterEmail" placeholder="Your email address" required>
                     <button type="submit">Subscribe</button>
                 </form>
-                <span class="newsletter-msg" id="newsletterMsg"></span>
             </div>
         </div>
         <div class="footer-bottom container">
@@ -198,9 +196,9 @@
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-</body>
 
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
 </html>

@@ -107,35 +107,59 @@ if (searchToggle && searchBar) {
 
 // ==================== HERO SLIDESHOW ====================
 const slides = document.querySelectorAll('.hero-slide');
-const dots = document.querySelectorAll('.hero-dot');
+const dotsContainer = document.querySelector('.hero-dots');
+let dots = document.querySelectorAll('.hero-dot');
 let currentSlide = 0;
 let slideInterval;
 
+function getDots() {
+    return document.querySelectorAll('.hero-dot');
+}
+
 function goToSlide(index) {
     slides.forEach(s => s.classList.remove('active'));
-    dots.forEach(d => d.classList.remove('active'));
+    const currentDots = getDots();
+    currentDots.forEach(d => d.classList.remove('active'));
+    
     if (slides[index]) slides[index].classList.add('active');
-    if (dots[index]) dots[index].classList.add('active');
+    if (currentDots[index]) currentDots[index].classList.add('active');
+    
     currentSlide = index;
 }
 
 function nextSlide() {
+    if (slides.length === 0) return;
     const next = (currentSlide + 1) % slides.length;
     goToSlide(next);
 }
 
 function startSlideshow() {
-    if (slides.length > 1) slideInterval = setInterval(nextSlide, 6000);
+    if (slides.length > 1) {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 6000);
+    }
 }
 
-dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-        goToSlide(i);
-        clearInterval(slideInterval);
-        startSlideshow();
-    });
-});
+function buildHeroDots() {
+    if (!dotsContainer) return;
+    const slidesCount = slides.length;
+    
+    dotsContainer.innerHTML = '';
+    
+    for (let i = 0; i < slidesCount; i++) {
+        const dot = document.createElement('span');
+        dot.className = `hero-dot${i === 0 ? ' active' : ''}`;
+        dot.addEventListener('click', () => {
+            goToSlide(i);
+            startSlideshow();
+        });
+        dotsContainer.appendChild(dot);
+    }
+    
+    dots = document.querySelectorAll('.hero-dot');
+}
 
+buildHeroDots();
 startSlideshow();
 
 // ==================== PARALLAX HERO ====================
@@ -148,49 +172,6 @@ if (hero) {
         });
         const heroContent = hero.querySelector('.hero-content');
         if (heroContent) heroContent.style.transform = `translateY(${scroll * 0.15}px)`;
-    });
-}
-
-// ==================== CONTACT FORM WITH LOADING ====================
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('contactSubmitBtn');
-        const feedback = document.getElementById('contactFeedback');
-        
-        btn.classList.add('btn-loading');
-        btn.textContent = 'Sending';
-        feedback.textContent = '';
-        
-        const formData = new FormData(contactForm);
-        
-        try {
-            const response = await fetch('/contact', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                showToast('Message sent successfully! We\'ll get back to you soon.', 'success');
-                contactForm.reset();
-                feedback.textContent = '✓ Message sent! Check your inbox for a confirmation.';
-                feedback.style.color = '#4caf50';
-            } else {
-                throw new Error('Failed');
-            }
-        } catch (err) {
-            showToast('Something went wrong. Please try again.', 'error');
-            feedback.textContent = 'Failed to send. Please try again.';
-            feedback.style.color = '#e74c3c';
-        }
-        
-        btn.classList.remove('btn-loading');
-        btn.textContent = 'Send Message';
-        
-        setTimeout(() => {
-            feedback.textContent = '';
-        }, 5000);
     });
 }
 
@@ -279,20 +260,44 @@ if (tSlides.length > 1) {
 
 tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)));
 
-
 // ==================== MOBILE BACK BUTTON ====================
-// Close mobile menu when back button is pressed
 window.addEventListener('popstate', () => {
     if (mobileMenu && mobileMenu.classList.contains('active')) {
         closeMenu();
-        history.pushState(null, '', window.location.href); // Prevent actual navigation
+        history.pushState(null, '', window.location.href);
     }
 });
 
-// Push initial state so back button can be intercepted
 if (window.history && window.history.pushState) {
     history.pushState(null, '', window.location.href);
 }
+
+// ==================== BACK TO TOP ====================
+const backToTop = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 500) {
+        backToTop.classList.add('visible');
+    } else {
+        backToTop.classList.remove('visible');
+    }
+});
+
+backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ==================== FROZEN HEADER SCROLL STATE ====================
+const header = document.getElementById('header');
+
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
 // ==================== SOCIAL LINKS ====================
 const socialLinks = {
     whatsapp: 'https://wa.me/265983142415',
