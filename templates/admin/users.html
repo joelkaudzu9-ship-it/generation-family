@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/users" class="active">Users</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+        {% endif %}
+        
+        <h1>Add New User</h1>
+        
+        <form method="POST" class="admin-form" id="userForm">
+            <input type="hidden" name="action" value="add">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Username *</label>
+                    <input type="text" name="username" placeholder="e.g. sermons_team" required>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="text" name="password" placeholder="Set a strong password" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Display Name *</label>
+                    <input type="text" name="display_name" placeholder="e.g. Pastor James" required>
+                </div>
+                <div class="form-group">
+                    <label>Role *</label>
+                    <select name="role" required>
+                        <option value="admin">Admin (Full Access)</option>
+                        <option value="sermons">Sermons</option>
+                        <option value="leadership">Leadership</option>
+                        <option value="ministries">Ministries</option>
+                        <option value="events">Events</option>
+                        <option value="blog">Blog</option>
+                        <option value="testimonials">Testimonials</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <input type="text" name="department" placeholder="e.g. Worship Team, Children's Ministry">
+                <span class="form-hint">Optional — just for your records.</span>
+            </div>
+            <button type="submit" class="btn-save">Add User</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>All Users ({{ users|length }})</h2>
+        {% if users %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><strong>{{ user.display_name }}</strong></td>
+                        <td><code>{{ user.username }}</code></td>
+                        <td><span class="badge">{{ user.role }}</span></td>
+                        <td>{{ user.department or '—' }}</td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge badge-success">Active</span>
+                            {% else %}
+                            <span class="badge badge-draft">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <form method="POST" action="/admin/users" style="display:inline;">
+                                <input type="hidden" name="action" value="toggle">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit" class="btn-edit small">
+                                    {% if user.is_active %}Disable{% else %}Enable{% endif %}
+                                </button>
+                            </form>
+                            {% if user.role != 'admin' %}
+                            <form method="POST" action="/admin/users" onsubmit="return confirm('Delete {{ user.display_name }}?')" style="display:inline;">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No users yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

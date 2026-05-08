@@ -27,16 +27,54 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def role_required(*allowed_roles):
+    """Restrict access to specific roles. 'admin' can access everything."""
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not session.get('admin_logged_in'):
+                return redirect(url_for('admin.login'))
+            
+            user = session.get('admin_user', {})
+            user_role = user.get('role', '')
+            
+            # Admin can access everything
+            if user_role == 'admin':
+                return f(*args, **kwargs)
+            
+            # Check if user's role is in allowed roles
+            if user_role in allowed_roles:
+                return f(*args, **kwargs)
+            
+            return redirect(url_for('admin.dashboard'))
+        return decorated_function
+    return decorator
+
 # ==================== LOGIN ====================
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
-        password = request.form.get('password')
-        if password == ADMIN_PASSWORD:
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        # Check against database
+        users = supabase_get('admin_users', {'username': f'eq.{username}', 'is_active': 'eq.true'})
+        
+        if users and users[0]['password'] == password:
+            user = users[0]
             session['admin_logged_in'] = True
+            session['admin_user'] = {
+                'id': user['id'],
+                'username': user['username'],
+                'display_name': user['display_name'],
+                'role': user['role'],
+                'department': user.get('department', '')
+            }
             return redirect(url_for('admin.dashboard'))
-        error = 'Incorrect password.'
+        else:
+            error = 'Invalid username or password.'
+    
     return render_template('admin/login.html', error=error)
 
 @admin_bp.route('/logout')
@@ -52,7 +90,7 @@ def dashboard():
 
 # ==================== SITE SETTINGS ====================
 @admin_bp.route('/settings', methods=['GET', 'POST'])
-@login_required
+@role_required('admin')
 def settings():
     message = None
     error = None
@@ -91,7 +129,7 @@ def settings():
 
 # ==================== SERMONS (CRUD) ====================
 @admin_bp.route('/sermons', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'sermons')
 def manage_sermons():
     message = None
     error = None
@@ -161,7 +199,7 @@ def delete_sermon(sermon_id):
 
 # ==================== LEADERSHIP (CRUD) ====================
 @admin_bp.route('/leadership', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'leadership')
 def manage_leadership():
     message = None
     error = None
@@ -212,7 +250,7 @@ def delete_leader(leader_id):
 
 # ==================== MINISTRIES (CRUD) ====================
 @admin_bp.route('/ministries', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'ministries')
 def manage_ministries():
     message = None
     error = None
@@ -265,7 +303,7 @@ def delete_ministry(ministry_id):
 
 # ==================== TESTIMONIALS (CRUD) ====================
 @admin_bp.route('/testimonials', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'testimonials')
 def manage_testimonials():
     message = None
     error = None
@@ -306,7 +344,7 @@ def delete_testimonial(id):
 
 # ==================== EVENTS (CRUD) ====================
 @admin_bp.route('/events', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'events')
 def manage_events():
     message = None
     error = None
@@ -359,7 +397,7 @@ def delete_event(event_id):
 
 # ==================== BLOG POSTS (CRUD) ====================
 @admin_bp.route('/blog', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'blog')
 def manage_blog():
     message = None
     error = None
@@ -414,7 +452,7 @@ def delete_blog(post_id):
 
 # ==================== NEWSLETTER ====================
 @admin_bp.route('/newsletter', methods=['GET', 'POST'])
-@login_required
+@role_required('admin')
 def newsletter():
     message = None
     error = None
@@ -440,7 +478,7 @@ def newsletter():
 
 # ==================== CONTACT SUBMISSIONS ====================
 @admin_bp.route('/messages')
-@login_required
+@role_required('admin')
 def messages():
     submissions = supabase_get('contact_submissions', {'order': 'created_at.desc'})
     return render_template('admin/messages.html', submissions=submissions)
@@ -460,7 +498,7 @@ def delete_message(id):
 
 # ==================== HERO IMAGES ====================
 @admin_bp.route('/hero', methods=['GET', 'POST'])
-@login_required
+@role_required('admin')
 def manage_hero():
     message = None
     error = None
@@ -489,3 +527,43 @@ def manage_hero():
     
     hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
     return render_template('admin/hero.html', hero_images=hero_images, message=message, error=error)
+
+@admin_bp.route('/users', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_users():
+    message = None
+    error = None
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'add':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            display_name = request.form.get('display_name')
+            role = request.form.get('role')
+            department = request.form.get('department', '')
+            
+            supabase_insert('admin_users', {
+                'username': username,
+                'password': password,
+                'display_name': display_name,
+                'role': role,
+                'department': department
+            })
+            message = f"User {display_name} added!"
+        
+        elif action == 'delete':
+            user_id = request.form.get('user_id')
+            supabase_delete('admin_users', int(user_id))
+            message = "User removed."
+        
+        elif action == 'toggle':
+            user_id = request.form.get('user_id')
+            user = supabase_get_one('admin_users', int(user_id))
+            if user:
+                supabase_update('admin_users', int(user_id), {'is_active': not user['is_active']})
+                message = "User status updated."
+    
+    users = supabase_get('admin_users', {'order': 'created_at.asc'})
+    return render_template('admin/users.html', users=users, message=message, error=error)

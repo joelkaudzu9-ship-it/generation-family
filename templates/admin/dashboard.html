@@ -10,78 +10,72 @@
 <body class="admin-body">
     <nav class="admin-nav">
         <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin/settings"><i class="fas fa-cog"></i> Settings</a>
-            <a href="/admin/hero">Hero</a>
-            <a href="/admin/sermons"><i class="fas fa-microphone-alt"></i> Sermons</a>
-            <a href="/admin/leadership"><i class="fas fa-user-tie"></i> Leadership</a>
-            <a href="/admin/ministries"><i class="fas fa-church"></i> Ministries</a>
-            <a href="/admin/testimonials"><i class="fas fa-quote-right"></i> Testimonials</a>
-            <a href="/admin/events"><i class="fas fa-calendar-alt"></i> Events</a>
-            <a href="/admin/blog"><i class="fas fa-blog"></i> Blog</a>
-            <a href="/admin/messages"><i class="fas fa-envelope"></i> Messages</a>
-            <a href="/admin/newsletter"><i class="fas fa-paper-plane"></i> Newsletter</a>
-            <a href="/">View Site</a>
+        <div class="admin-nav-links" id="adminNav"></div>
+        <div class="admin-user-info">
+            <span>{{ session.get('admin_user', {}).get('display_name', 'User') }}</span>
             <a href="/admin/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
     
     <main class="admin-main">
-        <h1>Welcome Back</h1>
-        <p>Manage every aspect of The Generation Family website from here.</p>
+        <h1>Welcome, {{ session.get('admin_user', {}).get('display_name', 'User') }}</h1>
+        <p>You have access to the sections below.</p>
         
-        <div class="admin-cards">
-            <a href="/admin/settings" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-cog"></i></span>
-                <h3>Site Settings</h3>
-                <p>Mission, vision, contact info, impact numbers</p>
-            </a>
-            <a href="/admin/sermons" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-microphone-alt"></i></span>
-                <h3>Sermons</h3>
-                <p>Upload MP3s, manage sermon library</p>
-            </a>
-            <a href="/admin/leadership" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-user-tie"></i></span>
-                <h3>Leadership</h3>
-                <p>Add, edit, reorder leaders</p>
-            </a>
-            <a href="/admin/ministries" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-church"></i></span>
-                <h3>Ministries</h3>
-                <p>Manage all ministry departments</p>
-            </a>
-            <a href="/admin/testimonials" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-quote-right"></i></span>
-                <h3>Testimonials</h3>
-                <p>Add and manage testimonies</p>
-            </a>
-            <a href="/admin/events" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-calendar-alt"></i></span>
-                <h3>Events</h3>
-                <p>Create upcoming programs</p>
-            </a>
-            <a href="/admin/hero" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-images"></i></span>
-                <h3>Hero Images</h3>
-                <p>Manage homepage background slideshow</p>
-            </a>
-            <a href="/admin/blog" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-blog"></i></span>
-                <h3>Blog</h3>
-                <p>Write news and articles</p>
-            </a>
-            <a href="/admin/messages" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-envelope"></i></span>
-                <h3>Messages</h3>
-                <p>View contact form submissions</p>
-            </a>
-            <a href="/admin/newsletter" class="admin-card">
-                <span class="admin-card-icon"><i class="fas fa-paper-plane"></i></span>
-                <h3>Newsletter</h3>
-                <p>Send emails to all subscribers</p>
-            </a>
+        <div class="admin-cards" id="dashboardCards">
+            <!-- Filled by JS based on role -->
         </div>
     </main>
+    
+    <script>
+        const user = {
+            role: '{{ session.get("admin_user", {}).get("role", "") }}',
+            displayName: '{{ session.get("admin_user", {}).get("display_name", "") }}'
+        };
+        
+        // All available sections
+        const allSections = {
+            settings: { icon: 'fa-cog', title: 'Settings', desc: 'Mission, vision, contact info', url: '/admin/settings', roles: ['admin'] },
+            hero: { icon: 'fa-images', title: 'Hero Images', desc: 'Homepage slideshow', url: '/admin/hero', roles: ['admin'] },
+            sermons: { icon: 'fa-microphone-alt', title: 'Sermons', desc: 'Upload and manage sermons', url: '/admin/sermons', roles: ['admin', 'sermons'] },
+            leadership: { icon: 'fa-user-tie', title: 'Leadership', desc: 'Manage church leaders', url: '/admin/leadership', roles: ['admin', 'leadership'] },
+            ministries: { icon: 'fa-church', title: 'Ministries', desc: 'Manage departments', url: '/admin/ministries', roles: ['admin', 'ministries'] },
+            testimonials: { icon: 'fa-quote-right', title: 'Testimonials', desc: 'Manage testimonies', url: '/admin/testimonials', roles: ['admin', 'testimonials'] },
+            events: { icon: 'fa-calendar-alt', title: 'Events', desc: 'Create and manage events', url: '/admin/events', roles: ['admin', 'events'] },
+            blog: { icon: 'fa-blog', title: 'Blog', desc: 'Write and manage posts', url: '/admin/blog', roles: ['admin', 'blog'] },
+            messages: { icon: 'fa-envelope', title: 'Messages', desc: 'View contact submissions', url: '/admin/messages', roles: ['admin'] },
+            newsletter: { icon: 'fa-paper-plane', title: 'Newsletter', desc: 'Send to subscribers', url: '/admin/newsletter', roles: ['admin'] },
+            users: { icon: 'fa-users-cog', title: 'Users', desc: 'Manage access and roles', url: '/admin/users', roles: ['admin'] }
+        };
+        
+        const cardsContainer = document.getElementById('dashboardCards');
+        const navContainer = document.getElementById('adminNav');
+        
+        // Build nav links
+        let navHTML = '<a href="/admin"><i class="fas fa-home"></i> Dashboard</a>';
+        
+        for (const [key, section] of Object.entries(allSections)) {
+            if (section.roles.includes(user.role)) {
+                navHTML += `<a href="${section.url}"><i class="fas ${section.icon}"></i> ${section.title}</a>`;
+            }
+        }
+        
+        navHTML += '<a href="/">View Site</a>';
+        navContainer.innerHTML = navHTML;
+        
+        // Build dashboard cards
+        for (const [key, section] of Object.entries(allSections)) {
+            if (section.roles.includes(user.role)) {
+                const card = document.createElement('a');
+                card.href = section.url;
+                card.className = 'admin-card';
+                card.innerHTML = `
+                    <span class="admin-card-icon"><i class="fas ${section.icon}"></i></span>
+                    <h3>${section.title}</h3>
+                    <p>${section.desc}</p>
+                `;
+                cardsContainer.appendChild(card);
+            }
+        }
+    </script>
 </body>
 </html>
