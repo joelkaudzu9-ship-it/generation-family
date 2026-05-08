@@ -64,6 +64,18 @@
                     <input type="text" name="values" value="{{ settings.get('values', '') }}">
                 </div>
             </fieldset>
+
+            <fieldset>
+                <legend><i class="fas fa-info-circle"></i> About Page</legend>
+                <div class="form-group">
+                    <label>About Intro (first paragraph)</label>
+                    <textarea name="about_intro" rows="3">{{ settings.get('about_intro', '') }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>About Description (second paragraph)</label>
+                    <textarea name="about_description" rows="3">{{ settings.get('about_description', '') }}</textarea>
+                </div>
+            </fieldset>
             
             <fieldset>
                 <legend><i class="fas fa-chart-bar"></i> Impact Numbers</legend>

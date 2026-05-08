@@ -109,6 +109,8 @@ def settings():
             'church_address': request.form.get('church_address'),
             'church_phone': request.form.get('church_phone'),
             'church_email': request.form.get('church_email'),
+            'about_intro': request.form.get('about_intro'),
+            'about_description': request.form.get('about_description'),
         }
         
         for key, value in updates.items():
