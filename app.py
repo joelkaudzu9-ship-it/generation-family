@@ -152,11 +152,6 @@ def sermons():
     return render_template('sermons.html', sermons=sermons_list)
 
 
-# ==================== GIVING ====================
-@app.route('/giving')
-def giving():
-    return render_template('giving.html')
-
 
 # ==================== PRAYER RHYTHMS ====================
 @app.route('/prayer-rhythms')
