@@ -7,6 +7,13 @@ from supabase_client import (
     get_events,
     get_site_settings,
     get_blog_posts,
+    get_prayer_rhythms,
+    get_family_groups,
+    get_marketplace_items,
+    get_retreats,
+    get_creatives,
+    get_media,
+    get_section_images,
     supabase_insert,
     supabase_get
 )
@@ -20,7 +27,10 @@ app.register_blueprint(admin_bp)
 
 @app.context_processor
 def inject_settings():
-    return {'settings': get_site_settings()}
+    return {
+        'settings': get_site_settings(),
+        'section_images': get_section_images()
+    }
 
 
 @app.route('/')
@@ -131,6 +141,36 @@ def giving():
     return render_template('giving.html')
 
 
+# ==================== PRAYER RHYTHMS ====================
+@app.route('/prayer-rhythms')
+def prayer_rhythms():
+    rhythms = get_prayer_rhythms()
+    return render_template('prayer-rhythms.html', rhythms=rhythms)
+
+# ==================== FAMILY GROUPS ====================
+@app.route('/family-groups')
+def family_groups():
+    groups = get_family_groups()
+    return render_template('family-groups.html', groups=groups)
+
+# ==================== MARKETPLACE ====================
+@app.route('/marketplace')
+def marketplace():
+    items = get_marketplace_items()
+    return render_template('marketplace.html', items=items)
+
+# ==================== RETREATS ====================
+@app.route('/retreats')
+def retreats():
+    retreats = get_retreats()
+    return render_template('retreats.html', retreats=retreats)
+
+# ==================== CREATIVES ====================
+@app.route('/creatives')
+def creatives():
+    creatives = get_creatives()
+    return render_template('creatives.html', creatives=creatives)
+
 # ==================== RESOURCES ====================
 @app.route('/resources')
 def resources():
@@ -140,34 +180,40 @@ def resources():
 def resources_canvas():
     return render_template('canvas.html')
 
-@app.route('/resources/media')
-def resources_media():
-    return render_template('media.html')
-
 @app.route('/resources/tgf-music')
 def tgf_music():
-    return render_template('tgf-music.html')
+    music = get_creatives(section='music')
+    return render_template('tgf-music.html', items=music)
 
 @app.route('/resources/tgf-drama')
 def tgf_drama():
-    return render_template('tgf-drama.html')
+    drama = get_creatives(section='drama')
+    return render_template('tgf-drama.html', items=drama)
 
 @app.route('/resources/tgf-poems')
 def tgf_poems():
-    return render_template('tgf-poems.html')
+    poems = get_creatives(section='poems')
+    return render_template('tgf-poems.html', items=poems)
 
 @app.route('/resources/sermons-mp3')
 def sermons_mp3():
     sermons_list = get_sermons()
     return render_template('sermons-mp3.html', sermons=sermons_list)
 
+@app.route('/resources/media')
+def resources_media():
+    media_items = get_media()
+    return render_template('media.html', media_items=media_items)
+
 @app.route('/resources/apparel')
 def apparel():
-    return render_template('apparel.html')
+    apparel_items = get_marketplace_items()
+    return render_template('apparel.html', items=apparel_items)
 
 @app.route('/resources/books')
 def books():
-    return render_template('books.html')
+    books_items = get_marketplace_items()
+    return render_template('books.html', items=books_items)
 
 @app.route('/blog')
 def blog():
@@ -216,30 +262,9 @@ def contact():
     
     return render_template('contact.html', settings=settings, success=False)
 
-@app.route('/prayer-rhythms')
-def prayer_rhythms():
-    return render_template('prayer-rhythms.html')
-
-@app.route('/family-groups')
-def family_groups():
-    return render_template('family-groups.html')
-
-@app.route('/marketplace')
-def marketplace():
-    return render_template('marketplace.html')
-
-@app.route('/retreats')
-def retreats():
-    return render_template('retreats.html')
-
 @app.route('/story')
 def story():
     return render_template('story.html')
-
-@app.route('/creatives')
-def creatives():
-    creatives = supabase_get('creatives', {'order': 'created_at.desc'})
-    return render_template('creatives.html', creatives=creatives)
 
 # ==================== FAQs ====================
 @app.route('/faqs')
@@ -276,4 +301,3 @@ def subscribe():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
