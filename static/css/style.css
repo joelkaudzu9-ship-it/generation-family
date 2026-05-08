@@ -677,12 +677,13 @@ a {
 .section-heading {
     font-family: var(--font-display);
     text-align: center;
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
     color: var(--gold);
-    margin-bottom: 48px;
-    letter-spacing: 1px;
+    margin-bottom: 32px;
+    letter-spacing: 0.5px;
     position: relative;
-    padding-bottom: 20px;
+    padding-bottom: 16px;
+    font-weight: 600;
 }
 
 .section-heading::after {
@@ -691,9 +692,10 @@ a {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
+    width: 40px;
+    height: 1px;
     background: var(--gold);
+    opacity: 0.5;
 }
 
 .section-heading::before {
@@ -2904,9 +2906,12 @@ html {
 .section-intro {
     text-align: center;
     color: var(--gray);
-    margin-top: -30px;
-    margin-bottom: 40px;
-    font-size: 0.95rem;
+    margin-top: -20px;
+    margin-bottom: 30px;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .rhythms-grid {
@@ -3487,4 +3492,17 @@ html {
     .creatives-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.mvv,
+.impact,
+.leadership,
+.ministries,
+.testimonials,
+.rhythms,
+.our-story,
+.expressions,
+.cta,
+.live-stream {
+    padding: 50px 0;
 }

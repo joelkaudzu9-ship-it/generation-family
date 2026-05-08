@@ -528,6 +528,105 @@ def manage_hero():
     hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
     return render_template('admin/hero.html', hero_images=hero_images, message=message, error=error)
 
+# ==================== CREATIVES MANAGEMENT ====================
+@admin_bp.route('/creatives', methods=['GET', 'POST'])
+@role_required('admin', 'creatives')
+def manage_creatives():
+    message = None
+    error = None
+    
+    if request.method == 'POST':
+        section = request.form.get('section')
+        title = request.form.get('title')
+        description = request.form.get('description')
+        content_url = request.form.get('content_url') or ''
+        
+        # Handle file upload
+        upload_file = request.files.get('content_file')
+        if upload_file and upload_file.filename:
+            result = upload_image(upload_file, folder=f'generation/creatives/{section}')
+            content_url = result['url']
+        
+        supabase_insert('creatives', {
+            'section': section,
+            'title': title,
+            'description': description,
+            'content_url': content_url
+        })
+        message = "Content added!"
+    
+    creatives = supabase_get('creatives', {'order': 'created_at.desc'})
+    return render_template('admin/creatives.html', creatives=creatives, message=message, error=error)
+
+@admin_bp.route('/creatives/<int:id>/delete', methods=['POST'])
+@role_required('admin', 'creatives')
+def delete_creative(id):
+    supabase_delete('creatives', id)
+    return redirect(url_for('admin.manage_creatives'))
+
+@admin_bp.route('/section-images', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_section_images():
+    message = None
+    
+    if request.method == 'POST':
+        section = request.form.get('section')
+        image_file = request.files.get('image')
+        
+        if image_file and image_file.filename:
+            result = upload_image(image_file, folder='generation/sections')
+            image_url = result['url']
+            
+            # Check if section already has an image
+            existing = supabase_get('section_images', {'section_name': f'eq.{section}'})
+            if existing:
+                supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
+            else:
+                supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
+            
+            message = f"Image for {section} updated!"
+    
+    images = supabase_get('section_images')
+    return render_template('admin/section-images.html', images=images, message=message)
+
+# ==================== MEDIA MANAGEMENT ====================
+@admin_bp.route('/media', methods=['GET', 'POST'])
+@role_required('admin', 'media')
+def manage_media():
+    message = None
+    error = None
+    
+    if request.method == 'POST':
+        media_type = request.form.get('media_type')
+        title = request.form.get('title')
+        description = request.form.get('description')
+        media_url = request.form.get('media_url') or ''
+        
+        upload_file = request.files.get('media_file')
+        if upload_file and upload_file.filename:
+            if media_type == 'audio':
+                result = upload_audio(upload_file, folder='generation/media/audio')
+            else:
+                result = upload_image(upload_file, folder='generation/media/images')
+            media_url = result['url']
+        
+        supabase_insert('media', {
+            'media_type': media_type,
+            'title': title,
+            'description': description,
+            'media_url': media_url
+        })
+        message = "Media added!"
+    
+    media_items = supabase_get('media', {'order': 'created_at.desc'})
+    return render_template('admin/media.html', media_items=media_items, message=message, error=error)
+
+@admin_bp.route('/media/<int:id>/delete', methods=['POST'])
+@role_required('admin', 'media')
+def delete_media(id):
+    supabase_delete('media', id)
+    return redirect(url_for('admin.manage_media'))
+
 @admin_bp.route('/users', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_users():
