@@ -1119,6 +1119,63 @@ a {
     color: var(--gray);
 }
 
+/* ==================== CONTACT MOBILE STACK ==================== */
+@media (max-width: 768px) {
+    .contact-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Form comes first on mobile */
+    .contact-form-wrapper {
+        order: 1;
+    }
+
+    /* Contact info comes second, more compact */
+    .contact-info {
+        order: 2;
+    }
+
+    .contact-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+
+    .contact-detail {
+        margin-bottom: 14px;
+        gap: 10px;
+    }
+
+    .contact-detail i {
+        font-size: 0.9rem;
+        width: 20px;
+    }
+
+    .contact-detail h4 {
+        font-size: 0.8rem;
+    }
+
+    .contact-detail p {
+        font-size: 0.78rem;
+        line-height: 1.5;
+    }
+
+    .contact-detail:last-of-type {
+        display: none; /* Hide service times on mobile, keep it clean */
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-section {
+        padding: 40px 0;
+    }
+
+    .contact-detail:last-of-type {
+        display: flex; /* Show service times again if needed, or keep hidden */
+    }
+}
+
 /* ==================== RESPONSIVE ADDITIONS ==================== */
 @media (max-width: 768px) {
     .contact-grid {
@@ -2163,4 +2220,71 @@ html {
 
 @keyframes stroke {
     100% { stroke-dashoffset: 0; }
+}
+
+/* ==================== COMPACT MOBILE FOOTER ==================== */
+@media (max-width: 480px) {
+    .footer {
+        padding: 30px 12px 16px;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .footer-col {
+        font-size: 0.75rem;
+    }
+
+    .footer-col h4 {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .footer-col p,
+    .footer-col ul li a {
+        font-size: 0.72rem;
+    }
+
+    .footer-col p i {
+        width: 14px;
+        font-size: 0.65rem;
+    }
+
+    .newsletter-form {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .newsletter-form input {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .newsletter-form button {
+        padding: 8px;
+        font-size: 0.75rem;
+        width: 100%;
+    }
+
+    .footer-socials {
+        gap: 8px;
+    }
+
+    .footer-socials a {
+        font-size: 1rem;
+    }
+
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        gap: 4px;
+    }
+
+    .footer-col:last-child {
+        grid-column: span 2;
+    }
 }

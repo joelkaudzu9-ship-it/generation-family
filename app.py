@@ -23,21 +23,21 @@ def inject_settings():
     return {'settings': get_site_settings()}
 
 
-# ==================== HOME ====================
 @app.route('/')
 def home():
     settings = get_site_settings()
     leadership = get_leadership()
     ministries = get_ministries()
     testimonials = get_testimonials()
+    hero_images = supabase_get('hero_images', {'is_active': 'eq.true', 'order': 'created_at.desc'})
     return render_template(
         'index.html',
         settings=settings,
         leadership=leadership,
         ministries=ministries,
-        testimonials=testimonials
+        testimonials=testimonials,
+        hero_images=hero_images
     )
-
 
 # ==================== ABOUT ====================
 @app.route('/about')

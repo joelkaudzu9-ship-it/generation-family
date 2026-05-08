@@ -448,3 +448,36 @@ def mark_read(id):
 def delete_message(id):
     supabase_delete('contact_submissions', id)
     return redirect(url_for('admin.messages'))
+
+
+# ==================== HERO IMAGES ====================
+@admin_bp.route('/hero', methods=['GET', 'POST'])
+@login_required
+def manage_hero():
+    message = None
+    error = None
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'add':
+            image_file = request.files.get('hero_image')
+            if image_file and image_file.filename:
+                result = upload_image(image_file, folder='generation/hero')
+                supabase_insert('hero_images', {
+                    'image_url': result['url'],
+                    'public_id': result['public_id'],
+                    'is_active': True
+                })
+                message = "Hero image added!"
+            else:
+                error = "Please select an image."
+        
+        elif action == 'delete':
+            image_id = request.form.get('image_id')
+            if image_id:
+                supabase_delete('hero_images', int(image_id))
+                message = "Image removed."
+    
+    hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
+    return render_template('admin/hero.html', hero_images=hero_images, message=message, error=error)
