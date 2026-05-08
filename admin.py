@@ -65,16 +65,12 @@ def login():
         if users and users[0]['password'] == password:
             user = users[0]
             
-            # Parse roles from database
-            roles = user.get('roles', [])
-            if not roles or roles == '{}':
-                if user.get('role'):
-                    roles = [user['role']]
-                else:
-                    roles = ['user']
-            elif isinstance(roles, str):
-                # Convert Supabase array string to Python list
-                roles = roles.strip('{}').split(',') if roles.strip('{}') else [user.get('role', 'user')]
+            # Parse roles from plain text field
+            roles_str = user.get('roles', '')
+            if roles_str:
+                roles = [r.strip() for r in roles_str.split(',') if r.strip()]
+            else:
+                roles = [user.get('role', 'user')]
             
             session['admin_logged_in'] = True
             session['admin_user'] = {
@@ -844,14 +840,14 @@ def manage_users():
             display_name = request.form.get('display_name')
             department = request.form.get('department', '')
             roles = request.form.getlist('roles')
-            primary_role = roles[0] if roles else 'user'
-            
+            roles_string = ','.join(roles) if roles else 'user'
+
             supabase_insert('admin_users', {
                 'username': username,
                 'password': password,
                 'display_name': display_name,
-                'role': primary_role,
-                'roles': roles,
+                'role': roles[0] if roles else 'user',
+                'roles': roles_string,
                 'department': department
             })
             message = f"User {display_name} added!"
