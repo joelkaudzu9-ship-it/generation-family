@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Groups — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/family-groups" class="active">Family Groups</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        
+        <h1>Add Family Group</h1>
+        
+        <form method="POST" class="admin-form" action="/admin/family-groups">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Group Name *</label>
+                    <input type="text" name="name" placeholder="e.g. Blantyre Central" required>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" name="city" placeholder="e.g. Blantyre">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Leader</label>
+                    <input type="text" name="leader" placeholder="e.g. Peter M.">
+                </div>
+                <div class="form-group">
+                    <label>Meeting Time</label>
+                    <input type="text" name="meeting_time" placeholder="e.g. Tuesdays 6PM">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" placeholder="What happens at this group?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Contact Email</label>
+                <input type="email" name="contact_email" placeholder="Group contact email">
+            </div>
+            <button type="submit" class="btn-save">Add Group</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>Current Groups</h2>
+        {% if groups %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Leader</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in groups %}
+                    <tr>
+                        <td><strong>{{ group.name }}</strong></td>
+                        <td>{{ group.city or '—' }}</td>
+                        <td>{{ group.leader or '—' }}</td>
+                        <td>
+                            {% if group.is_active %}
+                            <span class="badge badge-success">Active</span>
+                            {% else %}
+                            <span class="badge badge-draft">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="/admin/family-groups/{{ group.id }}/delete" class="delete-form" data-name="{{ group.name }}" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No family groups added yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

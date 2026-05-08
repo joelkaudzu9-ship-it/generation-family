@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retreats — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/retreats" class="active">Retreats</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        
+        <h1>Add Retreat</h1>
+        
+        <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/retreats">
+            <div class="form-group">
+                <label>Retreat Title *</label>
+                <input type="text" name="title" placeholder="e.g. Midsemester Retreat 2026" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date">
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" name="end_date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" placeholder="e.g. Zomba Mountain">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="4" placeholder="What happened at this retreat?"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="is_upcoming">
+                        <option value="true">Upcoming</option>
+                        <option value="false">Past Retreat</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-save">Add Retreat</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>All Retreats</h2>
+        {% if retreats %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Dates</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for retreat in retreats %}
+                    <tr>
+                        <td><strong>{{ retreat.title }}</strong></td>
+                        <td>{{ retreat.start_date or '—' }}{% if retreat.end_date %} — {{ retreat.end_date }}{% endif %}</td>
+                        <td>{{ retreat.location or '—' }}</td>
+                        <td>
+                            {% if retreat.is_upcoming %}
+                            <span class="badge badge-success">Upcoming</span>
+                            {% else %}
+                            <span class="badge">Past</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="/admin/retreats/{{ retreat.id }}/delete" class="delete-form" data-name="{{ retreat.title }}" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No retreats added yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

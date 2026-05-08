@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/story-sections" class="active">Our Story</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        
+        <h1>Add Story Section</h1>
+        <p>Each section appears as a heading + paragraph on the Our Story page. Add them in the order you want them to appear.</p>
+        
+        <form method="POST" class="admin-form" action="/admin/story-sections">
+            <div class="form-group">
+                <label>Section Title *</label>
+                <input type="text" name="title" placeholder="e.g. It Started With Two" required>
+            </div>
+            <div class="form-group">
+                <label>Content *</label>
+                <textarea name="content" rows="6" placeholder="Write the section content here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" name="display_order" value="0" min="0">
+            </div>
+            <button type="submit" class="btn-save">Add Section</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>Current Story Sections</h2>
+        {% if sections %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for section in sections %}
+                    <tr>
+                        <td>{{ section.display_order }}</td>
+                        <td><strong>{{ section.title }}</strong></td>
+                        <td>{{ section.content[:80] }}...</td>
+                        <td>
+                            <form method="POST" action="/admin/story-sections/{{ section.id }}/delete" class="delete-form" data-name="{{ section.title }}" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No story sections yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

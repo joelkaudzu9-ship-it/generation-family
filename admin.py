@@ -36,15 +36,16 @@ def role_required(*allowed_roles):
                 return redirect(url_for('admin.login'))
             
             user = session.get('admin_user', {})
-            user_role = user.get('role', '')
+            user_roles = user.get('roles', [])
             
-            # Admin can access everything
-            if user_role == 'admin':
+            # Admin role can access everything
+            if 'admin' in user_roles:
                 return f(*args, **kwargs)
             
-            # Check if user's role is in allowed roles
-            if user_role in allowed_roles:
-                return f(*args, **kwargs)
+            # Check if any of the user's roles match allowed roles
+            for role in user_roles:
+                if role in allowed_roles:
+                    return f(*args, **kwargs)
             
             return redirect(url_for('admin.dashboard'))
         return decorated_function
@@ -63,12 +64,21 @@ def login():
         
         if users and users[0]['password'] == password:
             user = users[0]
+            
+            # Get roles — check new array field first, fall back to old single role
+            roles = user.get('roles', [])
+            if not roles and user.get('role'):
+                roles = [user['role']]
+            if not roles:
+                roles = ['user']
+            
             session['admin_logged_in'] = True
             session['admin_user'] = {
                 'id': user['id'],
                 'username': user['username'],
                 'display_name': user['display_name'],
-                'role': user['role'],
+                'role': roles[0] if roles else 'user',  # Primary role for backward compatibility
+                'roles': roles,  # All roles
                 'department': user.get('department', '')
             }
             return redirect(url_for('admin.dashboard'))
@@ -128,6 +138,115 @@ def settings():
     
     current_settings = get_site_settings()
     return render_template('admin/settings.html', settings=current_settings, message=message, error=error)
+
+# ==================== PRAYER RHYTHMS ====================
+@admin_bp.route('/prayer-rhythms', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_prayer_rhythms():
+    message = None
+    if request.method == 'POST':
+        supabase_insert('prayer_rhythms', {
+            'title': request.form.get('title'),
+            'description': request.form.get('description'),
+            'icon': request.form.get('icon', 'fa-pray'),
+            'schedule': request.form.get('schedule'),
+            'display_order': int(request.form.get('display_order', 0))
+        })
+        message = "Prayer rhythm added!"
+    rhythms = supabase_get('prayer_rhythms', {'order': 'display_order.asc'})
+    return render_template('admin/prayer-rhythms.html', rhythms=rhythms, message=message)
+
+@admin_bp.route('/prayer-rhythms/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_prayer_rhythm(id):
+    supabase_delete('prayer_rhythms', id)
+    return redirect(url_for('admin.manage_prayer_rhythms'))
+
+# ==================== FAMILY GROUPS ====================
+@admin_bp.route('/family-groups', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_family_groups():
+    message = None
+    if request.method == 'POST':
+        supabase_insert('family_groups', {
+            'name': request.form.get('name'),
+            'city': request.form.get('city'),
+            'leader': request.form.get('leader'),
+            'meeting_time': request.form.get('meeting_time'),
+            'description': request.form.get('description'),
+            'contact_email': request.form.get('contact_email')
+        })
+        message = "Family group added!"
+    groups = supabase_get('family_groups', {'order': 'city.asc'})
+    return render_template('admin/family-groups-manage.html', groups=groups, message=message)
+
+@admin_bp.route('/family-groups/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_family_group(id):
+    supabase_delete('family_groups', id)
+    return redirect(url_for('admin.manage_family_groups'))
+
+# ==================== MARKETPLACE ====================
+@admin_bp.route('/marketplace', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_marketplace():
+    message = None
+    if request.method == 'POST':
+        image_url = ''
+        image_file = request.files.get('image')
+        if image_file and image_file.filename:
+            result = upload_image(image_file, folder='generation/marketplace')
+            image_url = result['url']
+        
+        supabase_insert('marketplace_items', {
+            'title': request.form.get('title'),
+            'category': request.form.get('category'),
+            'description': request.form.get('description'),
+            'price': request.form.get('price'),
+            'seller_name': request.form.get('seller_name'),
+            'seller_contact': request.form.get('seller_contact'),
+            'image_url': image_url
+        })
+        message = "Marketplace item added!"
+    items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
+    return render_template('admin/marketplace-manage.html', items=items, message=message)
+
+@admin_bp.route('/marketplace/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_marketplace_item(id):
+    supabase_delete('marketplace_items', id)
+    return redirect(url_for('admin.manage_marketplace'))
+
+# ==================== RETREATS ====================
+@admin_bp.route('/retreats', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_retreats():
+    message = None
+    if request.method == 'POST':
+        image_url = ''
+        image_file = request.files.get('image')
+        if image_file and image_file.filename:
+            result = upload_image(image_file, folder='generation/retreats')
+            image_url = result['url']
+        
+        supabase_insert('retreats', {
+            'title': request.form.get('title'),
+            'description': request.form.get('description'),
+            'location': request.form.get('location'),
+            'start_date': request.form.get('start_date'),
+            'end_date': request.form.get('end_date'),
+            'image_url': image_url,
+            'is_upcoming': request.form.get('is_upcoming') == 'true'
+        })
+        message = "Retreat added!"
+    retreats = supabase_get('retreats', {'order': 'start_date.desc'})
+    return render_template('admin/retreats-manage.html', retreats=retreats, message=message)
+
+@admin_bp.route('/retreats/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_retreat(id):
+    supabase_delete('retreats', id)
+    return redirect(url_for('admin.manage_retreats'))
 
 # ==================== SERMONS (CRUD) ====================
 @admin_bp.route('/sermons', methods=['GET', 'POST'])
@@ -719,14 +838,18 @@ def manage_users():
             username = request.form.get('username')
             password = request.form.get('password')
             display_name = request.form.get('display_name')
-            role = request.form.get('role')
             department = request.form.get('department', '')
+            
+            # Get multiple roles from checkboxes
+            roles = request.form.getlist('roles')
+            primary_role = roles[0] if roles else 'user'
             
             supabase_insert('admin_users', {
                 'username': username,
                 'password': password,
                 'display_name': display_name,
-                'role': role,
+                'role': primary_role,
+                'roles': roles,
                 'department': department
             })
             message = f"User {display_name} added!"

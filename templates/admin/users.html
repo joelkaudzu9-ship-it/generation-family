@@ -47,18 +47,46 @@
                     <input type="text" name="display_name" placeholder="e.g. Pastor James" required>
                 </div>
                 <div class="form-group">
-                    <label>Role *</label>
-                    <select name="role" required>
-                        <option value="admin">Admin (Full Access)</option>
-                        <option value="sermons">Sermons</option>
-                        <option value="leadership">Leadership</option>
-                        <option value="ministries">Ministries</option>
-                        <option value="events">Events</option>
-                        <option value="blog">Blog</option>
-                        <option value="testimonials">Testimonials</option>
-                        <option value="creatives">Creatives</option>
-                        <option value="media">Media</option>
-                    </select>
+                    <label>Roles *</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="admin">
+                            <span>Admin (Full Access)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="sermons">
+                            <span>Sermons</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="leadership">
+                            <span>Leadership</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="ministries">
+                            <span>Ministries</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="events">
+                            <span>Events</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="blog">
+                            <span>Blog</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="testimonials">
+                            <span>Testimonials</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="creatives">
+                            <span>Creatives</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="roles" value="media">
+                            <span>Media</span>
+                        </label>
+                    </div>
+                    <span class="form-hint">Select all that apply. Admin has full access to everything.</span>
                 </div>
             </div>
             <div class="form-group">
@@ -90,7 +118,14 @@
                     <tr>
                         <td><strong>{{ user.display_name }}</strong></td>
                         <td><code>{{ user.username }}</code></td>
-                        <td><span class="badge">{{ user.role }}</span></td>
+                        <td>
+                            {% for role in user.roles %}
+                            <span class="badge" style="margin-right:3px;">{{ role }}</span>
+                            {% endfor %}
+                            {% if not user.roles and user.role %}
+                            <span class="badge">{{ user.role }}</span>
+                            {% endif %}
+                        </td>
                         <td>{{ user.department or '—' }}</td>
                         <td>
                             {% if user.is_active %}

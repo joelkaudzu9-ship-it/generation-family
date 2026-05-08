@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/faqs-manage" class="active">FAQs</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        
+        <h1>Add FAQ</h1>
+        
+        <form method="POST" class="admin-form" action="/admin/faqs-manage">
+            <div class="form-group">
+                <label>Question *</label>
+                <input type="text" name="question" placeholder="e.g. How do I join a family group?" required>
+            </div>
+            <div class="form-group">
+                <label>Answer *</label>
+                <textarea name="answer" rows="4" placeholder="Write the answer..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" name="display_order" value="0" min="0">
+            </div>
+            <button type="submit" class="btn-save">Add FAQ</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>Current FAQs</h2>
+        {% if faqs %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for faq in faqs %}
+                    <tr>
+                        <td>{{ faq.display_order }}</td>
+                        <td><strong>{{ faq.question }}</strong></td>
+                        <td>{{ faq.answer[:80] }}...</td>
+                        <td>
+                            <form method="POST" action="/admin/faqs-manage/{{ faq.id }}/delete" class="delete-form" data-name="{{ faq.question }}" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No FAQs yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

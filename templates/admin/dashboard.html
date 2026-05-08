@@ -28,9 +28,31 @@
     
     <script>
         const user = {
-            role: '{{ session.get("admin_user", {}).get("role", "") }}',
+            roles: {{ session.get('admin_user', {}).get('roles', []) | tojson }},
             displayName: '{{ session.get("admin_user", {}).get("display_name", "") }}'
         };
+
+        // Check if user has access to a section
+        function hasAccess(allowedRoles) {
+            if (user.roles.includes('admin')) return true;
+            return allowedRoles.some(role => user.roles.includes(role));
+        }
+
+        // Build dashboard cards
+        for (const [key, section] of Object.entries(allSections)) {
+            if (hasAccess(section.roles)) {
+                // ... existing card code
+            }
+        }
+
+        // Build nav links
+        let navHTML = '<a href="/admin"><i class="fas fa-home"></i> Dashboard</a>';
+
+        for (const [key, section] of Object.entries(allSections)) {
+            if (hasAccess(section.roles)) {
+                navHTML += `<a href="${section.url}"><i class="fas ${section.icon}"></i> ${section.title}</a>`;
+            }
+        }
         
         // All available sections
         const allSections = {
@@ -42,6 +64,13 @@
             creatives: { icon: 'fa-palette', title: 'Creatives', desc: 'Music, drama, poems, art', url: '/admin/creatives', roles: ['admin', 'creatives'] },
             media: { icon: 'fa-photo-video', title: 'Media', desc: 'Sermons MP3, photos, videos', url: '/admin/media', roles: ['admin', 'media'] },
             sectionImages: { icon: 'fa-layer-group', title: 'Section Images', desc: 'Page header backgrounds', url: '/admin/section-images', roles: ['admin'] },
+            prayerRhythms: { icon: 'fa-praying-hands', title: 'Prayer Rhythms', desc: 'Manage prayer & fasting schedule', url: '/admin/prayer-rhythms', roles: ['admin'] },
+            familyGroups: { icon: 'fa-users', title: 'Family Groups', desc: 'Manage groups & locations', url: '/admin/family-groups', roles: ['admin'] },
+            marketplaceItems: { icon: 'fa-store', title: 'Marketplace', desc: 'Manage community listings', url: '/admin/marketplace', roles: ['admin'] },
+            retreatsManage: { icon: 'fa-mountain', title: 'Retreats', desc: 'Add past & upcoming retreats', url: '/admin/retreats', roles: ['admin'] },
+            storySections: { icon: 'fa-book-open', title: 'Our Story', desc: 'Edit the founding story', url: '/admin/story-sections', roles: ['admin'] },
+            givingInfo: { icon: 'fa-hand-holding-heart', title: 'Giving Info', desc: 'Manage giving methods', url: '/admin/giving-info', roles: ['admin'] },
+            faqsManage: { icon: 'fa-question-circle', title: 'FAQs', desc: 'Manage questions & answers', url: '/admin/faqs-manage', roles: ['admin'] },
             storySections: { icon: 'fa-book-open', title: 'Our Story', desc: 'Edit the founding story', url: '/admin/story-sections', roles: ['admin'] },
             givingInfo: { icon: 'fa-hand-holding-heart', title: 'Giving Info', desc: 'Manage giving methods', url: '/admin/giving-info', roles: ['admin'] },
             faqsManage: { icon: 'fa-question-circle', title: 'FAQs', desc: 'Manage questions & answers', url: '/admin/faqs-manage', roles: ['admin'] },

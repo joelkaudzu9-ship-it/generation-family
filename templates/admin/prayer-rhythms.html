@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Rhythms — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/prayer-rhythms" class="active">Prayer Rhythms</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        
+        <h1>Add Prayer Rhythm</h1>
+        
+        <form method="POST" class="admin-form" action="/admin/prayer-rhythms">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" name="title" placeholder="e.g. Weekly Prayer Gatherings" required>
+                </div>
+                <div class="form-group">
+                    <label>Icon (Font Awesome)</label>
+                    <input type="text" name="icon" value="fa-pray" placeholder="e.g. fa-praying-hands">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" placeholder="Describe this rhythm..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Schedule</label>
+                <textarea name="schedule" rows="6" placeholder="Monday — Evening Prayer (Online)&#10;Wednesday — Midweek Prayer (In-Person)&#10;Friday — Night Watch (Monthly)"></textarea>
+                <span class="form-hint">One line per schedule item.</span>
+            </div>
+            <div class="form-group">
+                <label>Display Order</label>
+                <input type="number" name="display_order" value="0" min="0">
+            </div>
+            <button type="submit" class="btn-save">Add Rhythm</button>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>Current Rhythms</h2>
+        {% if rhythms %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Title</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rhythm in rhythms %}
+                    <tr>
+                        <td>{{ rhythm.display_order }}</td>
+                        <td><strong>{{ rhythm.title }}</strong></td>
+                        <td>
+                            <form method="POST" action="/admin/prayer-rhythms/{{ rhythm.id }}/delete" class="delete-form" data-name="{{ rhythm.title }}" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No prayer rhythms added yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
