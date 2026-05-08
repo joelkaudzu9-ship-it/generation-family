@@ -11,20 +11,21 @@
 <section class="story-detail">
     <div class="container">
         <div class="story-content-full">
-            <h2>It Started With Two</h2>
-            <p>In 2019, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more than just getting degrees and moving on.</p>
-            
-            <p>They prayed. Others joined. The prayer grew.</p>
-            
-            <h2>From Dorm Room to Movement</h2>
-            <p>What started as two students became a community. That community developed rhythms — regular prayer gatherings, fasting days, shared meals, and retreats during the midsemester breaks. The rhythms became the identity.</p>
-            
-            <p>As students graduated and moved to different cities, they took the family with them. New family groups started. The marketplace emerged — members buying from members, skills and goods circulating within the community. The retreats continued, funded entirely by the generous giving of the family.</p>
-            
-            <h2>Today</h2>
-            <p>The Generation Family now spans {{ settings.get('cities', '5') }} cities. The founders have graduated. The movement hasn't stopped.</p>
-            
-            <p>We still pray. We still fast. We still gather in homes for meals. We still trade with one another. We still retreat together every midsemester. Because we're not an event. We're not a church service. We're a family — and families don't stop.</p>
+            {% if story_sections %}
+                {% for section in story_sections %}
+                <h2>{{ section.title }}</h2>
+                <p>{{ section.content }}</p>
+                {% endfor %}
+            {% else %}
+                <h2>It Started With Two</h2>
+                <p>In 2014, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more.</p>
+                
+                <h2>From Dorm Room to Movement</h2>
+                <p>What started as two students became a community. That community developed rhythms — regular prayer gatherings, fasting days, shared meals, and retreats.</p>
+                
+                <h2>Today</h2>
+                <p>The Generation Family now spans multiple cities. The founders have graduated. The movement hasn't stopped.</p>
+            {% endif %}
             
             <div class="story-stats">
                 <div class="story-stat">

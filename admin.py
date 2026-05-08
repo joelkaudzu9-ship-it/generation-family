@@ -589,6 +589,83 @@ def manage_section_images():
     images = supabase_get('section_images')
     return render_template('admin/section-images.html', images=images, message=message)
 
+# ==================== STORY SECTIONS ====================
+@admin_bp.route('/story-sections', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_story():
+    message = None
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        display_order = request.form.get('display_order', 0)
+        supabase_insert('story_sections', {
+            'title': title,
+            'content': content,
+            'display_order': int(display_order)
+        })
+        message = "Story section added!"
+    
+    sections = supabase_get('story_sections', {'order': 'display_order.asc'})
+    return render_template('admin/story-sections.html', sections=sections, message=message)
+
+# ==================== GIVING INFO ====================
+@admin_bp.route('/giving-info', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_giving():
+    message = None
+    if request.method == 'POST':
+        method = request.form.get('method')
+        details = request.form.get('details')
+        icon = request.form.get('icon', 'fa-hand-holding-heart')
+        display_order = request.form.get('display_order', 0)
+        supabase_insert('giving_info', {
+            'method': method,
+            'details': details,
+            'icon': icon,
+            'display_order': int(display_order)
+        })
+        message = "Giving method added!"
+    
+    methods = supabase_get('giving_info', {'order': 'display_order.asc'})
+    return render_template('admin/giving-info.html', methods=methods, message=message)
+
+# ==================== FAQS ====================
+@admin_bp.route('/faqs-manage', methods=['GET', 'POST'])
+@role_required('admin')
+def manage_faqs():
+    message = None
+    if request.method == 'POST':
+        question = request.form.get('question')
+        answer = request.form.get('answer')
+        display_order = request.form.get('display_order', 0)
+        supabase_insert('faqs', {
+            'question': question,
+            'answer': answer,
+            'display_order': int(display_order)
+        })
+        message = "FAQ added!"
+    
+    faqs = supabase_get('faqs', {'order': 'display_order.asc'})
+    return render_template('admin/faqs-manage.html', faqs=faqs, message=message)
+
+@admin_bp.route('/story-sections/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_story(id):
+    supabase_delete('story_sections', id)
+    return redirect(url_for('admin.manage_story'))
+
+@admin_bp.route('/giving-info/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_giving(id):
+    supabase_delete('giving_info', id)
+    return redirect(url_for('admin.manage_giving'))
+
+@admin_bp.route('/faqs-manage/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_faq(id):
+    supabase_delete('faqs', id)
+    return redirect(url_for('admin.manage_faqs'))
+
 # ==================== MEDIA MANAGEMENT ====================
 @admin_bp.route('/media', methods=['GET', 'POST'])
 @role_required('admin', 'media')

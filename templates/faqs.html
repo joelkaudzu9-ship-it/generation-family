@@ -10,24 +10,23 @@
 
 <section class="faqs-section">
     <div class="container">
+        {% if faqs %}
+        <div class="faqs-list">
+            {% for faq in faqs %}
+            <div class="faq-item">
+                <h3>{{ faq.question }}</h3>
+                <p>{{ faq.answer }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="faqs-list">
             <div class="faq-item">
-                <h3>What time are your services?</h3>
-                <p>Sunday services are at 9:00 AM and 11:00 AM. Wednesday Bible study is at 6:00 PM.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Where are you located?</h3>
-                <p>{{ settings.get('church_address', 'Location details coming soon.') }}</p>
-            </div>
-            <div class="faq-item">
-                <h3>How can I join a ministry?</h3>
-                <p>Visit our <a href="/ministries">Ministries page</a> or <a href="/contact">contact us</a> and we'll connect you.</p>
-            </div>
-            <div class="faq-item">
-                <h3>How do I give?</h3>
-                <p>You can give via mobile money or visit our <a href="/giving">Giving page</a> for more details.</p>
+                <h3>How do I join?</h3>
+                <p>Visit our Family Groups page or contact us and we'll connect you.</p>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 

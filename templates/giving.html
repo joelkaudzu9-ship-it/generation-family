@@ -3,8 +3,8 @@
 
 <section class="page-header" {% if section_images.get('giving') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('giving') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
-        <h1 class="page-title">Giving</h1>
-        <p class="page-subtitle">Support the vision and mission of The Generation Family</p>
+        <h1 class="page-title">Give</h1>
+        <p class="page-subtitle">Support the retreats and the movement through generous giving</p>
     </div>
 </section>
 
@@ -12,21 +12,27 @@
     <div class="container">
         <div class="giving-content">
             <h2>Why We Give</h2>
-            <p>Giving is an act of worship and a demonstration of faith. Your generosity enables us to reach more lives, support our communities, and advance the Kingdom of God.</p>
+            <p>Our retreats, gatherings, and community support are entirely funded by the generous, joyful giving of family members. Everyone gives what they can. Everyone benefits. No one is turned away.</p>
             
+            {% if giving_methods %}
+            <div class="giving-methods">
+                {% for method in giving_methods %}
+                <div class="giving-method">
+                    <i class="fas {{ method.icon or 'fa-hand-holding-heart' }}"></i>
+                    <h3>{{ method.method }}</h3>
+                    <p>{{ method.details }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
             <div class="giving-methods">
                 <div class="giving-method">
                     <i class="fas fa-mobile-alt"></i>
                     <h3>Mobile Money</h3>
-                    <p>Send your offering via mobile money to:</p>
-                    <strong>0983 142 415</strong>
-                </div>
-                <div class="giving-method">
-                    <i class="fas fa-university"></i>
-                    <h3>Bank Transfer</h3>
-                    <p>Account details coming soon.</p>
+                    <p>Details coming soon.</p>
                 </div>
             </div>
+            {% endif %}
             
             <p class="giving-scripture">"Each one must give as he has decided in his heart, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Corinthians 9:7</p>
         </div>

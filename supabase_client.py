@@ -83,6 +83,15 @@ def get_section_images():
     images = supabase_get('section_images')
     return {item['section_name']: item['image_url'] for item in images}
 
+def get_story_sections():
+    return supabase_get('story_sections', {'order': 'display_order.asc'})
+
+def get_giving_info():
+    return supabase_get('giving_info', {'order': 'display_order.asc'})
+
+def get_faqs():
+    return supabase_get('faqs', {'order': 'display_order.asc'})
+
 def supabase_delete(table, record_id):
     """Delete a record by ID."""
     url = f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{record_id}"

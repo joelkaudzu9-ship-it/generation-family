@@ -15,7 +15,10 @@ from supabase_client import (
     get_media,
     get_section_images,
     supabase_insert,
-    supabase_get
+    supabase_get,
+    get_story_sections,
+    get_giving_info,
+    get_faqs
 )
 from admin import admin_bp
 import os
@@ -106,6 +109,20 @@ def about():
     leadership = get_leadership()
     return render_template('about.html', settings=settings, leadership=leadership)
 
+@app.route('/story')
+def story():
+    sections = get_story_sections()
+    return render_template('story.html', story_sections=sections)
+
+@app.route('/giving')
+def giving():
+    giving_methods = get_giving_info()
+    return render_template('giving.html', giving_methods=giving_methods)
+
+@app.route('/faqs')
+def faqs():
+    faqs = get_faqs()
+    return render_template('faqs.html', faqs=faqs)
 
 # ==================== MINISTRIES ====================
 @app.route('/ministries')
