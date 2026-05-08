@@ -248,18 +248,33 @@ if (tSlides.length > 1) {
 
 tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)));
 
-// ==================== MOBILE BACK BUTTON ====================
-window.addEventListener('popstate', () => {
-    if (mobileMenu && mobileMenu.classList.contains('active')) {
-        closeMenu();
-        history.pushState(null, '', window.location.href);
-    }
-});
-
-if (window.history && window.history.pushState) {
-    history.pushState(null, '', window.location.href);
-}
-
+// ==================== PROFESSIONAL BACK BUTTON HANDLING ====================
+(function() {
+    
+    // Only intercept back button for overlays — never for page navigation
+    window.addEventListener('popstate', function(event) {
+        
+        // Close mobile menu if open (don't push new state — just close it)
+        if (mobileMenu && mobileMenu.classList.contains('active')) {
+            closeMenu();
+            // Push a replacement state so the back button doesn't keep closing the menu
+            history.replaceState({ menuClosed: true }, '', window.location.href);
+            return;
+        }
+        
+        // Close confirmation modal if open
+        const confirmModal = document.getElementById('confirmModal');
+        if (confirmModal && confirmModal.classList.contains('active')) {
+            confirmModal.classList.remove('active');
+            history.replaceState({ modalClosed: true }, '', window.location.href);
+            return;
+        }
+        
+        // If nothing to close, let the browser handle it naturally
+        // This will go to the previous page or leave the site
+    });
+    
+})();
 // ==================== BACK TO TOP ====================
 const backToTop = document.getElementById('backToTop');
 
