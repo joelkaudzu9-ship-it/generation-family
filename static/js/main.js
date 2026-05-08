@@ -1,3 +1,31 @@
+// ==================== TOAST SYSTEM ====================
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `
+        <span class="toast-icon"><i class="fas ${icons[type] || icons.success}"></i></span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
 // ==================== LOADING SCREEN ====================
 window.addEventListener('load', () => {
     const loader = document.getElementById('loaderWrapper');
@@ -123,6 +151,49 @@ if (hero) {
     });
 }
 
+// ==================== CONTACT FORM WITH LOADING ====================
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('contactSubmitBtn');
+        const feedback = document.getElementById('contactFeedback');
+        
+        btn.classList.add('btn-loading');
+        btn.textContent = 'Sending';
+        feedback.textContent = '';
+        
+        const formData = new FormData(contactForm);
+        
+        try {
+            const response = await fetch('/contact', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                showToast('Message sent successfully! We\'ll get back to you soon.', 'success');
+                contactForm.reset();
+                feedback.textContent = '✓ Message sent! Check your inbox for a confirmation.';
+                feedback.style.color = '#4caf50';
+            } else {
+                throw new Error('Failed');
+            }
+        } catch (err) {
+            showToast('Something went wrong. Please try again.', 'error');
+            feedback.textContent = 'Failed to send. Please try again.';
+            feedback.style.color = '#e74c3c';
+        }
+        
+        btn.classList.remove('btn-loading');
+        btn.textContent = 'Send Message';
+        
+        setTimeout(() => {
+            feedback.textContent = '';
+        }, 5000);
+    });
+}
+
 // ==================== SCROLL REVEAL ====================
 const revealElements = document.querySelectorAll('.mvv-card, .impact-card, .leader-card, .ministry-card, .event-card, .blog-card, .sermon-card, .faq-item, .resource-card');
 const revealObserver = new IntersectionObserver((entries) => {
@@ -208,6 +279,20 @@ if (tSlides.length > 1) {
 
 tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)));
 
+
+// ==================== MOBILE BACK BUTTON ====================
+// Close mobile menu when back button is pressed
+window.addEventListener('popstate', () => {
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        closeMenu();
+        history.pushState(null, '', window.location.href); // Prevent actual navigation
+    }
+});
+
+// Push initial state so back button can be intercepted
+if (window.history && window.history.pushState) {
+    history.pushState(null, '', window.location.href);
+}
 // ==================== SOCIAL LINKS ====================
 const socialLinks = {
     whatsapp: 'https://wa.me/265983142415',
@@ -241,33 +326,32 @@ if (newsletterForm) {
         e.preventDefault();
         const email = document.getElementById('newsletterEmail').value.trim();
         const button = newsletterForm.querySelector('button');
+        
         if (!email) {
-            newsletterMsg.textContent = 'Please enter your email.';
-            newsletterMsg.style.color = '#e74c3c';
+            showToast('Please enter your email address.', 'error');
             return;
         }
-        button.textContent = 'Subscribing...';
-        button.disabled = true;
-        newsletterMsg.textContent = '';
+        
+        button.classList.add('btn-loading');
+        button.textContent = 'Subscribing';
+        
         try {
             const formData = new FormData();
             formData.append('email', email);
             const response = await fetch('/subscribe', { method: 'POST', body: formData });
             const data = await response.json();
+            
             if (data.status === 'success') {
-                newsletterMsg.textContent = '✓ Subscribed! Welcome!';
-                newsletterMsg.style.color = '#4caf50';
+                showToast('Welcome to the family! Check your inbox.', 'success');
                 document.getElementById('newsletterEmail').value = '';
             } else {
-                newsletterMsg.textContent = data.message;
-                newsletterMsg.style.color = '#e74c3c';
+                showToast(data.message || 'Subscription failed.', 'error');
             }
         } catch (err) {
-            newsletterMsg.textContent = 'Network error. Try again.';
-            newsletterMsg.style.color = '#e74c3c';
+            showToast('Network error. Please try again.', 'error');
         }
+        
+        button.classList.remove('btn-loading');
         button.textContent = 'Subscribe';
-        button.disabled = false;
-        setTimeout(() => { newsletterMsg.textContent = ''; }, 5000);
     });
 }

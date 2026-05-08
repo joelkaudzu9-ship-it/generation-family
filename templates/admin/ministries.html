@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Ministries — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin/settings">Settings</a>
+            <a href="/admin/sermons">Sermons</a>
+            <a href="/admin/leadership">Leadership</a>
+            <a href="/admin/ministries" class="active">Ministries</a>
+            <a href="/admin/testimonials">Testimonials</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/blog">Blog</a>
+            <a href="/admin/messages">Messages</a>
+            <a href="/admin/newsletter">Newsletter</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+        {% endif %}
+        
+        <h1>{% if edit_ministry %}Edit Ministry{% else %}Add Ministry{% endif %}</h1>
+        
+        <form method="POST" enctype="multipart/form-data" class="admin-form" id="ministryForm">
+            {% if edit_ministry %}
+            <input type="hidden" name="ministry_id" value="{{ edit_ministry.id }}">
+            <input type="hidden" name="existing_image_url" value="{{ edit_ministry.image_url }}">
+            {% endif %}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" name="name" value="{{ edit_ministry.name if edit_ministry else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Slug *</label>
+                    <input type="text" name="slug" value="{{ edit_ministry.slug if edit_ministry else '' }}" placeholder="e.g. children" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3">{{ edit_ministry.description if edit_ministry else '' }}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Icon (Font Awesome class)</label>
+                    <input type="text" name="icon" value="{{ edit_ministry.icon if edit_ministry else 'fa-church' }}" placeholder="e.g. fa-child, fa-users">
+                    <span class="form-hint">See <a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a> for icon names</span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Image</label>
+                    {% if edit_ministry and edit_ministry.image_url %}
+                    <div class="current-image">
+                        <img src="{{ edit_ministry.image_url }}" alt="Current" class="admin-thumb-sm">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Display Order</label>
+                    <input type="number" name="display_order" value="{{ edit_ministry.display_order if edit_ministry else '0' }}" min="0">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="ministryBtn">
+                    {% if edit_ministry %}Update Ministry{% else %}Add Ministry{% endif %}
+                </button>
+                {% if edit_ministry %}
+                <a href="/admin/ministries" class="btn-cancel">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>All Ministries ({{ ministries|length }})</h2>
+        {% if ministries %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Icon</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ministry in ministries %}
+                    <tr {% if edit_ministry and edit_ministry.id == ministry.id %}class="highlight-row"{% endif %}>
+                        <td>{{ ministry.display_order }}</td>
+                        <td><i class="fas {{ ministry.icon }} gold-text"></i></td>
+                        <td><strong>{{ ministry.name }}</strong></td>
+                        <td><code>{{ ministry.slug }}</code></td>
+                        <td class="actions-cell">
+                            <a href="/admin/ministries/{{ ministry.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                            <form method="POST" action="/admin/ministries/{{ ministry.id }}/delete" onsubmit="return confirm('Delete {{ ministry.name }}?')" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state"><i class="fas fa-church"></i> No ministries added yet.</p>
+        {% endif %}
+    </main>
+    
+    <script>
+        document.getElementById('ministryForm').addEventListener('submit', function() {
+            var btn = document.getElementById('ministryBtn');
+            btn.classList.add('btn-loading');
+            btn.textContent = '{% if edit_ministry %}Updating...{% else %}Saving...{% endif %}';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
+</body>
+</html>

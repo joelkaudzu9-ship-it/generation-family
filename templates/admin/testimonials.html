@@ -5,62 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Testimonials — TGF Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="admin-body">
     <nav class="admin-nav">
-        <h2><a href="/admin">TGF Admin</a></h2>
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
         <div class="admin-nav-links">
+            <a href="/admin/settings">Settings</a>
             <a href="/admin/sermons">Sermons</a>
             <a href="/admin/leadership">Leadership</a>
+            <a href="/admin/ministries">Ministries</a>
             <a href="/admin/testimonials" class="active">Testimonials</a>
             <a href="/admin/events">Events</a>
+            <a href="/admin/blog">Blog</a>
+            <a href="/admin/messages">Messages</a>
+            <a href="/admin/newsletter">Newsletter</a>
             <a href="/">View Site</a>
             <a href="/admin/logout" class="logout-link">Logout</a>
         </div>
     </nav>
+    
     <main class="admin-main">
-        <h1>Add Testimonial</h1>
-        <form method="POST" class="admin-form">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+        {% endif %}
+        
+        <h1>{% if edit_testimonial %}Edit Testimonial{% else %}Add Testimonial{% endif %}</h1>
+        
+        <form method="POST" class="admin-form" id="testimonialForm">
+            {% if edit_testimonial %}
+            <input type="hidden" name="testimonial_id" value="{{ edit_testimonial.id }}">
+            {% endif %}
+            
             <div class="form-group">
                 <label>Name *</label>
-                <input type="text" name="name" placeholder="e.g. Grace M." required>
+                <input type="text" name="name" value="{{ edit_testimonial.name if edit_testimonial else '' }}" placeholder="e.g. Grace M." required>
             </div>
             <div class="form-group">
                 <label>Testimony *</label>
-                <textarea name="quote" rows="4" placeholder="What did God do in their life?" required></textarea>
+                <textarea name="quote" rows="4" placeholder="What did God do in their life?" required>{{ edit_testimonial.quote if edit_testimonial else '' }}</textarea>
             </div>
-            <button type="submit" class="btn-save">Add Testimonial</button>
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="testimonialBtn">
+                    {% if edit_testimonial %}Update Testimonial{% else %}Add Testimonial{% endif %}
+                </button>
+                {% if edit_testimonial %}
+                <a href="/admin/testimonials" class="btn-cancel">Cancel</a>
+                {% endif %}
+            </div>
         </form>
-
+        
         <hr class="admin-divider">
-
-        <h2>Current Testimonials</h2>
+        
+        <h2>All Testimonials ({{ testimonials|length }})</h2>
         {% if testimonials %}
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Quote</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in testimonials %}
-                <tr>
-                    <td>{{ t.name }}</td>
-                    <td>{{ t.quote[:80] }}...</td>
-                    <td>
-                        <form method="POST" action="/admin/testimonials/{{ t.id }}/delete" onsubmit="return confirm('Delete?')">
-                            <button type="submit" class="btn-delete">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quote</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in testimonials %}
+                    <tr {% if edit_testimonial and edit_testimonial.id == t.id %}class="highlight-row"{% endif %}>
+                        <td><strong>{{ t.name }}</strong></td>
+                        <td>{{ t.quote[:100] }}{% if t.quote|length > 100 %}...{% endif %}</td>
+                        <td class="actions-cell">
+                            <a href="/admin/testimonials/{{ t.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                            <form method="POST" action="/admin/testimonials/{{ t.id }}/delete" onsubmit="return confirm('Delete this testimonial?')" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <p class="empty-state">No testimonials yet.</p>
+        <p class="empty-state"><i class="fas fa-quote-right"></i> No testimonials yet.</p>
         {% endif %}
     </main>
+    
+    <script>
+        document.getElementById('testimonialForm').addEventListener('submit', function() {
+            var btn = document.getElementById('testimonialBtn');
+            btn.classList.add('btn-loading');
+            btn.textContent = '{% if edit_testimonial %}Updating...{% else %}Saving...{% endif %}';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
 </body>
 </html>

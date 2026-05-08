@@ -5,38 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site Settings — TGF Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="admin-body">
     <nav class="admin-nav">
-        <h2><a href="/admin">TGF Admin</a></h2>
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
         <div class="admin-nav-links">
             <a href="/admin/settings" class="active">Settings</a>
             <a href="/admin/sermons">Sermons</a>
             <a href="/admin/leadership">Leadership</a>
+            <a href="/admin/ministries">Ministries</a>
             <a href="/admin/testimonials">Testimonials</a>
             <a href="/admin/events">Events</a>
+            <a href="/admin/blog">Blog</a>
+            <a href="/admin/messages">Messages</a>
+            <a href="/admin/newsletter">Newsletter</a>
             <a href="/">View Site</a>
             <a href="/admin/logout" class="logout-link">Logout</a>
         </div>
     </nav>
+    
     <main class="admin-main">
         <h1>Site Settings</h1>
-        <p>These values appear across the website.</p>
-        <form method="POST" class="admin-form">
+        
+        {% if message %}
+        <div class="msg-success">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="msg-error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" class="admin-form" id="settingsForm">
             <fieldset>
-                <legend>Homepage</legend>
+                <legend><i class="fas fa-home"></i> Homepage</legend>
                 <div class="form-group">
                     <label>Hero Tagline</label>
-                    <input type="text" name="hero_tagline" value="{{ settings.get('hero_tagline', '') }}" placeholder="A Spiritual & Growth Family">
+                    <input type="text" name="hero_tagline" value="{{ settings.get('hero_tagline', '') }}">
                 </div>
                 <div class="form-group">
                     <label>Year Theme</label>
-                    <input type="text" name="year_theme" value="{{ settings.get('year_theme', '') }}" placeholder="TGF 2026 - Year Of Divine Establishment">
+                    <input type="text" name="year_theme" value="{{ settings.get('year_theme', '') }}">
                 </div>
             </fieldset>
-
+            
             <fieldset>
-                <legend>Mission / Vision / Values</legend>
+                <legend><i class="fas fa-cross"></i> Mission / Vision / Values</legend>
                 <div class="form-group">
                     <label>Mission</label>
                     <textarea name="mission" rows="2">{{ settings.get('mission', '') }}</textarea>
@@ -47,12 +60,12 @@
                 </div>
                 <div class="form-group">
                     <label>Values</label>
-                    <input type="text" name="values" value="{{ settings.get('values', '') }}" placeholder="Faith. Family. Integrity. Service. Excellence. Love.">
+                    <input type="text" name="values" value="{{ settings.get('values', '') }}">
                 </div>
             </fieldset>
-
+            
             <fieldset>
-                <legend>Impact Numbers</legend>
+                <legend><i class="fas fa-chart-bar"></i> Impact Numbers</legend>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Lives Impacted</label>
@@ -72,9 +85,9 @@
                     </div>
                 </div>
             </fieldset>
-
+            
             <fieldset>
-                <legend>Contact Information</legend>
+                <legend><i class="fas fa-address-book"></i> Contact Information</legend>
                 <div class="form-group">
                     <label>Church Address</label>
                     <input type="text" name="church_address" value="{{ settings.get('church_address', '') }}">
@@ -88,9 +101,22 @@
                     <input type="email" name="church_email" value="{{ settings.get('church_email', '') }}">
                 </div>
             </fieldset>
-
-            <button type="submit" class="btn-save">Save All Settings</button>
+            
+            <button type="submit" class="btn-save" id="settingsBtn">Save All Settings</button>
         </form>
     </main>
+    
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', function() {
+            var btn = document.getElementById('settingsBtn');
+            btn.classList.add('btn-loading');
+            btn.textContent = 'Saving...';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
 </body>
 </html>

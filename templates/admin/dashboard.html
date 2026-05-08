@@ -5,53 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — TGF Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="admin-body">
     <nav class="admin-nav">
-        <h2>TGF Admin</h2>
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
         <div class="admin-nav-links">
-            <a href="/admin/settings">Settings</a>
-            <a href="/admin/sermons">Sermons</a>
-            <a href="/admin/leadership">Leadership</a>
-            <a href="/admin/testimonials">Testimonials</a>
-            <a href="/admin/events">Events</a>
+            <a href="/admin/settings"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/admin/sermons"><i class="fas fa-microphone-alt"></i> Sermons</a>
+            <a href="/admin/leadership"><i class="fas fa-user-tie"></i> Leadership</a>
+            <a href="/admin/ministries"><i class="fas fa-church"></i> Ministries</a>
+            <a href="/admin/testimonials"><i class="fas fa-quote-right"></i> Testimonials</a>
+            <a href="/admin/events"><i class="fas fa-calendar-alt"></i> Events</a>
+            <a href="/admin/blog"><i class="fas fa-blog"></i> Blog</a>
+            <a href="/admin/messages"><i class="fas fa-envelope"></i> Messages</a>
+            <a href="/admin/newsletter"><i class="fas fa-paper-plane"></i> Newsletter</a>
             <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
+            <a href="/admin/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
+    
     <main class="admin-main">
-        <h1>Dashboard</h1>
-        <p>Welcome back. Choose a section from the menu to manage content.</p>
+        <h1>Welcome Back</h1>
+        <p>Manage every aspect of The Generation Family website from here.</p>
+        
         <div class="admin-cards">
             <a href="/admin/settings" class="admin-card">
-                <span class="admin-card-icon">⚙️</span>
+                <span class="admin-card-icon"><i class="fas fa-cog"></i></span>
                 <h3>Site Settings</h3>
                 <p>Mission, vision, contact info, impact numbers</p>
             </a>
             <a href="/admin/sermons" class="admin-card">
-                <span class="admin-card-icon">🎙️</span>
+                <span class="admin-card-icon"><i class="fas fa-microphone-alt"></i></span>
                 <h3>Sermons</h3>
-                <p>Upload MP3s, add sermon details</p>
+                <p>Upload MP3s, manage sermon library</p>
             </a>
             <a href="/admin/leadership" class="admin-card">
-                <span class="admin-card-icon">👥</span>
+                <span class="admin-card-icon"><i class="fas fa-user-tie"></i></span>
                 <h3>Leadership</h3>
-                <p>Add leaders, upload photos</p>
+                <p>Add, edit, reorder leaders</p>
+            </a>
+            <a href="/admin/ministries" class="admin-card">
+                <span class="admin-card-icon"><i class="fas fa-church"></i></span>
+                <h3>Ministries</h3>
+                <p>Manage all ministry departments</p>
             </a>
             <a href="/admin/testimonials" class="admin-card">
-                <span class="admin-card-icon">💬</span>
+                <span class="admin-card-icon"><i class="fas fa-quote-right"></i></span>
                 <h3>Testimonials</h3>
-                <p>Manage testimonies</p>
+                <p>Add and manage testimonies</p>
             </a>
             <a href="/admin/events" class="admin-card">
-                <span class="admin-card-icon">📅</span>
+                <span class="admin-card-icon"><i class="fas fa-calendar-alt"></i></span>
                 <h3>Events</h3>
-                <p>Add upcoming programs and events</p>
+                <p>Create upcoming programs</p>
+            </a>
+            <a href="/admin/blog" class="admin-card">
+                <span class="admin-card-icon"><i class="fas fa-blog"></i></span>
+                <h3>Blog</h3>
+                <p>Write news and articles</p>
+            </a>
+            <a href="/admin/messages" class="admin-card">
+                <span class="admin-card-icon"><i class="fas fa-envelope"></i></span>
+                <h3>Messages</h3>
+                <p>View contact form submissions</p>
             </a>
             <a href="/admin/newsletter" class="admin-card">
-                <span class="admin-card-icon">📨</span>
-                <h3>Send Newsletter</h3>
-                <p>Compose and send emails to all subscribers</p>
+                <span class="admin-card-icon"><i class="fas fa-paper-plane"></i></span>
+                <h3>Newsletter</h3>
+                <p>Send emails to all subscribers</p>
             </a>
         </div>
     </main>

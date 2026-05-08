@@ -1991,3 +1991,176 @@ html {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.5); }
 }
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: var(--darker);
+    border: 1px solid #333;
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 280px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: toastIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    background: rgba(20,20,20,0.95);
+}
+
+.toast.removing {
+    animation: toastOut 0.3s ease forwards;
+}
+
+.toast.success { border-left-color: #4caf50; }
+.toast.error { border-left-color: #e74c3c; }
+.toast.info { border-left-color: #3498db; }
+
+.toast-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon { color: #4caf50; }
+.toast.error .toast-icon { color: #e74c3c; }
+.toast.info .toast-icon { color: #3498db; }
+
+.toast-message {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--gray-light);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    line-height: 1;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+    }
+    .toast {
+        min-width: auto;
+        max-width: 100%;
+    }
+}
+
+/* ==================== BUTTON LOADING ==================== */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.btn-gold.btn-loading {
+    color: var(--black);
+}
+
+.btn-gold.btn-loading::after {
+    border-top-color: var(--black);
+}
+
+.btn-outline.btn-loading::after {
+    border-top-color: var(--gold);
+}
+
+/* ==================== FORM FEEDBACK ==================== */
+.form-feedback {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+.form-status {
+    font-size: 0.8rem;
+    margin-left: 12px;
+    color: var(--gray);
+}
+
+/* ==================== SUCCESS CHECKMARK ANIMATION ==================== */
+.success-animation {
+    margin: 0 auto 24px;
+    width: 80px;
+    height: 80px;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+}
+
+.checkmark-circle {
+    stroke: #4caf50;
+    stroke-width: 2;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+    stroke: #4caf50;
+    stroke-width: 3;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+@keyframes stroke {
+    100% { stroke-dashoffset: 0; }
+}

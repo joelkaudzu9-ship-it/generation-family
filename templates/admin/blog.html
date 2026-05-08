@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Blog — TGF Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin/settings">Settings</a>
+            <a href="/admin/sermons">Sermons</a>
+            <a href="/admin/leadership">Leadership</a>
+            <a href="/admin/ministries">Ministries</a>
+            <a href="/admin/testimonials">Testimonials</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/blog" class="active">Blog</a>
+            <a href="/admin/messages">Messages</a>
+            <a href="/admin/newsletter">Newsletter</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <main class="admin-main">
+        {% if message %}
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+        {% endif %}
+        
+        <h1>{% if edit_post %}Edit Post{% else %}New Blog Post{% endif %}</h1>
+        
+        <form method="POST" enctype="multipart/form-data" class="admin-form" id="blogForm">
+            {% if edit_post %}
+            <input type="hidden" name="post_id" value="{{ edit_post.id }}">
+            <input type="hidden" name="existing_image_url" value="{{ edit_post.image_url }}">
+            {% endif %}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" name="title" value="{{ edit_post.title if edit_post else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category">
+                        <option value="General" {% if edit_post and edit_post.category == 'General' %}selected{% endif %}>General</option>
+                        <option value="Announcement" {% if edit_post and edit_post.category == 'Announcement' %}selected{% endif %}>Announcement</option>
+                        <option value="Devotional" {% if edit_post and edit_post.category == 'Devotional' %}selected{% endif %}>Devotional</option>
+                        <option value="Event" {% if edit_post and edit_post.category == 'Event' %}selected{% endif %}>Event</option>
+                        <option value="Testimony" {% if edit_post and edit_post.category == 'Testimony' %}selected{% endif %}>Testimony</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Excerpt / Summary</label>
+                <textarea name="excerpt" rows="2">{{ edit_post.excerpt if edit_post else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Content *</label>
+                <textarea name="content" rows="8" required>{{ edit_post.content if edit_post else '' }}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Featured Image</label>
+                    {% if edit_post and edit_post.image_url %}
+                    <div class="current-image">
+                        <img src="{{ edit_post.image_url }}" alt="Current" class="admin-thumb-sm">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Published</label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="published" {% if edit_post and edit_post.published %}checked{% endif %}>
+                        <span>Make visible on website</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="blogBtn">
+                    {% if edit_post %}Update Post{% else %}Publish Post{% endif %}
+                </button>
+                {% if edit_post %}
+                <a href="/admin/blog" class="btn-cancel">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+        
+        <hr class="admin-divider">
+        
+        <h2>All Posts ({{ posts|length }})</h2>
+        {% if posts %}
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr {% if edit_post and edit_post.id == post.id %}class="highlight-row"{% endif %}>
+                        <td><strong>{{ post.title }}</strong></td>
+                        <td><span class="badge">{{ post.category }}</span></td>
+                        <td>
+                            {% if post.published %}
+                            <span class="badge badge-success">Published</span>
+                            {% else %}
+                            <span class="badge badge-draft">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ post.created_at[:10] if post.created_at else '—' }}</td>
+                        <td class="actions-cell">
+                            <a href="/admin/blog/{{ post.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                            <form method="POST" action="/admin/blog/{{ post.id }}/delete" onsubmit="return confirm('Delete this post?')" style="display:inline;">
+                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state"><i class="fas fa-blog"></i> No blog posts yet.</p>
+        {% endif %}
+    </main>
+    
+    <script>
+        document.getElementById('blogForm').addEventListener('submit', function() {
+            var btn = document.getElementById('blogBtn');
+            btn.classList.add('btn-loading');
+            btn.textContent = '{% if edit_post %}Updating...{% else %}Publishing...{% endif %}';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
+</body>
+</html>
