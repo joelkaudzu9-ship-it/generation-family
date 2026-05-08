@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, make_response
 from supabase_client import (
     get_leadership,
     get_ministries,
@@ -30,14 +30,64 @@ def home():
     ministries = get_ministries()
     testimonials = get_testimonials()
     hero_images = supabase_get('hero_images', {'is_active': 'eq.true', 'order': 'created_at.desc'})
+    events = get_events()
+    
+    # Get the next upcoming event
+    next_event = events[0] if events else None
+    
     return render_template(
         'index.html',
         settings=settings,
         leadership=leadership,
         ministries=ministries,
         testimonials=testimonials,
-        hero_images=hero_images
+        hero_images=hero_images,
+        next_event=next_event
     )
+
+
+
+@app.route('/podcast.xml')
+def podcast_rss():
+    sermons_list = get_sermons()
+    settings = get_site_settings()
+    
+    rss = f'''<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+    <title>The Generation Family Sermons</title>
+    <link>https://generation-family.onrender.com</link>
+    <description>Life-changing messages from The Generation Family. A spiritual and growth family raising a generation rooted in faith.</description>
+    <language>en</language>
+    <itunes:author>The Generation Family</itunes:author>
+    <itunes:summary>{settings.get('hero_tagline', 'A Spiritual & Growth Family')}</itunes:summary>
+    <itunes:image href="{url_for('static', filename='images/og-image.jpg', _external=True)}"/>
+    <itunes:category text="Religion &amp; Spirituality"/>
+    <itunes:category text="Christianity"/>
+    <itunes:explicit>no</itunes:explicit>
+'''
+    
+    for sermon in sermons_list:
+        if sermon.get('audio_url'):
+            pub_date = sermon.get('date', '')
+            rss += f'''
+    <item>
+        <title>{sermon.get('title', 'Sermon')}</title>
+        <description>{sermon.get('description', '')}</description>
+        <itunes:summary>{sermon.get('description', '')}</itunes:summary>
+        <itunes:author>{sermon.get('speaker', 'The Generation Family')}</itunes:author>
+        <enclosure url="{sermon.get('audio_url')}" length="0" type="audio/mpeg"/>
+        <guid>{sermon.get('audio_url')}</guid>
+        <pubDate>{pub_date}</pubDate>
+    </item>'''
+    
+    rss += '''
+</channel>
+</rss>'''
+    
+    response = make_response(rss)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
 
 # ==================== ABOUT ====================
 @app.route('/about')
@@ -121,10 +171,14 @@ def books():
 
 
 # ==================== BLOG ====================
-@app.route('/blog')
-def blog():
-    posts = get_blog_posts()
-    return render_template('blog.html', posts=posts)
+@app.route('/blog/<slug>')
+def blog_post(slug):
+    posts = supabase_get('blog_posts', {'slug': f'eq.{slug}', 'published': 'eq.true'})
+    post = posts[0] if posts else None
+    if not post:
+        return render_template('404.html'), 404
+    recent_posts = supabase_get('blog_posts', {'published': 'eq.true', 'order': 'created_at.desc', 'limit': '3'})
+    return render_template('blog-detail.html', post=post, recent_posts=recent_posts)
 
 
 # ==================== CONTACT ====================

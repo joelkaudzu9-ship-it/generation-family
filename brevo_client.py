@@ -193,3 +193,46 @@ def send_newsletter_to_all(subject, content):
     
     print(f"Newsletter sent to {success_count}/{len(contacts)} contacts.")
     return success_count > 0
+
+def send_new_sermon_notification(sermon_title, speaker, audio_url, description=''):
+    """Send email to all subscribers when a new sermon is uploaded."""
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
+    
+    data = {
+        "sender": {
+            "name": BREVO_FROM_NAME,
+            "email": BREVO_FROM_EMAIL
+        },
+        "to": [{
+            "email": BREVO_TO_EMAIL
+        }],
+        "subject": f"New Sermon: {sermon_title}",
+        "htmlContent": f"""
+        <div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto; background:#0a0a0a; color:#fff; padding:30px; border-radius:12px;">
+            <div style="text-align:center; margin-bottom:20px;">
+                <h2 style="color:#D4AF37;">The Generation Family</h2>
+                <p style="color:#ccc; font-size:14px;">New Sermon Available</p>
+            </div>
+            <div style="background:#111; padding:25px; border-radius:8px; text-align:center;">
+                <h3 style="color:#D4AF37; margin-bottom:10px;">{sermon_title}</h3>
+                <p style="color:#999; margin-bottom:5px;">Speaker: {speaker}</p>
+                <p style="color:#ccc; font-size:14px; line-height:1.6; margin:15px 0;">{description}</p>
+                <div style="margin-top:20px;">
+                    <a href="{audio_url}" style="background:#D4AF37; color:#000; padding:12px 30px; text-decoration:none; border-radius:50px; font-weight:bold; display:inline-block;">Listen Now</a>
+                </div>
+            </div>
+            <p style="color:#666; font-size:12px; text-align:center; margin-top:20px;">
+                You received this because you subscribed via our website.<br>
+                <a href="https://app.brevo.com/unsubscribe" style="color:#D4AF37;">Unsubscribe</a>
+            </p>
+        </div>
+        """
+    }
+    
+    response = requests.post(url, headers=headers, json=data, verify=False)
+    return response.status_code in [200, 201]

@@ -3,7 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Generation Family | TGF 2026</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>{% block title %}The Generation Family | A Spiritual & Growth Family{% endblock %}</title>
+    <meta name="title" content="{% block meta_title %}The Generation Family | A Spiritual & Growth Family{% endblock %}">
+    <meta name="description" content="{% block meta_description %}A spiritual and growth family raising a generation rooted in faith, growing in love, and living with purpose. Join us Sundays at 9AM & 11AM.{% endblock %}">
+    <meta name="keywords" content="church, generation family, TGF, spiritual growth, Malawi, Christian, worship, sermons, faith">
+    <meta name="author" content="The Generation Family">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://generation-family.onrender.com">
+    <meta property="og:title" content="{{ self.meta_title() }}">
+    <meta property="og:description" content="{{ self.meta_description() }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://generation-family.onrender.com">
+    <meta property="twitter:title" content="{{ self.meta_title() }}">
+    <meta property="twitter:description" content="{{ self.meta_description() }}">
+    <meta property="twitter:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://generation-family.onrender.com{{ request.path }}">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,6 +73,7 @@
                 <div class="logo-text">
                     <span class="logo-name">The Generation Family</span>
                     <span class="logo-tagline">{{ settings.get('year_theme', 'TGF 2026') }}</span>
+                    <span class="service-times-header">Sun 9AM & 11AM · Wed 6PM</span>
                 </div>
             </a>
 

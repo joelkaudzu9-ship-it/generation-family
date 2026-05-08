@@ -29,6 +29,48 @@
     </div>
 </section>
 
+<!-- Next Event Countdown -->
+{% if next_event %}
+<section class="event-countdown">
+    <div class="container">
+        <div class="countdown-card">
+            <div class="countdown-content">
+                <span class="countdown-eyebrow">Up Next</span>
+                <h3>{{ next_event.title }}</h3>
+                <div class="countdown-meta">
+                    {% if next_event.event_date %}
+                    <span><i class="fas fa-calendar"></i> {{ next_event.event_date }}</span>
+                    {% endif %}
+                    {% if next_event.event_time %}
+                    <span><i class="fas fa-clock"></i> {{ next_event.event_time }}</span>
+                    {% endif %}
+                    {% if next_event.location %}
+                    <span><i class="fas fa-map-marker-alt"></i> {{ next_event.location }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="countdown-timer" data-date="{{ next_event.event_date }}" data-time="{{ next_event.event_time or '00:00' }}">
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countDays">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countHours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countMins">00</span>
+                    <span class="countdown-label">Mins</span>
+                </div>
+            </div>
+            <div class="countdown-cta">
+                <a href="/programs" class="btn-gold">View All Events</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Mission / Vision / Values -->
 <section class="mvv">
     <div class="container">
@@ -160,6 +202,32 @@
             <span class="t-dot active"></span>
         </div>
         {% endif %}
+    </div>
+</section>
+
+<!-- Live Stream / Watch Online -->
+<section class="live-stream">
+    <div class="container">
+        <h2 class="section-heading">Watch Online</h2>
+        <p class="live-stream-subtitle">Join us live every Sunday from anywhere in the world</p>
+        <div class="live-stream-grid">
+            <div class="live-stream-card">
+                <div class="live-platform-icon">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <h3>YouTube</h3>
+                <p>Subscribe and turn on notifications to never miss a service</p>
+                <a href="https://youtube.com/@TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on YouTube</a>
+            </div>
+            <div class="live-stream-card">
+                <div class="live-platform-icon">
+                    <i class="fab fa-facebook"></i>
+                </div>
+                <h3>Facebook Live</h3>
+                <p>Follow our page for live streams during all services</p>
+                <a href="https://facebook.com/TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on Facebook</a>
+            </div>
+        </div>
     </div>
 </section>
 

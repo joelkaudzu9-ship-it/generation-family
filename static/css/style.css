@@ -141,6 +141,21 @@ a {
     text-transform: uppercase;
 }
 
+.service-times-header {
+    font-size: 0.6rem;
+    color: var(--gold);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+@media (max-width: 480px) {
+    .service-times-header {
+        display: none;
+    }
+}
+
 /* Desktop Nav */
 .desktop-nav {
     display: flex;
@@ -2308,4 +2323,420 @@ html {
 /* ==================== WHITE HAMBURGER ==================== */
 .hamburger span {
     background: #ffffff;
+}
+
+/* ==================== SERMON SEARCH ==================== */
+.sermon-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    font-size: 0.85rem;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 10px;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input-wrapper input:focus {
+    border-color: var(--gold);
+}
+
+.search-input-wrapper input::placeholder {
+    color: #555;
+}
+
+.sermon-count {
+    font-size: 0.8rem;
+    color: var(--gray);
+    white-space: nowrap;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--gray);
+    padding: 40px 20px;
+    font-size: 0.9rem;
+}
+
+/* ==================== BLOG DETAIL ==================== */
+.page-header-small {
+    padding: 50px 0 40px;
+}
+
+.blog-detail-section {
+    padding: 60px 0 80px;
+    background: var(--black);
+}
+
+.blog-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 50px;
+}
+
+.blog-detail-image {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid #222;
+}
+
+.blog-detail-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.blog-detail-body {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.9;
+}
+
+.blog-detail-body p {
+    margin-bottom: 18px;
+}
+
+.blog-detail-body h2,
+.blog-detail-body h3 {
+    color: var(--gold);
+    font-family: var(--font-display);
+    margin: 30px 0 14px;
+}
+
+.blog-detail-footer {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #1a1a1a;
+}
+
+.blog-detail-footer .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Sidebar */
+.blog-detail-sidebar {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+}
+
+.sidebar-widget {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar-widget h4 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+}
+
+.recent-posts-list,
+.category-list {
+    list-style: none;
+}
+
+.recent-posts-list li {
+    margin-bottom: 10px;
+}
+
+.recent-posts-list li a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--gray-light);
+    transition: all 0.2s;
+}
+
+.recent-posts-list li a:hover,
+.recent-posts-list li a.active {
+    background: rgba(212, 175, 55, 0.08);
+    color: var(--gold);
+}
+
+.recent-date {
+    display: block;
+    font-size: 0.7rem;
+    color: #555;
+    margin-top: 4px;
+}
+
+.category-list li a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: var(--gray);
+    transition: all 0.2s;
+}
+
+.category-list li a:hover {
+    color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .blog-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .blog-detail-sidebar {
+        position: static;
+        order: -1;
+    }
+}
+
+/* ==================== EVENT COUNTDOWN ==================== */
+.event-countdown {
+    padding: 0 0 40px;
+    background: var(--black);
+    margin-top: -30px;
+    position: relative;
+    z-index: 3;
+}
+
+.countdown-card {
+    background: linear-gradient(135deg, #111 0%, #0d0d0d 100%);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.countdown-eyebrow {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.countdown-content h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--white);
+}
+
+.countdown-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.countdown-meta span {
+    font-size: 0.78rem;
+    color: var(--gray);
+}
+
+.countdown-meta span i {
+    color: var(--gold);
+    margin-right: 5px;
+    font-size: 0.7rem;
+}
+
+.countdown-timer {
+    display: flex;
+    gap: 16px;
+}
+
+.countdown-block {
+    text-align: center;
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 16px 18px;
+    min-width: 70px;
+}
+
+.countdown-number {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+.countdown-cta {
+    flex-shrink: 0;
+}
+
+.countdown-expired {
+    text-align: center;
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .countdown-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+    }
+
+    .countdown-meta {
+        justify-content: center;
+    }
+
+    .countdown-timer {
+        justify-content: center;
+    }
+
+    .countdown-block {
+        min-width: 60px;
+        padding: 12px 14px;
+    }
+
+    .countdown-number {
+        font-size: 1.5rem;
+    }
+}
+
+.podcast-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.podcast-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #f97316;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.podcast-link:hover {
+    background: #ea580c;
+}
+
+.podcast-hint {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+
+/* ==================== LIVE STREAM ==================== */
+.live-stream {
+    padding: 80px 0;
+    background: var(--black);
+}
+
+.live-stream-subtitle {
+    text-align: center;
+    color: var(--gray);
+    margin-top: -30px;
+    margin-bottom: 40px;
+    font-size: 0.9rem;
+}
+
+.live-stream-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.live-stream-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 40px 28px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.live-stream-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+
+.live-platform-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.live-stream-card:nth-child(1) .live-platform-icon i {
+    color: #ff0000;
+}
+
+.live-stream-card:nth-child(2) .live-platform-icon i {
+    color: #1877f2;
+}
+
+.live-stream-card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+}
+
+.live-stream-card p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .live-stream-grid {
+        grid-template-columns: 1fr;
+    }
 }

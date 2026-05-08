@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if post %}
+<section class="page-header page-header-small">
+    <div class="container">
+        <span class="blog-category gold-text">{{ post.category }}</span>
+        <h1 class="page-title">{{ post.title }}</h1>
+        <p class="page-subtitle">{{ post.created_at[:10] if post.created_at else '' }}</p>
+    </div>
+</section>
+
+<section class="blog-detail-section">
+    <div class="container">
+        <div class="blog-detail-grid">
+            <article class="blog-detail-content">
+                {% if post.image_url %}
+                <div class="blog-detail-image">
+                    <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                <div class="blog-detail-body">
+                    {{ post.content|safe }}
+                </div>
+                <div class="blog-detail-footer">
+                    <a href="/blog" class="btn-outline"><i class="fas fa-arrow-left"></i> Back to Blog</a>
+                </div>
+            </article>
+
+            <aside class="blog-detail-sidebar">
+                {% if recent_posts %}
+                <div class="sidebar-widget">
+                    <h4>Recent Posts</h4>
+                    <ul class="recent-posts-list">
+                        {% for rp in recent_posts %}
+                        <li>
+                            <a href="/blog/{{ rp.slug }}" class="{% if rp.id == post.id %}active{% endif %}">
+                                {{ rp.title }}
+                                <span class="recent-date">{{ rp.created_at[:10] if rp.created_at else '' }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <div class="sidebar-widget">
+                    <h4>Categories</h4>
+                    <ul class="category-list">
+                        <li><a href="/blog">General</a></li>
+                        <li><a href="/blog">Announcement</a></li>
+                        <li><a href="/blog">Devotional</a></li>
+                        <li><a href="/blog">Testimony</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Post Not Found</h1>
+        <p class="page-subtitle"><a href="/blog">Back to blog</a></p>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

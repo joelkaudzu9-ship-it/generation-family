@@ -134,6 +134,14 @@ def manage_sermons():
         else:
             supabase_insert('sermons', data)
             message = "Sermon added!"
+            
+            # Send notification for new sermons
+            try:
+                from brevo_client import send_new_sermon_notification
+                send_new_sermon_notification(title, speaker or 'The Generation Family', audio_url, description or '')
+            except Exception as e:
+                print(f"Sermon notification failed: {e}")
+        
     
     sermons = supabase_get('sermons', {'order': 'date.desc'})
     return render_template('admin/sermons.html', sermons=sermons, message=message, error=error)

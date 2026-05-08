@@ -360,3 +360,36 @@ if (newsletterForm) {
         button.textContent = 'Subscribe';
     });
 }
+
+// ==================== EVENT COUNTDOWN ====================
+const countdownTimer = document.querySelector('.countdown-timer');
+
+if (countdownTimer) {
+    const eventDate = countdownTimer.dataset.date;
+    const eventTime = countdownTimer.dataset.time || '00:00';
+    
+    if (eventDate) {
+        const targetDate = new Date(eventDate + 'T' + eventTime);
+        
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) {
+                countdownTimer.innerHTML = '<span class="countdown-expired">Happening Now!</span>';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            document.getElementById('countDays').textContent = String(days).padStart(2, '0');
+            document.getElementById('countHours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('countMins').textContent = String(mins).padStart(2, '0');
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 60000); // Update every minute
+    }
+}
