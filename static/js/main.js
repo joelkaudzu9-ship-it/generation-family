@@ -286,29 +286,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// ==================== SOCIAL LINKS ====================
-const socialLinks = {
-    whatsapp: 'https://wa.me/265983142415',
-    email: 'mailto:gizmokzu@gmail.com',
-    facebook: 'https://facebook.com/TheGenerationFamily',
-    instagram: 'https://instagram.com/TheGenerationFamily',
-    linkedin: 'https://linkedin.com/company/TheGenerationFamily',
-    tiktok: 'https://tiktok.com/@TheGenerationFamily'
-};
-
-document.querySelectorAll('.side-icon').forEach(icon => {
-    const classes = icon.classList;
-    for (const [platform, url] of Object.entries(socialLinks)) {
-        if (classes.contains(platform)) {
-            icon.href = url;
-            icon.target = '_blank';
-            icon.rel = 'noopener';
-        }
-    }
-});
-
-const emailIcon = document.querySelector('.side-icon.email');
-if (emailIcon) emailIcon.href = 'mailto:gizmokzu@gmail.com';
 
 // ==================== NEWSLETTER FORM ====================
 const newsletterForm = document.getElementById('newsletterForm');
