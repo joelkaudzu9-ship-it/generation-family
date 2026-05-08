@@ -35,7 +35,7 @@
         
         <h1>{% if edit_event %}Edit Event{% else %}Add Event{% endif %}</h1>
         
-        <form method="POST" enctype="multipart/form-data" class="admin-form" id="eventForm">
+        <form method="POST" enctype="multipart/form-data" class="admin-form" id="eventForm" action="/admin/events">
             {% if edit_event %}
             <input type="hidden" name="event_id" value="{{ edit_event.id }}">
             <input type="hidden" name="existing_image_url" value="{{ edit_event.image_url }}">

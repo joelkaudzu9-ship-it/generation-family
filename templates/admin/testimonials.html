@@ -35,7 +35,7 @@
         
         <h1>{% if edit_testimonial %}Edit Testimonial{% else %}Add Testimonial{% endif %}</h1>
         
-        <form method="POST" class="admin-form" id="testimonialForm">
+        <form method="POST" class="admin-form" id="testimonialForm" action="/admin/testimonials">
             {% if edit_testimonial %}
             <input type="hidden" name="testimonial_id" value="{{ edit_testimonial.id }}">
             {% endif %}

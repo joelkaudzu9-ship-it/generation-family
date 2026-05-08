@@ -35,7 +35,7 @@
         
         <h1>{% if edit_leader %}Edit Leader{% else %}Add Leader{% endif %}</h1>
         
-        <form method="POST" enctype="multipart/form-data" class="admin-form" id="leaderForm">
+        <form method="POST" enctype="multipart/form-data" class="admin-form" id="leaderForm" action="/admin/leadership">
             {% if edit_leader %}
             <input type="hidden" name="leader_id" value="{{ edit_leader.id }}">
             <input type="hidden" name="existing_image_url" value="{{ edit_leader.image_url }}">

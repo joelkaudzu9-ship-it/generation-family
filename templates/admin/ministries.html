@@ -35,7 +35,7 @@
         
         <h1>{% if edit_ministry %}Edit Ministry{% else %}Add Ministry{% endif %}</h1>
         
-        <form method="POST" enctype="multipart/form-data" class="admin-form" id="ministryForm">
+        <form method="POST" enctype="multipart/form-data" class="admin-form" id="ministryForm" action="/admin/ministries">
             {% if edit_ministry %}
             <input type="hidden" name="ministry_id" value="{{ edit_ministry.id }}">
             <input type="hidden" name="existing_image_url" value="{{ edit_ministry.image_url }}">
