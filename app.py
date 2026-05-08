@@ -232,6 +232,10 @@ def retreats():
 def story():
     return render_template('story.html')
 
+@app.route('/creatives')
+def creatives():
+    return render_template('creatives.html')
+
 # ==================== FAQs ====================
 @app.route('/faqs')
 def faqs():

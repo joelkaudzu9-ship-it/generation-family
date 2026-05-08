@@ -30,6 +30,7 @@ body {
     line-height: 1.7;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    padding-top: 70px;
 }
 
 img {
@@ -89,11 +90,14 @@ a {
 
 /* ==================== HEADER ==================== */
 .header {
-    position: sticky !important;
-    top: 0 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 999;
     background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
 
@@ -393,6 +397,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    
 }
 
 .mobile-menu-body > a {
@@ -3383,6 +3388,103 @@ html {
     .rhythms-grid,
     .expressions-grid,
     .fg-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== CREATIVES PAGE ==================== */
+.creatives-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.creatives-intro {
+    max-width: 650px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.creatives-intro p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.creatives-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.creative-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 36px 28px;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.creative-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+
+.creative-card-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 18px;
+}
+
+.creative-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--white);
+}
+
+.creative-card p {
+    color: var(--gray);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.creative-link {
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s;
+}
+
+.creative-link:hover {
+    gap: 10px;
+}
+
+.creatives-cta {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.creatives-cta h3 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.creatives-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .creatives-grid {
         grid-template-columns: 1fr;
     }
 }
