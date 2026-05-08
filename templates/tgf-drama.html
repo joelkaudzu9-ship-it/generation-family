@@ -4,16 +4,43 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">TGF Drama</h1>
-        <p class="page-subtitle">Faith-inspired dramatic presentations and skits</p>
+        <p class="page-subtitle">Powerful skits and dramatic presentations from the family</p>
     </div>
 </section>
 
-<section class="placeholder-section">
+<section class="creatives-detail">
     <div class="container">
+        {% if items %}
+        <div class="creatives-grid">
+            {% for item in items %}
+            <div class="creative-card">
+                <div class="creative-card-icon"><i class="fas fa-theater-masks"></i></div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                {% if item.content_url %}
+                    {% if item.content_url.endswith('.mp4') or item.content_url.endswith('.webm') %}
+                    <video controls style="width:100%;border-radius:10px;margin-top:12px;">
+                        <source src="{{ item.content_url }}" type="video/mp4">
+                    </video>
+                    {% else %}
+                    <img src="{{ item.content_url }}" alt="{{ item.title }}" style="width:100%;border-radius:10px;margin-top:12px;">
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="empty-state-page">
             <i class="fas fa-theater-masks"></i>
             <h3>Drama Coming Soon</h3>
-            <p>Powerful performances that bring the Word to life. Stay tuned.</p>
+            <p>Powerful performances that bring truth to life. Stay tuned.</p>
+        </div>
+        {% endif %}
+        
+        <div class="creatives-cta">
+            <h3>Are you a performer?</h3>
+            <p>You don't join a department. You just create. And the family celebrates it.</p>
+            <a href="/contact" class="btn-gold">Share Your Work</a>
         </div>
     </div>
 </section>

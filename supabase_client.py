@@ -51,6 +51,38 @@ def supabase_update(table, record_id, data):
         response.raise_for_status()
     return True
 
+def get_prayer_rhythms():
+    return supabase_get('prayer_rhythms', {'order': 'display_order.asc'})
+
+def get_family_groups():
+    return supabase_get('family_groups', {'is_active': 'eq.true', 'order': 'city.asc'})
+
+def get_marketplace_items():
+    return supabase_get('marketplace_items', {'is_available': 'eq.true', 'order': 'created_at.desc'})
+
+def get_retreats():
+    return supabase_get('retreats', {'order': 'start_date.desc'})
+
+def get_upcoming_retreat():
+    retreats = supabase_get('retreats', {'is_upcoming': 'eq.true', 'order': 'start_date.asc', 'limit': '1'})
+    return retreats[0] if retreats else None
+
+def get_creatives(section=None):
+    params = {'order': 'created_at.desc'}
+    if section:
+        params['section'] = f'eq.{section}'
+    return supabase_get('creatives', params)
+
+def get_media(media_type=None):
+    params = {'order': 'created_at.desc'}
+    if media_type:
+        params['media_type'] = f'eq.{media_type}'
+    return supabase_get('media', params)
+
+def get_section_images():
+    images = supabase_get('section_images')
+    return {item['section_name']: item['image_url'] for item in images}
+
 def supabase_delete(table, record_id):
     """Delete a record by ID."""
     url = f"{SUPABASE_URL}/rest/v1/{table}?id=eq.{record_id}"

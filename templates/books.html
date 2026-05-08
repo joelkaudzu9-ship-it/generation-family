@@ -4,16 +4,44 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Books</h1>
-        <p class="page-subtitle">Faith-building books and reading resources</p>
+        <p class="page-subtitle">Faith-building books and reading resources recommended by the family</p>
     </div>
 </section>
 
-<section class="placeholder-section">
+<section class="marketplace-detail">
     <div class="container">
+        {% if items %}
+        <div class="mp-grid">
+            {% for item in items %}
+            {% if item.category == 'Books' %}
+            <div class="mp-card">
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" class="mp-image" style="width:100%;border-radius:12px;margin-bottom:14px;">
+                {% else %}
+                <div class="mp-icon"><i class="fas fa-book"></i></div>
+                {% endif %}
+                <h3>{{ item.title }}</h3>
+                {% if item.price %}<p class="mp-price gold-text">{{ item.price }}</p>{% endif %}
+                <p>{{ item.description }}</p>
+                {% if item.seller_name %}
+                <p class="mp-seller" style="color:var(--gray);font-size:0.78rem;">Offered by {{ item.seller_name }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="empty-state-page">
             <i class="fas fa-book"></i>
             <h3>Library Coming Soon</h3>
-            <p>Curated books to strengthen your walk with God. Recommendations and resources coming soon.</p>
+            <p>Curated books and reading resources will be listed here.</p>
+        </div>
+        {% endif %}
+        
+        <div class="mp-cta">
+            <h3>Have a book to recommend?</h3>
+            <p>Share it through a family group.</p>
+            <a href="/family-groups" class="btn-gold">Find a Family Group</a>
         </div>
     </div>
 </section>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Section Images — TGF Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="admin-body">
     <nav class="admin-nav">
@@ -19,16 +20,16 @@
     
     <main class="admin-main">
         {% if message %}
-        <div class="msg-success">{{ message }}</div>
+        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
         {% endif %}
         
         <h1>Section Background Images</h1>
-        <p>Upload LinkedIn cover-style images for each page section. Best size: 1200 x 400px.</p>
+        <p>Upload background images for each page section. Best size: 1200 x 400px. These appear as the header background on each page.</p>
         
         <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/section-images">
             <div class="form-row">
                 <div class="form-group">
-                    <label>Section</label>
+                    <label>Section *</label>
                     <select name="section" required>
                         <option value="prayer-rhythms">Prayer & Fasting</option>
                         <option value="family-groups">Family Groups</option>
@@ -38,6 +39,9 @@
                         <option value="sermons">Sermons</option>
                         <option value="story">Our Story</option>
                         <option value="giving">Give</option>
+                        <option value="events">Gatherings & Events</option>
+                        <option value="blog">Blog</option>
+                        <option value="contact">Contact</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -45,7 +49,7 @@
                     <input type="file" name="image" accept="image/*" required>
                 </div>
             </div>
-            <button type="submit" class="btn-save">Upload</button>
+            <button type="submit" class="btn-save">Upload Section Image</button>
         </form>
         
         <hr class="admin-divider">
@@ -55,13 +59,13 @@
         <div class="admin-grid">
             {% for img in images %}
             <div class="admin-card-small">
-                <img src="{{ img.image_url }}" alt="{{ img.section_name }}" class="admin-thumb">
-                <h4>{{ img.section_name }}</h4>
+                <img src="{{ img.image_url }}" alt="{{ img.section_name }}" class="admin-thumb-sm" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">
+                <h4 style="margin-top:8px;">{{ img.section_name }}</h4>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p class="empty-state">No section images yet.</p>
+        <p class="empty-state"><i class="fas fa-layer-group"></i> No section images yet. Upload your first one above.</p>
         {% endif %}
     </main>
 </body>

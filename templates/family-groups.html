@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Family Groups</h1>
         <p class="page-subtitle">Small communities where strangers become family</p>
@@ -14,28 +14,28 @@
             <p>Family groups are the heart of The Generation Family. They're small communities of 8-15 people who meet regularly to share meals, pray together, and do life side by side. This is where you're known — not just counted.</p>
         </div>
         
+        {% if groups %}
         <div class="fg-grid">
+            {% for group in groups %}
             <div class="fg-card">
-                <div class="fg-card-icon"><i class="fas fa-utensils"></i></div>
-                <h3>Share Meals</h3>
-                <p>Every gathering includes food. We eat together because Jesus did his best work around tables.</p>
+                <div class="fg-card-icon"><i class="fas fa-home"></i></div>
+                <h3>{{ group.name }}</h3>
+                <div class="fg-details">
+                    {% if group.city %}<p><i class="fas fa-map-marker-alt gold-text"></i> {{ group.city }}</p>{% endif %}
+                    {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
+                    {% if group.leader %}<p><i class="fas fa-user gold-text"></i> Led by {{ group.leader }}</p>{% endif %}
+                </div>
+                {% if group.description %}<p class="fg-desc">{{ group.description }}</p>{% endif %}
             </div>
-            <div class="fg-card">
-                <div class="fg-card-icon"><i class="fas fa-pray"></i></div>
-                <h3>Pray Together</h3>
-                <p>Family groups pray for each other's needs, celebrate breakthroughs, and carry each other's burdens.</p>
-            </div>
-            <div class="fg-card">
-                <div class="fg-card-icon"><i class="fas fa-hands-helping"></i></div>
-                <h3>Support One Another</h3>
-                <p>When someone in the group has a need, the family responds. That's the marketplace. That's the retreat fund. That's family.</p>
-            </div>
-            <div class="fg-card">
-                <div class="fg-card-icon"><i class="fas fa-map-marker-alt"></i></div>
-                <h3>In Every City</h3>
-                <p>We have family groups in each of our {{ settings.get('cities', '5') }} cities. Find one near you.</p>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-users"></i>
+            <h3>Groups Being Formed</h3>
+            <p>New family groups are starting soon. Contact us to find one near you.</p>
+        </div>
+        {% endif %}
         
         <div class="fg-cta">
             <h3>Ready to find your people?</h3>

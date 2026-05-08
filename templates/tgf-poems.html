@@ -4,16 +4,47 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Poems & Spoken Word</h1>
-        <p class="page-subtitle">Spirit-inspired poetry from the hearts of our community</p>
+        <p class="page-subtitle">Words that heal, challenge, and inspire — written and performed by the family</p>
     </div>
 </section>
 
-<section class="placeholder-section">
+<section class="creatives-detail">
     <div class="container">
+        {% if items %}
+        <div class="creatives-grid">
+            {% for item in items %}
+            <div class="creative-card">
+                <div class="creative-card-icon"><i class="fas fa-feather-alt"></i></div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                {% if item.content_url %}
+                    {% if item.content_url.endswith('.mp3') or item.content_url.endswith('.m4a') or item.content_url.endswith('.wav') %}
+                    <audio controls style="width:100%;margin-top:12px;">
+                        <source src="{{ item.content_url }}" type="audio/mpeg">
+                    </audio>
+                    {% elif item.content_url.endswith('.mp4') or item.content_url.endswith('.webm') %}
+                    <video controls style="width:100%;border-radius:10px;margin-top:12px;">
+                        <source src="{{ item.content_url }}" type="video/mp4">
+                    </video>
+                    {% else %}
+                    <img src="{{ item.content_url }}" alt="{{ item.title }}" style="width:100%;border-radius:10px;margin-top:12px;">
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="empty-state-page">
             <i class="fas fa-feather-alt"></i>
             <h3>Poetry Coming Soon</h3>
-            <p>Words that heal, inspire, and draw us closer to God. Coming soon.</p>
+            <p>Words that heal, challenge, and inspire. Coming soon.</p>
+        </div>
+        {% endif %}
+        
+        <div class="creatives-cta">
+            <h3>Are you a writer?</h3>
+            <p>You don't join a department. You just create. And the family celebrates it.</p>
+            <a href="/contact" class="btn-gold">Share Your Work</a>
         </div>
     </div>
 </section>

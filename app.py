@@ -238,7 +238,8 @@ def story():
 
 @app.route('/creatives')
 def creatives():
-    return render_template('creatives.html')
+    creatives = supabase_get('creatives', {'order': 'created_at.desc'})
+    return render_template('creatives.html', creatives=creatives)
 
 # ==================== FAQs ====================
 @app.route('/faqs')

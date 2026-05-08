@@ -8,12 +8,40 @@
     </div>
 </section>
 
-<section class="placeholder-section">
+<section class="marketplace-detail">
     <div class="container">
+        {% if items %}
+        <div class="mp-grid">
+            {% for item in items %}
+            {% if item.category == 'Apparel' or item.category == 'Goods' %}
+            <div class="mp-card">
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" class="mp-image" style="width:100%;border-radius:12px;margin-bottom:14px;">
+                {% else %}
+                <div class="mp-icon"><i class="fas fa-tshirt"></i></div>
+                {% endif %}
+                <h3>{{ item.title }}</h3>
+                {% if item.price %}<p class="mp-price gold-text">{{ item.price }}</p>{% endif %}
+                <p>{{ item.description }}</p>
+                {% if item.seller_name %}
+                <p class="mp-seller" style="color:var(--gray);font-size:0.78rem;">Offered by {{ item.seller_name }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="empty-state-page">
             <i class="fas fa-tshirt"></i>
             <h3>Store Coming Soon</h3>
-            <p>Our merchandise store is being prepared. Check back for branded apparel and accessories.</p>
+            <p>Branded apparel and merchandise will be available here.</p>
+        </div>
+        {% endif %}
+        
+        <div class="mp-cta">
+            <h3>Have something to sell?</h3>
+            <p>List your items through a family group.</p>
+            <a href="/family-groups" class="btn-gold">Find a Family Group</a>
         </div>
     </div>
 </section>

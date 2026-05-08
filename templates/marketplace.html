@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('marketplace') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('marketplace') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Marketplace</h1>
         <p class="page-subtitle">A community economy — members buy from members</p>
@@ -14,23 +14,31 @@
             <p>The marketplace is one of the most distinctive things about The Generation Family. It's a simple idea: before you buy from a stranger, check if someone in the family can provide it. Skills, goods, and services circulate within the community. Everyone benefits. Everyone belongs.</p>
         </div>
         
+        {% if items %}
         <div class="mp-grid">
+            {% for item in items %}
             <div class="mp-card">
-                <div class="mp-icon"><i class="fas fa-tshirt"></i></div>
-                <h3>Goods</h3>
-                <p>Clothing, household items, books, and more — bought and sold within the family.</p>
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" alt="{{ item.title }}" class="mp-image">
+                {% else %}
+                <div class="mp-icon"><i class="fas fa-{{ 'tshirt' if item.category == 'Goods' else 'tools' if item.category == 'Services' else 'seedling' }}"></i></div>
+                {% endif %}
+                <h3>{{ item.title }}</h3>
+                {% if item.price %}<p class="mp-price gold-text">{{ item.price }}</p>{% endif %}
+                <p>{{ item.description }}</p>
+                {% if item.seller_name %}
+                <p class="mp-seller">Offered by {{ item.seller_name }}</p>
+                {% endif %}
             </div>
-            <div class="mp-card">
-                <div class="mp-icon"><i class="fas fa-tools"></i></div>
-                <h3>Skills & Services</h3>
-                <p>Tutoring, design, tailoring, catering, transport — members serving members.</p>
-            </div>
-            <div class="mp-card">
-                <div class="mp-icon"><i class="fas fa-seedling"></i></div>
-                <h3>Produce & Food</h3>
-                <p>Homegrown produce, baked goods, and prepared meals shared within the community.</p>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-store"></i>
+            <h3>Marketplace Opening Soon</h3>
+            <p>Items from the community will be listed here.</p>
+        </div>
+        {% endif %}
         
         <div class="mp-cta">
             <h3>Have something to offer? Looking for something?</h3>

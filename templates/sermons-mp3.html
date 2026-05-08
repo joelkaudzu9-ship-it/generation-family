@@ -4,41 +4,86 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Sermons MP3</h1>
-        <p class="page-subtitle">Download and listen to sermons on the go</p>
+        <p class="page-subtitle">Download and listen to messages from our gatherings, retreats, and prayer meetings</p>
     </div>
 </section>
 
 <section class="sermons-section">
     <div class="container">
         {% if sermons %}
-        <div class="sermons-list">
+        <div class="sermon-search-bar">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="sermonSearch" placeholder="Search by title, speaker, or series...">
+            </div>
+            <span class="sermon-count" id="sermonCount">{{ sermons|length }} sermons</span>
+        </div>
+
+        <div class="sermons-list" id="sermonsList">
             {% for sermon in sermons %}
-            <div class="sermon-card">
+            {% if sermon.audio_url %}
+            <div class="sermon-card" data-title="{{ sermon.title|lower }}" data-speaker="{{ sermon.speaker|lower if sermon.speaker else '' }}" data-series="{{ sermon.series|lower if sermon.series else '' }}">
                 <div class="sermon-info">
                     <h3>{{ sermon.title }}</h3>
                     <div class="sermon-meta">
                         {% if sermon.speaker %}<span><i class="fas fa-user gold-text"></i> {{ sermon.speaker }}</span>{% endif %}
                         {% if sermon.date %}<span><i class="fas fa-calendar gold-text"></i> {{ sermon.date }}</span>{% endif %}
+                        {% if sermon.series %}<span><i class="fas fa-folder gold-text"></i> {{ sermon.series }}</span>{% endif %}
                     </div>
+                    {% if sermon.description %}<p class="sermon-desc">{{ sermon.description }}</p>{% endif %}
                 </div>
-                {% if sermon.audio_url %}
                 <div class="sermon-audio">
-                    <audio controls>
+                    <audio controls style="width:100%;">
                         <source src="{{ sermon.audio_url }}" type="audio/mpeg">
                     </audio>
-                    <a href="{{ sermon.audio_url }}" download class="btn-gold small">Download MP3</a>
+                    <a href="{{ sermon.audio_url }}" download class="btn-gold small" style="margin-top:10px;display:inline-block;">
+                        <i class="fas fa-download"></i> Download MP3
+                    </a>
                 </div>
-                {% endif %}
             </div>
+            {% endif %}
             {% endfor %}
         </div>
+
+        <p class="no-results" id="noResults" style="display:none;">No sermons match your search.</p>
         {% else %}
         <div class="empty-state-page">
             <i class="fas fa-headphones"></i>
             <h3>Sermon MP3s Coming Soon</h3>
+            <p>Downloadable sermons will appear here as they are uploaded.</p>
         </div>
         {% endif %}
     </div>
 </section>
+
+<script>
+const searchInput = document.getElementById('sermonSearch');
+const sermonCards = document.querySelectorAll('.sermon-card');
+const sermonCount = document.getElementById('sermonCount');
+const noResults = document.getElementById('noResults');
+
+if (searchInput) {
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        sermonCards.forEach(card => {
+            const title = card.dataset.title || '';
+            const speaker = card.dataset.speaker || '';
+            const series = card.dataset.series || '';
+            
+            if (query === '' || title.includes(query) || speaker.includes(query) || series.includes(query)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        sermonCount.textContent = visibleCount + ' sermon' + (visibleCount !== 1 ? 's' : '');
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    });
+}
+</script>
 
 {% endblock %}

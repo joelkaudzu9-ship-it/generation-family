@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('retreats') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('retreats') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Retreats</h1>
         <p class="page-subtitle">Every midsemester break, we withdraw together</p>
@@ -15,6 +15,27 @@
             <p>These retreats are entirely funded by the generous, joyful giving of members. Nobody is turned away for lack of funds. Everyone who wants to come, comes.</p>
         </div>
         
+        {% if retreats %}
+        <div class="retreats-grid">
+            {% for retreat in retreats %}
+            <div class="retreat-card">
+                {% if retreat.image_url %}
+                <div class="retreat-image">
+                    <img src="{{ retreat.image_url }}" alt="{{ retreat.title }}">
+                </div>
+                {% endif %}
+                <div class="retreat-info">
+                    <h3>{{ retreat.title }}</h3>
+                    <div class="retreat-meta">
+                        {% if retreat.start_date %}<span><i class="fas fa-calendar gold-text"></i> {{ retreat.start_date }}{% if retreat.end_date %} — {{ retreat.end_date }}{% endif %}</span>{% endif %}
+                        {% if retreat.location %}<span><i class="fas fa-map-marker-alt gold-text"></i> {{ retreat.location }}</span>{% endif %}
+                    </div>
+                    <p>{{ retreat.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="retreats-highlights">
             <div class="retreat-highlight">
                 <div class="highlight-number">2x</div>
@@ -32,6 +53,7 @@
                 <p>No one is turned away. Everyone belongs.</p>
             </div>
         </div>
+        {% endif %}
         
         <div class="retreats-cta">
             <h3>The next retreat is being planned now.</h3>

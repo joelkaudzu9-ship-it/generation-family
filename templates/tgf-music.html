@@ -4,17 +4,34 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">TGF Music</h1>
-        <p class="page-subtitle">Original worship songs and music from our ministry</p>
+        <p class="page-subtitle">Original songs and worship recordings from the family</p>
     </div>
 </section>
 
-<section class="placeholder-section">
+<section class="creatives-detail">
     <div class="container">
+        {% if items %}
+        <div class="creatives-grid">
+            {% for item in items %}
+            <div class="creative-card">
+                <div class="creative-card-icon"><i class="fas fa-music"></i></div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                {% if item.content_url %}
+                <audio controls style="width:100%;margin-top:12px;">
+                    <source src="{{ item.content_url }}" type="audio/mpeg">
+                </audio>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="empty-state-page">
             <i class="fas fa-music"></i>
             <h3>Music Coming Soon</h3>
-            <p>We're preparing something special. Check back for original songs and worship recordings from The Generation Family.</p>
+            <p>Original songs and worship recordings from the family will appear here.</p>
         </div>
+        {% endif %}
     </div>
 </section>
 

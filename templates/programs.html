@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('events') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('events') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
-        <h1 class="page-title">Programs & Events</h1>
-        <p class="page-subtitle">Join us for upcoming services, conferences, and community gatherings</p>
+        <h1 class="page-title">Gatherings & Events</h1>
+        <p class="page-subtitle">Prayer gatherings, retreats, and community meetups</p>
     </div>
 </section>
 
@@ -34,8 +34,8 @@
         {% else %}
         <div class="empty-state-page">
             <i class="fas fa-calendar-alt"></i>
-            <h3>Events Coming Soon</h3>
-            <p>Stay tuned for upcoming programs and gatherings.</p>
+            <h3>Gatherings Coming Soon</h3>
+            <p>Stay tuned for upcoming prayer gatherings, retreats, and community meetups.</p>
         </div>
         {% endif %}
     </div>

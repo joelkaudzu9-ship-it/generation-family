@@ -14,35 +14,39 @@
             <p>The Generation Family is full of artists, musicians, actors, poets, and creators. These aren't separate departments — they're expressions of the creativity God has placed in the family. Everyone is welcome to participate, contribute, and create.</p>
         </div>
         
+        {% if creatives %}
         <div class="creatives-grid">
+            {% for item in creatives %}
             <div class="creative-card">
-                <div class="creative-card-icon"><i class="fas fa-music"></i></div>
-                <h3>TGF Music</h3>
-                <p>Original songs, worship recordings, and sounds from the family. Born in prayer rooms, shared with the world.</p>
-                <a href="/resources/tgf-music" class="creative-link">Explore Music <i class="fas fa-arrow-right"></i></a>
+                <div class="creative-card-icon">
+                    {% if item.section == 'music' %}<i class="fas fa-music"></i>
+                    {% elif item.section == 'drama' %}<i class="fas fa-theater-masks"></i>
+                    {% elif item.section == 'poems' %}<i class="fas fa-feather-alt"></i>
+                    {% elif item.section == 'art' %}<i class="fas fa-paint-brush"></i>
+                    {% else %}<i class="fas fa-star"></i>
+                    {% endif %}
+                </div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                {% if item.content_url %}
+                    {% if item.section == 'music' %}
+                    <audio controls style="width:100%;margin-top:12px;">
+                        <source src="{{ item.content_url }}" type="audio/mpeg">
+                    </audio>
+                    {% else %}
+                    <img src="{{ item.content_url }}" alt="{{ item.title }}" style="width:100%;border-radius:10px;margin-top:12px;">
+                    {% endif %}
+                {% endif %}
             </div>
-            
-            <div class="creative-card">
-                <div class="creative-card-icon"><i class="fas fa-theater-masks"></i></div>
-                <h3>TGF Drama</h3>
-                <p>Powerful skits and dramatic presentations that bring truth to life. Performed at gatherings, retreats, and beyond.</p>
-                <a href="/resources/tgf-drama" class="creative-link">Watch Drama <i class="fas fa-arrow-right"></i></a>
-            </div>
-            
-            <div class="creative-card">
-                <div class="creative-card-icon"><i class="fas fa-feather-alt"></i></div>
-                <h3>Poems & Spoken Word</h3>
-                <p>Words that heal, challenge, and inspire. Written and performed by members of the family.</p>
-                <a href="/resources/tgf-poems" class="creative-link">Read & Listen <i class="fas fa-arrow-right"></i></a>
-            </div>
-            
-            <div class="creative-card">
-                <div class="creative-card-icon"><i class="fas fa-paint-brush"></i></div>
-                <h3>Visual Art</h3>
-                <p>Paintings, photography, design, and visual expressions from the creative minds in the community.</p>
-                <a href="/contact" class="creative-link">Submit Your Art <i class="fas fa-arrow-right"></i></a>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-palette"></i>
+            <h3>Creative Works Coming Soon</h3>
+            <p>Music, drama, poems, and art from the family will appear here.</p>
+        </div>
+        {% endif %}
         
         <div class="creatives-cta">
             <h3>Are you a creative?</h3>

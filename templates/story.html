@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('story') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('story') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Our Story</h1>
         <p class="page-subtitle">Two students. One prayer. A movement born.</p>
@@ -12,7 +12,7 @@
     <div class="container">
         <div class="story-content-full">
             <h2>It Started With Two</h2>
-            <p>In 2019, three students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more than just getting degrees and moving on.</p>
+            <p>In 2019, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more than just getting degrees and moving on.</p>
             
             <p>They prayed. Others joined. The prayer grew.</p>
             
