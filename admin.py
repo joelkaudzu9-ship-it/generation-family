@@ -65,20 +65,24 @@ def login():
         if users and users[0]['password'] == password:
             user = users[0]
             
-            # Get roles — check new array field first, fall back to old single role
+            # Parse roles from database
             roles = user.get('roles', [])
-            if not roles and user.get('role'):
-                roles = [user['role']]
-            if not roles:
-                roles = ['user']
+            if not roles or roles == '{}':
+                if user.get('role'):
+                    roles = [user['role']]
+                else:
+                    roles = ['user']
+            elif isinstance(roles, str):
+                # Convert Supabase array string to Python list
+                roles = roles.strip('{}').split(',') if roles.strip('{}') else [user.get('role', 'user')]
             
             session['admin_logged_in'] = True
             session['admin_user'] = {
                 'id': user['id'],
                 'username': user['username'],
                 'display_name': user['display_name'],
-                'role': roles[0] if roles else 'user',  # Primary role for backward compatibility
-                'roles': roles,  # All roles
+                'role': roles[0] if roles else 'user',
+                'roles': roles,
                 'department': user.get('department', '')
             }
             return redirect(url_for('admin.dashboard'))
@@ -833,14 +837,12 @@ def manage_users():
     
     if request.method == 'POST':
         action = request.form.get('action')
-        
+                
         if action == 'add':
             username = request.form.get('username')
             password = request.form.get('password')
             display_name = request.form.get('display_name')
             department = request.form.get('department', '')
-            
-            # Get multiple roles from checkboxes
             roles = request.form.getlist('roles')
             primary_role = roles[0] if roles else 'user'
             

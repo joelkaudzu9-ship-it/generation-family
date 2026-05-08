@@ -32,7 +32,17 @@ def supabase_get_one(table, record_id):
 def supabase_insert(table, data):
     """Insert a record into a Supabase table."""
     url = f"{SUPABASE_URL}/rest/v1/{table}"
-    response = requests.post(url, headers=HEADERS, json=data)
+    
+    # Convert any Python lists to PostgreSQL array format
+    processed_data = {}
+    for key, value in data.items():
+        if isinstance(value, list):
+            # Convert Python list to Postgres array string {val1,val2,val3}
+            processed_data[key] = '{' + ','.join(str(v) for v in value) + '}'
+        else:
+            processed_data[key] = value
+    
+    response = requests.post(url, headers=HEADERS, json=processed_data)
     response.raise_for_status()
     return response.json()
 
@@ -45,7 +55,16 @@ def supabase_update(table, record_id, data):
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal'
     }
-    response = requests.patch(url, headers=headers, json=data)
+    
+    # Convert any Python lists to PostgreSQL array format
+    processed_data = {}
+    for key, value in data.items():
+        if isinstance(value, list):
+            processed_data[key] = '{' + ','.join(str(v) for v in value) + '}'
+        else:
+            processed_data[key] = value
+    
+    response = requests.patch(url, headers=headers, json=processed_data)
     if response.status_code not in [200, 201, 204]:
         print(f"Supabase update error: {response.status_code} - {response.text}")
         response.raise_for_status()
