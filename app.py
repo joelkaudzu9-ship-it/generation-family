@@ -274,14 +274,8 @@ def contact():
     
     return render_template('contact.html', settings=settings, success=False)
 
-@app.route('/story')
-def story():
-    return render_template('story.html')
 
-# ==================== FAQs =================
-@app.route('/faqs')
-def faqs():
-    return render_template('faqs.html')
+
 
 
 @app.route('/subscribe', methods=['POST'])
