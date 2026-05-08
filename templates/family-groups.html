@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Family Groups</h1>
+        <p class="page-subtitle">Small communities where strangers become family</p>
+    </div>
+</section>
+
+<section class="family-groups-detail">
+    <div class="container">
+        <div class="fg-intro">
+            <p>Family groups are the heart of The Generation Family. They're small communities of 8-15 people who meet regularly to share meals, pray together, and do life side by side. This is where you're known — not just counted.</p>
+        </div>
+        
+        <div class="fg-grid">
+            <div class="fg-card">
+                <div class="fg-card-icon"><i class="fas fa-utensils"></i></div>
+                <h3>Share Meals</h3>
+                <p>Every gathering includes food. We eat together because Jesus did his best work around tables.</p>
+            </div>
+            <div class="fg-card">
+                <div class="fg-card-icon"><i class="fas fa-pray"></i></div>
+                <h3>Pray Together</h3>
+                <p>Family groups pray for each other's needs, celebrate breakthroughs, and carry each other's burdens.</p>
+            </div>
+            <div class="fg-card">
+                <div class="fg-card-icon"><i class="fas fa-hands-helping"></i></div>
+                <h3>Support One Another</h3>
+                <p>When someone in the group has a need, the family responds. That's the marketplace. That's the retreat fund. That's family.</p>
+            </div>
+            <div class="fg-card">
+                <div class="fg-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <h3>In Every City</h3>
+                <p>We have family groups in each of our {{ settings.get('cities', '5') }} cities. Find one near you.</p>
+            </div>
+        </div>
+        
+        <div class="fg-cta">
+            <h3>Ready to find your people?</h3>
+            <p>We'll connect you with a family group in your area.</p>
+            <a href="/contact" class="btn-gold">Get Connected</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

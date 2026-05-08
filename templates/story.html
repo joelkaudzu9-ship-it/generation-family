@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Our Story</h1>
+        <p class="page-subtitle">Two students. One prayer. A movement born.</p>
+    </div>
+</section>
+
+<section class="story-detail">
+    <div class="container">
+        <div class="story-content-full">
+            <h2>It Started With Two</h2>
+            <p>In 2019, three students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more than just getting degrees and moving on.</p>
+            
+            <p>They prayed. Others joined. The prayer grew.</p>
+            
+            <h2>From Dorm Room to Movement</h2>
+            <p>What started as two students became a community. That community developed rhythms — regular prayer gatherings, fasting days, shared meals, and retreats during the midsemester breaks. The rhythms became the identity.</p>
+            
+            <p>As students graduated and moved to different cities, they took the family with them. New family groups started. The marketplace emerged — members buying from members, skills and goods circulating within the community. The retreats continued, funded entirely by the generous giving of the family.</p>
+            
+            <h2>Today</h2>
+            <p>The Generation Family now spans {{ settings.get('cities', '5') }} cities. The founders have graduated. The movement hasn't stopped.</p>
+            
+            <p>We still pray. We still fast. We still gather in homes for meals. We still trade with one another. We still retreat together every midsemester. Because we're not an event. We're not a church service. We're a family — and families don't stop.</p>
+            
+            <div class="story-stats">
+                <div class="story-stat">
+                    <span class="stat-number gold-text">{{ settings.get('years_in_existence', '12') }}</span>
+                    <span class="stat-label">Years Growing</span>
+                </div>
+                <div class="story-stat">
+                    <span class="stat-number gold-text">{{ settings.get('cities', '5') }}</span>
+                    <span class="stat-label">Cities Reached</span>
+                </div>
+                <div class="story-stat">
+                    <span class="stat-number gold-text">{{ settings.get('lives_impacted', '2500+') }}</span>
+                    <span class="stat-label">Lives Touched</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -212,7 +212,25 @@ def contact():
     
     return render_template('contact.html', settings=settings, success=False)
 
+@app.route('/prayer-rhythms')
+def prayer_rhythms():
+    return render_template('prayer-rhythms.html')
 
+@app.route('/family-groups')
+def family_groups():
+    return render_template('family-groups.html')
+
+@app.route('/marketplace')
+def marketplace():
+    return render_template('marketplace.html')
+
+@app.route('/retreats')
+def retreats():
+    return render_template('retreats.html')
+
+@app.route('/story')
+def story():
+    return render_template('story.html')
 
 # ==================== FAQs ====================
 @app.route('/faqs')
@@ -249,3 +267,4 @@ def subscribe():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

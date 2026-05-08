@@ -2889,3 +2889,500 @@ html {
 .mobile-search input::placeholder {
     color: #555;
 }
+
+/* ==================== RHYTHMS HOMEPAGE ==================== */
+.rhythms {
+    padding: 60px 0;
+    background: var(--dark);
+}
+
+.section-intro {
+    text-align: center;
+    color: var(--gray);
+    margin-top: -30px;
+    margin-bottom: 40px;
+    font-size: 0.95rem;
+}
+
+.rhythms-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.rhythm-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.rhythm-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+
+.rhythm-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+}
+
+.rhythm-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.rhythm-card p {
+    color: var(--gray);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* ==================== OUR STORY HOMEPAGE ==================== */
+.our-story {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.story-content {
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+.story-content p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin-bottom: 16px;
+}
+
+.story-cta {
+    text-align: center;
+}
+
+/* ==================== EXPRESSIONS HOMEPAGE ==================== */
+.expressions {
+    padding: 60px 0;
+    background: var(--dark);
+}
+
+.expressions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.expression-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s;
+    display: block;
+}
+
+.expression-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+
+.expression-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+}
+
+.expression-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--white);
+}
+
+.expression-card p {
+    color: var(--gray);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* ==================== PRAYER RHYTHMS PAGE ==================== */
+.rhythms-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.rhythms-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.rhythm-detail-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 36px 28px;
+}
+
+.rhythm-detail-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 18px;
+}
+
+.rhythm-detail-card h2 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
+.rhythm-detail-card p {
+    color: var(--gray-light);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.rhythm-schedule {
+    background: rgba(212, 175, 55, 0.05);
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.schedule-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #1a1a1a;
+    color: var(--gray-light);
+    font-size: 0.85rem;
+}
+
+.schedule-item:last-child {
+    border-bottom: none;
+}
+
+.schedule-item strong {
+    color: var(--gold);
+}
+
+.rhythms-cta {
+    text-align: center;
+    padding: 40px 0 20px;
+}
+
+.rhythms-cta h3 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.rhythms-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+/* ==================== FAMILY GROUPS PAGE ==================== */
+.family-groups-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.fg-intro {
+    max-width: 650px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.fg-intro p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.fg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.fg-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 28px 18px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.fg-card:hover {
+    border-color: var(--gold);
+}
+
+.fg-card-icon {
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+
+.fg-card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.fg-card p {
+    color: var(--gray);
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.fg-cta {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.fg-cta h3 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.fg-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+/* ==================== MARKETPLACE PAGE ==================== */
+.marketplace-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.mp-intro {
+    max-width: 650px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.mp-intro p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.mp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.mp-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.mp-card:hover {
+    border-color: var(--gold);
+}
+
+.mp-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+}
+
+.mp-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.mp-card p {
+    color: var(--gray);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+.mp-cta {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.mp-cta h3 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.mp-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+/* ==================== RETREATS PAGE ==================== */
+.retreats-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.retreats-intro {
+    max-width: 650px;
+    margin: 0 auto 40px;
+}
+
+.retreats-intro p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+
+.retreats-highlights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.retreat-highlight {
+    text-align: center;
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 28px 18px;
+}
+
+.highlight-number {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.highlight-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.retreat-highlight p {
+    color: var(--gray);
+    font-size: 0.8rem;
+}
+
+.retreats-cta {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.retreats-cta h3 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.retreats-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+.retreats-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ==================== STORY PAGE ==================== */
+.story-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.story-content-full {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.story-content-full h2 {
+    font-family: var(--font-display);
+    color: var(--gold);
+    font-size: 1.4rem;
+    margin: 36px 0 14px;
+}
+
+.story-content-full h2:first-child {
+    margin-top: 0;
+}
+
+.story-content-full p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin-bottom: 16px;
+}
+
+.story-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #1a1a1a;
+}
+
+.story-stat {
+    text-align: center;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .rhythms-grid,
+    .expressions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .rhythms-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .fg-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .mp-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .retreats-highlights {
+        grid-template-columns: 1fr;
+    }
+    
+    .story-stats {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rhythms-grid,
+    .expressions-grid,
+    .fg-grid {
+        grid-template-columns: 1fr;
+    }
+}

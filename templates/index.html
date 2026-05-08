@@ -14,170 +14,96 @@
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-        <p class="hero-eyebrow">Welcome Home</p>
+        <p class="hero-eyebrow">A Movement Born at KUHES</p>
         <h1 class="hero-title">The Generation<br>Family</h1>
-        <p class="hero-subtitle">{{ settings.get('hero_tagline', 'A Spiritual & Growth Family') }} — Raising a generation rooted in faith, growing in love, living with purpose.</p>
+        <p class="hero-subtitle">Founded by two students. Built on prayer. Sustained by fasting. Growing through family. Now in {{ settings.get('cities', '5') }} cities — and counting.</p>
         <div class="hero-buttons">
-            <a href="/about" class="btn-gold">Discover More</a>
-            <a href="/contact" class="btn-outline">Join Us</a>
+            <a href="/family-groups" class="btn-gold">Join a Family Group</a>
+            <a href="/prayer-rhythms" class="btn-outline">See Prayer Rhythms</a>
         </div>
     </div>
-    <div class="hero-dots">
-        <span class="hero-dot active"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
-    </div>
+    <div class="hero-dots"></div>
 </section>
 
-<!-- Next Event Countdown -->
-{% if next_event %}
-<section class="event-countdown">
+<!-- Our Rhythms -->
+<section class="rhythms">
     <div class="container">
-        <div class="countdown-card">
-            <div class="countdown-content">
-                <span class="countdown-eyebrow">Up Next</span>
-                <h3>{{ next_event.title }}</h3>
-                <div class="countdown-meta">
-                    {% if next_event.event_date %}
-                    <span><i class="fas fa-calendar"></i> {{ next_event.event_date }}</span>
-                    {% endif %}
-                    {% if next_event.event_time %}
-                    <span><i class="fas fa-clock"></i> {{ next_event.event_time }}</span>
-                    {% endif %}
-                    {% if next_event.location %}
-                    <span><i class="fas fa-map-marker-alt"></i> {{ next_event.location }}</span>
-                    {% endif %}
-                </div>
+        <h2 class="section-heading">Our Rhythms</h2>
+        <p class="section-intro">These aren't events. They're the heartbeat of who we are.</p>
+        <div class="rhythms-grid">
+            <div class="rhythm-card">
+                <div class="rhythm-icon"><i class="fas fa-praying-hands"></i></div>
+                <h3>Prayer Gatherings</h3>
+                <p>We meet multiple times a week to pray — on campus, in homes, and wherever two or three are gathered.</p>
             </div>
-            <div class="countdown-timer" data-date="{{ next_event.event_date }}" data-time="{{ next_event.event_time or '00:00' }}">
-                <div class="countdown-block">
-                    <span class="countdown-number" id="countDays">00</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-block">
-                    <span class="countdown-number" id="countHours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-block">
-                    <span class="countdown-number" id="countMins">00</span>
-                    <span class="countdown-label">Mins</span>
-                </div>
+            <div class="rhythm-card">
+                <div class="rhythm-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>Fasting Days</h3>
+                <p>Regular days of corporate fasting. Not obligation. Devotion. The whole family pressing in together.</p>
             </div>
-            <div class="countdown-cta">
-                <a href="/programs" class="btn-gold">View All Events</a>
+            <div class="rhythm-card">
+                <div class="rhythm-icon"><i class="fas fa-utensils"></i></div>
+                <h3>Family Meals</h3>
+                <p>Small groups that share food, share life, and share what they have. This is where strangers become family.</p>
             </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- Mission / Vision / Values -->
-<section class="mvv">
-    <div class="container">
-        <div class="mvv-grid">
-            <div class="mvv-card">
-                <div class="mvv-icon"><i class="fas fa-cross"></i></div>
-                <h3>Our Mission</h3>
-                <p>{{ settings.get('mission', 'To raise a generation of believers rooted in faith, growing in love, and living with purpose.') }}</p>
-            </div>
-            <div class="mvv-card">
-                <div class="mvv-icon"><i class="fas fa-eye"></i></div>
-                <h3>Our Vision</h3>
-                <p>{{ settings.get('vision', 'To see every member become a vessel of transformation in their family, community, and the world.') }}</p>
-            </div>
-            <div class="mvv-card">
-                <div class="mvv-icon"><i class="fas fa-heart"></i></div>
-                <h3>Our Values</h3>
-                <p>{{ settings.get('values', 'Faith. Family. Integrity. Service. Excellence. Love.') }}</p>
+            <div class="rhythm-card">
+                <div class="rhythm-icon"><i class="fas fa-mountain"></i></div>
+                <h3>Retreats</h3>
+                <p>Every midsemester break, we withdraw together. Fully funded by the generous giving of members.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Impact Numbers -->
-<section class="impact">
+<!-- Our Story -->
+<section class="our-story">
     <div class="container">
-        <h2 class="section-heading">Our Impact</h2>
-        <div class="impact-grid">
-            <div class="impact-card">
-                <span class="impact-number">{{ settings.get('lives_impacted', '2500+') }}</span>
-                <span class="impact-label">Lives Impacted</span>
-            </div>
-            <div class="impact-card">
-                <span class="impact-number">{{ settings.get('years_in_existence', '12') }}</span>
-                <span class="impact-label">Years in Ministry</span>
-            </div>
-            <div class="impact-card">
-                <span class="impact-number">{{ settings.get('cities', '5') }}</span>
-                <span class="impact-label">Cities Reached</span>
-            </div>
-            <div class="impact-card">
-                <span class="impact-number">{{ settings.get('meetings_held', '1200+') }}</span>
-                <span class="impact-label">Meetings Held</span>
-            </div>
+        <h2 class="section-heading">Our Story</h2>
+        <div class="story-content">
+            <p>In 2014, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. Just two people and a conviction that their generation was destined for more.</p>
+            <p>That prayer grew into a community. That community grew into a movement. Today, The Generation Family spans {{ settings.get('cities', '5') }} cities, hosts retreats every midsemester break, runs family groups that share meals and resources, and operates a marketplace where members buy from one another.</p>
+            <p>The founders have graduated. The movement hasn't stopped.</p>
+        </div>
+        <div class="story-cta">
+            <a href="/story" class="btn-gold">Read the Full Story</a>
         </div>
     </div>
 </section>
 
-<!-- Senior Leadership -->
-<section class="leadership">
+<!-- Our Expressions -->
+<section class="expressions">
     <div class="container">
-        <h2 class="section-heading">Our Leadership</h2>
-        <div class="leadership-grid">
-            {% if leadership %}
-                {% for leader in leadership %}
-                <div class="leader-card">
-                    <div class="leader-img">
-                        {% if leader.image_url %}
-                        <img src="{{ leader.image_url }}" alt="{{ leader.name }}">
-                        {% else %}
-                        <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text={{ leader.name[:1] }}" alt="{{ leader.name }}">
-                        {% endif %}
-                    </div>
-                    <h4>{{ leader.name }}</h4>
-                    <p>{{ leader.title }}</p>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="leader-card">
-                    <div class="leader-img">
-                        <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text=?" alt="Leader">
-                    </div>
-                    <h4>Coming Soon</h4>
-                    <p>Leadership details will be added shortly.</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</section>
-
-<!-- Ministries -->
-<section class="ministries">
-    <div class="container">
-        <h2 class="section-heading">Our Ministries</h2>
-        <div class="ministries-grid">
-            {% if ministries %}
-                {% for ministry in ministries %}
-                <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
-                    <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
-                    <h4>{{ ministry.name }}</h4>
-                </a>
-                {% endfor %}
-            {% else %}
-                <a href="#" class="ministry-card">
-                    <div class="ministry-icon"><i class="fas fa-church"></i></div>
-                    <h4>Ministries coming soon</h4>
-                </a>
-            {% endif %}
+        <h2 class="section-heading">Our Expressions</h2>
+        <div class="expressions-grid">
+            <a href="/prayer-rhythms" class="expression-card">
+                <div class="expression-icon"><i class="fas fa-praying-hands"></i></div>
+                <h3>Prayer & Fasting</h3>
+                <p>The engine of everything we are. Regular rhythms of corporate prayer and fasting that anchor the community.</p>
+            </a>
+            <a href="/family-groups" class="expression-card">
+                <div class="expression-icon"><i class="fas fa-users"></i></div>
+                <h3>Family Groups</h3>
+                <p>Small communities that eat together, share life, and become home for one another. Find one near you.</p>
+            </a>
+            <a href="/marketplace" class="expression-card">
+                <div class="expression-icon"><i class="fas fa-store"></i></div>
+                <h3>Marketplace</h3>
+                <p>A community economy. Members buy from members. Skills, goods, and services exchanged within the family.</p>
+            </a>
+            <a href="/retreats" class="expression-card">
+                <div class="expression-icon"><i class="fas fa-mountain"></i></div>
+                <h3>Retreats</h3>
+                <p>Every midsemester, we leave campus and city life behind to seek God together. Funded by the generosity of members.</p>
+            </a>
         </div>
     </div>
 </section>
 
 <!-- Testimonials -->
+{% if testimonials %}
 <section class="testimonials">
     <div class="container">
-        <h2 class="section-heading">Testimonies</h2>
-        {% if testimonials %}
+        <h2 class="section-heading">Stories from the Family</h2>
         <div class="testimonial-slider">
             {% for testimonial in testimonials %}
             <div class="testimonial-slide {% if loop.first %}active{% endif %}">
@@ -191,54 +117,18 @@
             <span class="t-dot {% if loop.first %}active{% endif %}"></span>
             {% endfor %}
         </div>
-        {% else %}
-        <div class="testimonial-slider">
-            <div class="testimonial-slide active">
-                <p class="testimonial-quote">"Testimonials will appear here soon. Share your story with us!"</p>
-                <p class="testimonial-author">— The Generation Family</p>
-            </div>
-        </div>
-        <div class="testimonial-dots">
-            <span class="t-dot active"></span>
-        </div>
-        {% endif %}
     </div>
 </section>
+{% endif %}
 
-<!-- Live Stream / Watch Online -->
-<section class="live-stream">
-    <div class="container">
-        <h2 class="section-heading">Watch Online</h2>
-        <p class="live-stream-subtitle">Join us live every Sunday from anywhere in the world</p>
-        <div class="live-stream-grid">
-            <div class="live-stream-card">
-                <div class="live-platform-icon">
-                    <i class="fab fa-youtube"></i>
-                </div>
-                <h3>YouTube</h3>
-                <p>Subscribe and turn on notifications to never miss a service</p>
-                <a href="https://youtube.com/@TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on YouTube</a>
-            </div>
-            <div class="live-stream-card">
-                <div class="live-platform-icon">
-                    <i class="fab fa-facebook"></i>
-                </div>
-                <h3>Facebook Live</h3>
-                <p>Follow our page for live streams during all services</p>
-                <a href="https://facebook.com/TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on Facebook</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA -->
+<!-- Final CTA -->
 <section class="cta">
     <div class="container">
-        <h2>Ready to Grow With Us?</h2>
-        <p>Join a community of believers passionate about faith, family, and purpose.</p>
+        <h2>This Movement Is Open</h2>
+        <p>Whether you're a student at KUHES, a graduate in the city, or someone looking for a family that prays — you belong here.</p>
         <div class="cta-buttons">
-            <a href="/contact" class="btn-gold">Contact Us</a>
-            <a href="/sermons" class="btn-outline">Listen to Sermons</a>
+            <a href="/family-groups" class="btn-gold">Find a Family Group</a>
+            <a href="/prayer-rhythms" class="btn-outline">Join the Prayer Rhythms</a>
         </div>
     </div>
 </section>
