@@ -74,6 +74,14 @@ function closeMenu() {
     mobileMenu.classList.remove('active');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
+    
+    // Reset all accordions
+    document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelectorAll('.mobile-accordion-content').forEach(content => {
+        content.style.maxHeight = null;
+    });
 }
 
 if (hamburger) hamburger.addEventListener('click', openMenu);
