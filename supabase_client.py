@@ -37,12 +37,17 @@ def supabase_insert(table, data):
     processed_data = {}
     for key, value in data.items():
         if isinstance(value, list):
-            # Convert Python list to Postgres array string {val1,val2,val3}
             processed_data[key] = '{' + ','.join(str(v) for v in value) + '}'
         else:
             processed_data[key] = value
     
+    print(f"Inserting into {table}: {processed_data}")  # Debug
+    
     response = requests.post(url, headers=HEADERS, json=processed_data)
+    
+    if response.status_code not in [200, 201]:
+        print(f"Supabase insert error: {response.status_code} - {response.text}")
+    
     response.raise_for_status()
     return response.json()
 
