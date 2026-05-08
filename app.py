@@ -169,6 +169,10 @@ def apparel():
 def books():
     return render_template('books.html')
 
+@app.route('/blog')
+def blog():
+    posts = get_blog_posts()
+    return render_template('blog.html', posts=posts)
 
 # ==================== BLOG ====================
 @app.route('/blog/<slug>')
