@@ -25,45 +25,40 @@
             <!-- Filled by JS based on role -->
         </div>
     </main>
-    
     <script>
-        const user = {
-            roles: {{ session.get('admin_user', {}).get('roles', []) | tojson }},
-            displayName: '{{ session.get("admin_user", {}).get("display_name", "") }}'
+        // Safe parsing of user roles
+        var user = {
+            roles: [],
+            displayName: ''
         };
-
-        // Check if user has access to a section
-        function hasAccess(allowedRoles) {
-            if (user.roles.includes('admin')) return true;
-            return allowedRoles.some(role => user.roles.includes(role));
-        }
-
-        // Build dashboard cards
-        for (const [key, section] of Object.entries(allSections)) {
-            if (hasAccess(section.roles)) {
-                // ... existing card code
-            }
-        }
-
-        // Build nav links
-        let navHTML = '<a href="/admin"><i class="fas fa-home"></i> Dashboard</a>';
-
-        for (const [key, section] of Object.entries(allSections)) {
-            if (hasAccess(section.roles)) {
-                navHTML += `<a href="${section.url}"><i class="fas ${section.icon}"></i> ${section.title}</a>`;
-            }
-        }
+        
+        {% if session.get('admin_user') %}
+        user.displayName = '{{ session["admin_user"].get("display_name", "") }}';
+        {% if session["admin_user"].get("roles") %}
+        user.roles = [
+            {% for role in session["admin_user"]["roles"] %}
+            '{{ role }}'{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        {% elif session["admin_user"].get("role") %}
+        user.roles = ['{{ session["admin_user"]["role"] }}'];
+        {% endif %}
+        {% endif %}
         
         // All available sections
-        const allSections = {
+        var allSections = {
             settings: { icon: 'fa-cog', title: 'Settings', desc: 'Mission, vision, contact info', url: '/admin/settings', roles: ['admin'] },
             hero: { icon: 'fa-images', title: 'Hero Images', desc: 'Homepage slideshow', url: '/admin/hero', roles: ['admin'] },
+            sectionImages: { icon: 'fa-layer-group', title: 'Section Images', desc: 'Page header backgrounds', url: '/admin/section-images', roles: ['admin'] },
             sermons: { icon: 'fa-microphone-alt', title: 'Sermons', desc: 'Upload and manage sermons', url: '/admin/sermons', roles: ['admin', 'sermons'] },
             leadership: { icon: 'fa-user-tie', title: 'Leadership', desc: 'Manage church leaders', url: '/admin/leadership', roles: ['admin', 'leadership'] },
             ministries: { icon: 'fa-church', title: 'Ministries', desc: 'Manage departments', url: '/admin/ministries', roles: ['admin', 'ministries'] },
-            creatives: { icon: 'fa-palette', title: 'Creatives', desc: 'Music, drama, poems, art', url: '/admin/creatives', roles: ['admin', 'creatives'] },
-            media: { icon: 'fa-photo-video', title: 'Media', desc: 'Sermons MP3, photos, videos', url: '/admin/media', roles: ['admin', 'media'] },
-            sectionImages: { icon: 'fa-layer-group', title: 'Section Images', desc: 'Page header backgrounds', url: '/admin/section-images', roles: ['admin'] },
+            testimonials: { icon: 'fa-quote-right', title: 'Testimonials', desc: 'Manage testimonies', url: '/admin/testimonials', roles: ['admin', 'testimonials'] },
+            events: { icon: 'fa-calendar-alt', title: 'Events', desc: 'Create and manage events', url: '/admin/events', roles: ['admin', 'events'] },
+            blog: { icon: 'fa-blog', title: 'Blog', desc: 'Write and manage posts', url: '/admin/blog', roles: ['admin', 'blog'] },
+            messages: { icon: 'fa-envelope', title: 'Messages', desc: 'View contact submissions', url: '/admin/messages', roles: ['admin'] },
+            newsletter: { icon: 'fa-paper-plane', title: 'Newsletter', desc: 'Send to subscribers', url: '/admin/newsletter', roles: ['admin'] },
+            users: { icon: 'fa-users-cog', title: 'Users', desc: 'Manage access and roles', url: '/admin/users', roles: ['admin'] },
             prayerRhythms: { icon: 'fa-praying-hands', title: 'Prayer Rhythms', desc: 'Manage prayer & fasting schedule', url: '/admin/prayer-rhythms', roles: ['admin'] },
             familyGroups: { icon: 'fa-users', title: 'Family Groups', desc: 'Manage groups & locations', url: '/admin/family-groups', roles: ['admin'] },
             marketplaceItems: { icon: 'fa-store', title: 'Marketplace', desc: 'Manage community listings', url: '/admin/marketplace', roles: ['admin'] },
@@ -71,45 +66,44 @@
             storySections: { icon: 'fa-book-open', title: 'Our Story', desc: 'Edit the founding story', url: '/admin/story-sections', roles: ['admin'] },
             givingInfo: { icon: 'fa-hand-holding-heart', title: 'Giving Info', desc: 'Manage giving methods', url: '/admin/giving-info', roles: ['admin'] },
             faqsManage: { icon: 'fa-question-circle', title: 'FAQs', desc: 'Manage questions & answers', url: '/admin/faqs-manage', roles: ['admin'] },
-            storySections: { icon: 'fa-book-open', title: 'Our Story', desc: 'Edit the founding story', url: '/admin/story-sections', roles: ['admin'] },
-            givingInfo: { icon: 'fa-hand-holding-heart', title: 'Giving Info', desc: 'Manage giving methods', url: '/admin/giving-info', roles: ['admin'] },
-            faqsManage: { icon: 'fa-question-circle', title: 'FAQs', desc: 'Manage questions & answers', url: '/admin/faqs-manage', roles: ['admin'] },
-            testimonials: { icon: 'fa-quote-right', title: 'Testimonials', desc: 'Manage testimonies', url: '/admin/testimonials', roles: ['admin', 'testimonials'] },
-            events: { icon: 'fa-calendar-alt', title: 'Events', desc: 'Create and manage events', url: '/admin/events', roles: ['admin', 'events'] },
-            blog: { icon: 'fa-blog', title: 'Blog', desc: 'Write and manage posts', url: '/admin/blog', roles: ['admin', 'blog'] },
-            messages: { icon: 'fa-envelope', title: 'Messages', desc: 'View contact submissions', url: '/admin/messages', roles: ['admin'] },
-            newsletter: { icon: 'fa-paper-plane', title: 'Newsletter', desc: 'Send to subscribers', url: '/admin/newsletter', roles: ['admin'] },
-            users: { icon: 'fa-users-cog', title: 'Users', desc: 'Manage access and roles', url: '/admin/users', roles: ['admin'] }
+            creatives: { icon: 'fa-palette', title: 'Creatives', desc: 'Music, drama, poems, art', url: '/admin/creatives', roles: ['admin', 'creatives'] },
+            media: { icon: 'fa-photo-video', title: 'Media', desc: 'Sermons MP3, photos, videos', url: '/admin/media', roles: ['admin', 'media'] }
         };
         
-        const cardsContainer = document.getElementById('dashboardCards');
-        const navContainer = document.getElementById('adminNav');
-        
-        // Build nav links
-        let navHTML = '<a href="/admin"><i class="fas fa-home"></i> Dashboard</a>';
-        
-        for (const [key, section] of Object.entries(allSections)) {
-            if (section.roles.includes(user.role)) {
-                navHTML += `<a href="${section.url}"><i class="fas ${section.icon}"></i> ${section.title}</a>`;
+        function hasAccess(allowedRoles) {
+            if (user.roles.indexOf('admin') !== -1) return true;
+            for (var i = 0; i < allowedRoles.length; i++) {
+                if (user.roles.indexOf(allowedRoles[i]) !== -1) return true;
             }
+            return false;
         }
         
+        var cardsContainer = document.getElementById('dashboardCards');
+        var navContainer = document.getElementById('adminNav');
+        
+        // Build nav
+        var navHTML = '<a href="/admin"><i class="fas fa-home"></i> Dashboard</a>';
+        for (var key in allSections) {
+            if (hasAccess(allSections[key].roles)) {
+                navHTML += '<a href="' + allSections[key].url + '"><i class="fas ' + allSections[key].icon + '"></i> ' + allSections[key].title + '</a>';
+            }
+        }
         navHTML += '<a href="/">View Site</a>';
         navContainer.innerHTML = navHTML;
         
-        // Build dashboard cards
-        for (const [key, section] of Object.entries(allSections)) {
-            if (section.roles.includes(user.role)) {
-                const card = document.createElement('a');
-                card.href = section.url;
-                card.className = 'admin-card';
-                card.innerHTML = `
-                    <span class="admin-card-icon"><i class="fas ${section.icon}"></i></span>
-                    <h3>${section.title}</h3>
-                    <p>${section.desc}</p>
-                `;
-                cardsContainer.appendChild(card);
+        // Build cards
+        if (cardsContainer) {
+            var html = '';
+            for (var key in allSections) {
+                if (hasAccess(allSections[key].roles)) {
+                    html += '<a href="' + allSections[key].url + '" class="admin-card">';
+                    html += '<span class="admin-card-icon"><i class="fas ' + allSections[key].icon + '"></i></span>';
+                    html += '<h3>' + allSections[key].title + '</h3>';
+                    html += '<p>' + allSections[key].desc + '</p>';
+                    html += '</a>';
+                }
             }
+            cardsContainer.innerHTML = html;
         }
     </script>
 </body>
