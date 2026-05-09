@@ -45,8 +45,10 @@
 <section class="event-countdown">
     <div class="container">
         <div class="countdown-card">
+            <div class="countdown-badge">
+                <i class="fas fa-calendar-alt"></i> Up Next
+            </div>
             <div class="countdown-content">
-                <span class="countdown-eyebrow">Up Next</span>
                 <h3>{{ next_event.title }}</h3>
                 <div class="countdown-meta">
                     {% if next_event.event_date %}
@@ -65,18 +67,18 @@
                     <span class="countdown-number" id="countDays">00</span>
                     <span class="countdown-label">Days</span>
                 </div>
+                <div class="countdown-separator">:</div>
                 <div class="countdown-block">
                     <span class="countdown-number" id="countHours">00</span>
                     <span class="countdown-label">Hours</span>
                 </div>
+                <div class="countdown-separator">:</div>
                 <div class="countdown-block">
                     <span class="countdown-number" id="countMins">00</span>
                     <span class="countdown-label">Mins</span>
                 </div>
             </div>
-            <div class="countdown-cta">
-                <a href="/programs" class="btn-gold">View All Events</a>
-            </div>
+            <a href="/programs" class="btn-gold countdown-btn">View All</a>
         </div>
     </div>
 </section>

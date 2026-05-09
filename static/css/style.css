@@ -2553,12 +2553,12 @@ html {
 
 /* ==================== EVENT COUNTDOWN ==================== */
 .event-countdown {
-    padding: 0 0 40px;
+    padding: 40px 0 20px;
     background: var(--black);
-    margin-top: -30px;
     position: relative;
     z-index: 3;
 }
+
 
 .countdown-card {
     background: linear-gradient(135deg, #111 0%, #0d0d0d 100%);
@@ -2571,6 +2571,7 @@ html {
     flex-wrap: wrap;
     gap: 24px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    margin-top: -20px;
 }
 
 .countdown-eyebrow {
@@ -3678,4 +3679,74 @@ html {
     .lightbox-prev { left: 10px; }
     .lightbox-next { right: 10px; }
     .lightbox-close { top: 10px; right: 12px; }
+}
+
+.countdown-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    position: absolute;
+    top: -12px;
+    left: 24px;
+}
+
+.countdown-card {
+    position: relative;
+    background: linear-gradient(135deg, #111 0%, #0d0d0d 100%);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.countdown-separator {
+    color: var(--gold);
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    padding-bottom: 16px;
+}
+
+.countdown-btn {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .countdown-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px 20px 24px;
+    }
+    
+    .countdown-badge {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .countdown-meta {
+        justify-content: center;
+    }
+    
+    .countdown-timer {
+        justify-content: center;
+    }
+    
+    .countdown-separator {
+        padding-bottom: 16px;
+    }
 }
