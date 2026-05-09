@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block title %}The Generation Family | A Movement Born at KUHES{% endblock %}
+{% block meta_title %}The Generation Family | A Movement Born at KUHES{% endblock %}
+{% block meta_description %}Founded by two students at KUHES. Built on prayer. Sustained by fasting. Growing through family. Now in {{ settings.get('cities', '5') }} cities — and counting.{% endblock %}
+
 {% block content %}
 
 <!-- Hero Section -->
@@ -16,7 +21,7 @@
     <div class="hero-content">
         <p class="hero-eyebrow">A Movement Born at KUHES</p>
         <h1 class="hero-title">The Generation<br>Family</h1>
-        <p class="hero-subtitle">Founded by two students. Built on prayer. Sustained by fasting. Growing through family. Now in {{ settings.get('cities', '5') }} cities — and counting.</p>
+        <p class="hero-subtitle">Built on prayer. Sustained by fasting. Growing through family. Now in {{ settings.get('cities', '5') }} cities — and counting.</p>
         <div class="hero-buttons">
             <a href="/family-groups" class="btn-gold">Join a Family Group</a>
             <a href="/prayer-rhythms" class="btn-outline">See Prayer Rhythms</a>
@@ -25,15 +30,57 @@
     <div class="hero-dots"></div>
 </section>
 
-    <!-- Side Social Icons -->
-    <div class="side-socials">
-        <a href="https://wa.me/265983142415" class="side-icon whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-        <a href="mailto:gizmokzu@gmail.com" class="side-icon email" aria-label="Email"><i class="fas fa-envelope"></i></a>
-        <a href="https://facebook.com/TheGenerationFamily" class="side-icon facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com/TheGenerationFamily" class="side-icon instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="https://linkedin.com/company/TheGenerationFamily" class="side-icon linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="https://tiktok.com/@TheGenerationFamily" class="side-icon tiktok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+<!-- Side Social Icons -->
+<div class="side-socials">
+    <a href="https://wa.me/265983142415" class="side-icon whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <a href="mailto:gizmokzu@gmail.com" class="side-icon email" aria-label="Email"><i class="fas fa-envelope"></i></a>
+    <a href="https://facebook.com/TheGenerationFamily" class="side-icon facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://instagram.com/TheGenerationFamily" class="side-icon instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://linkedin.com/company/TheGenerationFamily" class="side-icon linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    <a href="https://tiktok.com/@TheGenerationFamily" class="side-icon tiktok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+</div>
+
+<!-- Next Event Countdown -->
+{% if next_event %}
+<section class="event-countdown">
+    <div class="container">
+        <div class="countdown-card">
+            <div class="countdown-content">
+                <span class="countdown-eyebrow">Up Next</span>
+                <h3>{{ next_event.title }}</h3>
+                <div class="countdown-meta">
+                    {% if next_event.event_date %}
+                    <span><i class="fas fa-calendar"></i> {{ next_event.event_date }}</span>
+                    {% endif %}
+                    {% if next_event.event_time %}
+                    <span><i class="fas fa-clock"></i> {{ next_event.event_time }}</span>
+                    {% endif %}
+                    {% if next_event.location %}
+                    <span><i class="fas fa-map-marker-alt"></i> {{ next_event.location }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="countdown-timer" data-date="{{ next_event.event_date }}" data-time="{{ next_event.event_time or '00:00' }}">
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countDays">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countHours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-block">
+                    <span class="countdown-number" id="countMins">00</span>
+                    <span class="countdown-label">Mins</span>
+                </div>
+            </div>
+            <div class="countdown-cta">
+                <a href="/programs" class="btn-gold">View All Events</a>
+            </div>
+        </div>
     </div>
+</section>
+{% endif %}
 
 <!-- Our Rhythms -->
 <section class="rhythms">
@@ -70,7 +117,7 @@
     <div class="container">
         <h2 class="section-heading">Our Story</h2>
         <div class="story-content">
-            <p>In 2013, three students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. Just two people and a conviction that their generation was destined for more.</p>
+            <p>In 2019, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. Just two people and a conviction that their generation was destined for more.</p>
             <p>That prayer grew into a community. That community grew into a movement. Today, The Generation Family spans {{ settings.get('cities', '5') }} cities, hosts retreats every midsemester break, runs family groups that share meals and resources, and operates a marketplace where members buy from one another.</p>
             <p>The founders have graduated. The movement hasn't stopped.</p>
         </div>
@@ -105,6 +152,28 @@
                 <h3>Retreats</h3>
                 <p>Every midsemester, we leave campus and city life behind to seek God together. Funded by the generosity of members.</p>
             </a>
+        </div>
+    </div>
+</section>
+
+<!-- Live Stream / Watch Online -->
+<section class="live-stream">
+    <div class="container">
+        <h2 class="section-heading">Watch Online</h2>
+        <p class="live-stream-subtitle">Join us live from anywhere in the world</p>
+        <div class="live-stream-grid">
+            <div class="live-stream-card">
+                <div class="live-platform-icon"><i class="fab fa-youtube"></i></div>
+                <h3>YouTube</h3>
+                <p>Subscribe and turn on notifications to never miss a gathering</p>
+                <a href="https://youtube.com/@TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on YouTube</a>
+            </div>
+            <div class="live-stream-card">
+                <div class="live-platform-icon"><i class="fab fa-facebook"></i></div>
+                <h3>Facebook Live</h3>
+                <p>Follow our page for live streams during gatherings</p>
+                <a href="https://facebook.com/TheGenerationFamily" target="_blank" rel="noopener" class="btn-outline">Watch on Facebook</a>
+            </div>
         </div>
     </div>
 </section>
