@@ -212,6 +212,14 @@ def sermons_mp3():
     sermons_list = get_sermons()
     return render_template('sermons-mp3.html', sermons=sermons_list)
 
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
 @app.route('/resources/media')
 def resources_media():
     media_items = get_media()
