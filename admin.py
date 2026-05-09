@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 import os
+from flask import flash
 from dotenv import load_dotenv
 from supabase_client import (
     supabase_get,
@@ -333,6 +334,7 @@ def edit_sermon(sermon_id):
 @login_required
 def delete_sermon(sermon_id):
     supabase_delete('sermons', sermon_id)
+    flash('Sermon deleted.', 'success')
     return redirect(url_for('admin.manage_sermons'))
 
 # ==================== LEADERSHIP (CRUD) ====================

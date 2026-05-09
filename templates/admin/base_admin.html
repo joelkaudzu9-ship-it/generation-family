@@ -33,6 +33,18 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    showToast('{{ message }}', '{{ category }}');
+                });
+            </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <script>
         // Toast system
         function showToast(message, type) {
