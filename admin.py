@@ -195,8 +195,15 @@ def manage_marketplace():
         image_url = ''
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/marketplace')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/marketplace')
+                image_url = result['url']
+            except ValueError as e:
+                items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
+                return render_template('admin/marketplace-manage.html', items=items, error=str(e))
+            except Exception:
+                items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
+                return render_template('admin/marketplace-manage.html', items=items, error="Upload failed. Try a smaller file.")
         
         supabase_insert('marketplace_items', {
             'title': request.form.get('title'),
@@ -226,8 +233,15 @@ def manage_retreats():
         image_url = ''
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/retreats')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/retreats')
+                image_url = result['url']
+            except ValueError as e:
+                retreats = supabase_get('retreats', {'order': 'start_date.desc'})
+                return render_template('admin/retreats-manage.html', retreats=retreats, error=str(e))
+            except Exception:
+                retreats = supabase_get('retreats', {'order': 'start_date.desc'})
+                return render_template('admin/retreats-manage.html', retreats=retreats, error="Upload failed. Try a smaller file.")
         
         supabase_insert('retreats', {
             'title': request.form.get('title'),
@@ -266,17 +280,15 @@ def manage_sermons():
         
         audio_file = request.files.get('audio_file')
         if audio_file and audio_file.filename:
-            audio_file.seek(0, 2)
-            file_size = audio_file.tell()
-            audio_file.seek(0)
-            
-            if file_size > 40 * 1024 * 1024:
-                error = "File too large. Max 40MB. Please compress the MP3."
+            try:
+                result = upload_audio(audio_file, folder='generation/sermons')
+                audio_url = result['url']
+            except ValueError as e:
                 sermons = supabase_get('sermons', {'order': 'date.desc'})
-                return render_template('admin/sermons.html', sermons=sermons, error=error, message=message)
-            
-            result = upload_audio(audio_file, folder='generation/sermons')
-            audio_url = result['url']
+                return render_template('admin/sermons.html', sermons=sermons, error=str(e))
+            except Exception:
+                sermons = supabase_get('sermons', {'order': 'date.desc'})
+                return render_template('admin/sermons.html', sermons=sermons, error="Upload failed. Try a smaller file.")
         
         data = {
             'title': title,
@@ -335,8 +347,15 @@ def manage_leadership():
         
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/leadership')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/leadership')
+                image_url = result['url']
+            except ValueError as e:
+                leaders = supabase_get('leadership', {'order': 'display_order.asc'})
+                return render_template('admin/leadership.html', leaders=leaders, error=str(e))
+            except Exception:
+                leaders = supabase_get('leadership', {'order': 'display_order.asc'})
+                return render_template('admin/leadership.html', leaders=leaders, error="Upload failed. Try a smaller file.")
         
         data = {
             'name': name,
@@ -387,8 +406,15 @@ def manage_ministries():
         
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/ministries')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/ministries')
+                image_url = result['url']
+            except ValueError as e:
+                ministries = supabase_get('ministries', {'order': 'display_order.asc'})
+                return render_template('admin/ministries.html', ministries=ministries, error=str(e))
+            except Exception:
+                ministries = supabase_get('ministries', {'order': 'display_order.asc'})
+                return render_template('admin/ministries.html', ministries=ministries, error="Upload failed. Try a smaller file.")
         
         data = {
             'name': name,
@@ -481,8 +507,15 @@ def manage_events():
         
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/events')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/events')
+                image_url = result['url']
+            except ValueError as e:
+                events = supabase_get('events', {'order': 'event_date.asc'})
+                return render_template('admin/events.html', events=events, error=str(e))
+            except Exception:
+                events = supabase_get('events', {'order': 'event_date.asc'})
+                return render_template('admin/events.html', events=events, error="Upload failed. Try a smaller file.")
         
         data = {
             'title': title,
@@ -535,8 +568,15 @@ def manage_blog():
         
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/blog')
-            image_url = result['url']
+            try:
+                result = upload_image(image_file, folder='generation/blog')
+                image_url = result['url']
+            except ValueError as e:
+                posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
+                return render_template('admin/blog.html', posts=posts, error=str(e))
+            except Exception:
+                posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
+                return render_template('admin/blog.html', posts=posts, error="Upload failed. Try a smaller file.")
         
         data = {
             'title': title,
@@ -630,13 +670,20 @@ def manage_hero():
         if action == 'add':
             image_file = request.files.get('hero_image')
             if image_file and image_file.filename:
-                result = upload_image(image_file, folder='generation/hero')
-                supabase_insert('hero_images', {
-                    'image_url': result['url'],
-                    'public_id': result['public_id'],
-                    'is_active': True
-                })
-                message = "Hero image added!"
+                try:
+                    result = upload_image(image_file, folder='generation/hero')
+                    supabase_insert('hero_images', {
+                        'image_url': result['url'],
+                        'public_id': result['public_id'],
+                        'is_active': True
+                    })
+                    message = "Hero image added!"
+                except ValueError as e:
+                    hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
+                    return render_template('admin/hero.html', hero_images=hero_images, error=str(e))
+                except Exception:
+                    hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
+                    return render_template('admin/hero.html', hero_images=hero_images, error="Upload failed. Try a smaller file.")
             else:
                 error = "Please select an image."
         
@@ -665,8 +712,15 @@ def manage_creatives():
         # Handle file upload
         upload_file = request.files.get('content_file')
         if upload_file and upload_file.filename:
-            result = upload_image(upload_file, folder=f'generation/creatives/{section}')
-            content_url = result['url']
+            try:
+                result = upload_image(upload_file, folder=f'generation/creatives/{section}')
+                content_url = result['url']
+            except ValueError as e:
+                creatives = supabase_get('creatives', {'order': 'created_at.desc'})
+                return render_template('admin/creatives.html', creatives=creatives, error=str(e))
+            except Exception:
+                creatives = supabase_get('creatives', {'order': 'created_at.desc'})
+                return render_template('admin/creatives.html', creatives=creatives, error="Upload failed. Try a smaller file.")
         
         supabase_insert('creatives', {
             'section': section,
@@ -695,17 +749,21 @@ def manage_section_images():
         image_file = request.files.get('image')
         
         if image_file and image_file.filename:
-            result = upload_image(image_file, folder='generation/sections')
-            image_url = result['url']
-            
-            # Check if section already has an image
-            existing = supabase_get('section_images', {'section_name': f'eq.{section}'})
-            if existing:
-                supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
-            else:
-                supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
-            
-            message = f"Image for {section} updated!"
+            try:
+                result = upload_image(image_file, folder='generation/sections')
+                image_url = result['url']
+                existing = supabase_get('section_images', {'section_name': f'eq.{section}'})
+                if existing:
+                    supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
+                else:
+                    supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
+                message = f"Image for {section} updated!"
+            except ValueError as e:
+                images = supabase_get('section_images')
+                return render_template('admin/section-images.html', images=images, error=str(e))
+            except Exception:
+                images = supabase_get('section_images')
+                return render_template('admin/section-images.html', images=images, error="Upload failed. Try a smaller file.")
     
     images = supabase_get('section_images')
     return render_template('admin/section-images.html', images=images, message=message)
@@ -802,19 +860,27 @@ def manage_media():
         
         upload_file = request.files.get('media_file')
         if upload_file and upload_file.filename:
-            if media_type == 'audio':
-                result = upload_audio(upload_file, folder='generation/media/audio')
-            else:
-                result = upload_image(upload_file, folder='generation/media/images')
-            media_url = result['url']
+            try:
+                if media_type == 'audio':
+                    result = upload_audio(upload_file, folder='generation/media/audio')
+                else:
+                    result = upload_image(upload_file, folder='generation/media/images')
+                media_url = result['url']
+            except ValueError as e:
+                media_items = supabase_get('media', {'order': 'created_at.desc'})
+                return render_template('admin/media.html', media_items=media_items, error=str(e))
+            except Exception:
+                media_items = supabase_get('media', {'order': 'created_at.desc'})
+                return render_template('admin/media.html', media_items=media_items, error="Upload failed. Try a smaller file.")
         
-        supabase_insert('media', {
-            'media_type': media_type,
-            'title': title,
-            'description': description,
-            'media_url': media_url
-        })
-        message = "Media added!"
+        if not error:
+            supabase_insert('media', {
+                'media_type': media_type,
+                'title': title,
+                'description': description,
+                'media_url': media_url
+            })
+            message = "Media added!"
     
     media_items = supabase_get('media', {'order': 'created_at.desc'})
     return render_template('admin/media.html', media_items=media_items, message=message, error=error)

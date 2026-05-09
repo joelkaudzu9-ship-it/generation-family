@@ -13,56 +13,40 @@ cloudinary.config(
     secure=True
 )
 
+MAX_IMAGE_SIZE = 10 * 1024 * 1024
+MAX_AUDIO_SIZE = 40 * 1024 * 1024
+
+def _check_size(file, max_size, label):
+    if hasattr(file, 'seek'):
+        file.seek(0, 2)
+        size = file.tell()
+        file.seek(0)
+        if size > max_size:
+            raise ValueError(f"File too large. {label} limit is {max_size/(1024*1024):.0f}MB. Your file is {size/(1024*1024):.1f}MB.")
+
 def upload_image(file, folder="generation", public_id=None):
-    """Upload an image to Cloudinary. 'file' can be a path, URL, or file object."""
+    _check_size(file, MAX_IMAGE_SIZE, "Image")
     options = {
         'folder': folder,
         'resource_type': 'image',
-        'transformation': [
-            {'quality': 'auto', 'fetch_format': 'auto'}
-        ]
+        'transformation': [{'quality': 'auto', 'fetch_format': 'auto'}]
     }
     if public_id:
         options['public_id'] = public_id
-
     result = cloudinary.uploader.upload(file, **options)
-    return {
-        'url': result['secure_url'],
-        'public_id': result['public_id'],
-        'width': result['width'],
-        'height': result['height']
-    }
+    return {'url': result['secure_url'], 'public_id': result['public_id'], 'width': result['width'], 'height': result['height']}
 
 def upload_audio(file, folder="generation/sermons", public_id=None):
-    """Upload an MP3 sermon to Cloudinary."""
-    options = {
-        'folder': folder,
-        'resource_type': 'video',  # Cloudinary treats audio as video type
-        'format': 'mp3'
-    }
+    _check_size(file, MAX_AUDIO_SIZE, "Audio")
+    options = {'folder': folder, 'resource_type': 'video', 'format': 'mp3'}
     if public_id:
         options['public_id'] = public_id
-
     result = cloudinary.uploader.upload(file, **options)
-    return {
-        'url': result['secure_url'],
-        'public_id': result['public_id'],
-        'duration': result.get('duration', 0)
-    }
+    return {'url': result['secure_url'], 'public_id': result['public_id'], 'duration': result.get('duration', 0)}
 
 def delete_upload(public_id, resource_type='image'):
-    """Delete a file from Cloudinary by public_id."""
     result = cloudinary.uploader.destroy(public_id, resource_type=resource_type)
     return result.get('result') == 'ok'
 
 def get_optimized_url(public_id, width=400, height=400, crop='fill'):
-    """Generate an optimized image URL with transformations."""
-    url = cloudinary.CloudinaryImage(public_id).build_url(
-        width=width,
-        height=height,
-        crop=crop,
-        gravity='face',
-        quality='auto',
-        fetch_format='auto'
-    )
-    return url
+    return cloudinary.CloudinaryImage(public_id).build_url(width=width, height=height, crop=crop, gravity='face', quality='auto', fetch_format='auto')
