@@ -13,7 +13,7 @@
         <div class="contact-grid">
             <div class="contact-form-wrapper">
                 <h3>Send Us a Message</h3>
-                <form class="contact-form" method="POST" action="/contact" id="contactForm">
+                <form class="contact-form" method="POST" action="/contact">
                     <div class="form-group">
                         <label for="name">Name *</label>
                         <input type="text" id="name" name="name" placeholder="Your full name" required>
@@ -30,61 +30,52 @@
                         <label for="message">Message *</label>
                         <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
                     </div>
-                    <button type="submit" class="btn-gold" id="contactSubmitBtn">Send Message</button>
-                    <div class="form-feedback" id="contactFeedback"></div>
+                    <button type="submit" class="btn-gold">Send Message</button>
                 </form>
+                {% if success %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if (typeof showToast === 'function') {
+                            showToast("Message sent! We'll get back to you soon.", 'success');
+                        }
+                    });
+                </script>
+                {% endif %}
             </div>
 
+            <div class="contact-info">
+                <h3>Get In Touch</h3>
+                <div class="contact-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h4>Location</h4>
+                        <p>{{ settings.get('church_address', '[Address Coming Soon]') }}</p>
+                    </div>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>{{ settings.get('church_phone', '[Phone Coming Soon]') }}</p>
+                    </div>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p>{{ settings.get('church_email', 'info@thegenerationfamily.org') }}</p>
+                    </div>
+                </div>
+                <div class="contact-detail">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Service Times</h4>
+                        <p>Sunday: 9:00 AM & 11:00 AM<br>Wednesday: 6:00 PM</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-
-<script>
-// Show success toast if form was just submitted
-{% if success %}
-document.addEventListener('DOMContentLoaded', function() {
-    showToast("Message sent! We'll get back to you soon.", 'success');
-});
-{% endif %}
-
-// Contact form with loading state
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('contactSubmitBtn');
-        const feedback = document.getElementById('contactFeedback');
-        
-        btn.classList.add('btn-loading');
-        btn.textContent = 'Sending...';
-        feedback.textContent = '';
-        
-        const formData = new FormData(contactForm);
-        
-        try {
-            const response = await fetch('/contact', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                // Reload to show toast
-                window.location.reload();
-            } else {
-                throw new Error('Failed');
-            }
-        } catch (err) {
-            feedback.textContent = 'Failed to send. Please try again.';
-            feedback.style.color = '#e74c3c';
-            btn.classList.remove('btn-loading');
-            btn.textContent = 'Send Message';
-        }
-        
-        setTimeout(() => {
-            feedback.textContent = '';
-        }, 5000);
-    });
-}
-</script>
 
 {% endblock %}
