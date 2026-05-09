@@ -74,6 +74,10 @@
                         <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
                     </form>
                     {% endif %}
+                    <form method="POST" action="/admin/users/{{ user.id }}/edit" style="display:inline;">
+                        <input type="password" name="password" placeholder="New password" style="width:120px;padding:4px 8px;margin-right:4px;background:#111;border:1px solid #333;color:#fff;border-radius:4px;font-size:0.7rem;" required>
+                        <button type="submit" class="btn-edit small">Change PW</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

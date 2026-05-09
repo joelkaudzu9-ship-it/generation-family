@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from functools import wraps
 import os
-from flask import flash
 from dotenv import load_dotenv
 from supabase_client import (
     supabase_get,
@@ -166,6 +165,7 @@ def manage_prayer_rhythms():
 @role_required('admin')
 def delete_prayer_rhythm(id):
     supabase_delete('prayer_rhythms', id)
+    flash('Prayer rhythm deleted.', 'success')
     return redirect(url_for('admin.manage_prayer_rhythms'))
 
 # ==================== FAMILY GROUPS ====================
@@ -190,6 +190,7 @@ def manage_family_groups():
 @role_required('admin')
 def delete_family_group(id):
     supabase_delete('family_groups', id)
+    flash('Family group deleted.', 'success')
     return redirect(url_for('admin.manage_family_groups'))
 
 # ==================== MARKETPLACE ====================
@@ -228,6 +229,7 @@ def manage_marketplace():
 @role_required('admin')
 def delete_marketplace_item(id):
     supabase_delete('marketplace_items', id)
+    flash('Marketplace item deleted.', 'success')
     return redirect(url_for('admin.manage_marketplace'))
 
 # ==================== RETREATS ====================
@@ -266,6 +268,7 @@ def manage_retreats():
 @role_required('admin')
 def delete_retreat(id):
     supabase_delete('retreats', id)
+    flash('Retreat deleted.', 'success')
     return redirect(url_for('admin.manage_retreats'))
 
 # ==================== SERMONS (CRUD) ====================
@@ -393,6 +396,7 @@ def edit_leader(leader_id):
 @login_required
 def delete_leader(leader_id):
     supabase_delete('leadership', leader_id)
+    flash('Leader removed.', 'success')
     return redirect(url_for('admin.manage_leadership'))
 
 # ==================== MINISTRIES (CRUD) ====================
@@ -453,6 +457,7 @@ def edit_ministry(ministry_id):
 @login_required
 def delete_ministry(ministry_id):
     supabase_delete('ministries', ministry_id)
+    flash('Ministry deleted.', 'success')
     return redirect(url_for('admin.manage_ministries'))
 
 # ==================== TESTIMONIALS (CRUD) ====================
@@ -494,6 +499,7 @@ def edit_testimonial(id):
 @login_required
 def delete_testimonial(id):
     supabase_delete('testimonials', id)
+    flash('Testimonial deleted.', 'success')
     return redirect(url_for('admin.manage_testimonials'))
 
 # ==================== EVENTS (CRUD) ====================
@@ -554,6 +560,7 @@ def edit_event(event_id):
 @login_required
 def delete_event(event_id):
     supabase_delete('events', event_id)
+    flash('Event deleted.', 'success')
     return redirect(url_for('admin.manage_events'))
 
 # ==================== BLOG POSTS (CRUD) ====================
@@ -616,6 +623,7 @@ def edit_blog(post_id):
 @login_required
 def delete_blog(post_id):
     supabase_delete('blog_posts', post_id)
+    flash('Post deleted.', 'success')
     return redirect(url_for('admin.manage_blog'))
 
 # ==================== NEWSLETTER ====================
@@ -634,13 +642,14 @@ def newsletter():
                 from brevo_client import send_newsletter_to_all
                 result = send_newsletter_to_all(subject, content)
                 if result:
-                    message = "Newsletter sent successfully to all subscribers!"
+                    flash('Newsletter sent to all subscribers!', 'success')
                 else:
-                    error = "Failed to send. Check Brevo account limits."
+                    flash('Failed to send. Check Brevo account limits.', 'error')
             except Exception as e:
-                error = f"Error: {str(e)}"
+                flash(f'Error: {str(e)}', 'error')
         else:
-            error = "Subject and content are required."
+            flash('Subject and content are required.', 'error')
+        return redirect(url_for('admin.newsletter'))
     
     return render_template('admin/newsletter.html', message=message, error=error)
 
@@ -655,12 +664,14 @@ def messages():
 @login_required
 def mark_read(id):
     supabase_update('contact_submissions', id, {'is_read': True})
+    flash('Message marked as read.', 'success')
     return redirect(url_for('admin.messages'))
 
 @admin_bp.route('/messages/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_message(id):
     supabase_delete('contact_submissions', id)
+    flash('Message deleted.', 'success')
     return redirect(url_for('admin.messages'))
 
 
@@ -693,12 +704,12 @@ def manage_hero():
                     return render_template('admin/hero.html', hero_images=hero_images, error="Upload failed. Try a smaller file.")
             else:
                 error = "Please select an image."
-        
+                
         elif action == 'delete':
-            image_id = request.form.get('image_id')
-            if image_id:
-                supabase_delete('hero_images', int(image_id))
-                message = "Image removed."
+            user_id = request.form.get('user_id')
+            supabase_delete('admin_users', int(user_id))
+            flash('User removed.', 'success')
+            return redirect(url_for('admin.manage_users'))
     
     hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
     return render_template('admin/hero.html', hero_images=hero_images, message=message, error=error)
@@ -744,6 +755,7 @@ def manage_creatives():
 @role_required('admin', 'creatives')
 def delete_creative(id):
     supabase_delete('creatives', id)
+    flash('Creative content deleted.', 'success')
     return redirect(url_for('admin.manage_creatives'))
 
 @admin_bp.route('/section-images', methods=['GET', 'POST'])
@@ -838,18 +850,30 @@ def manage_faqs():
 @role_required('admin')
 def delete_story(id):
     supabase_delete('story_sections', id)
+    flash('Story section deleted.', 'success')
     return redirect(url_for('admin.manage_story'))
 
 @admin_bp.route('/giving-info/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_giving(id):
     supabase_delete('giving_info', id)
+    flash('Giving method deleted.', 'success')
     return redirect(url_for('admin.manage_giving'))
+
+@admin_bp.route('/users/<int:user_id>/edit', methods=['POST'])
+@role_required('admin')
+def edit_user(user_id):
+    password = request.form.get('password')
+    if password:
+        supabase_update('admin_users', user_id, {'password': password})
+        flash('Password updated.', 'success')
+    return redirect(url_for('admin.manage_users'))
 
 @admin_bp.route('/faqs-manage/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_faq(id):
     supabase_delete('faqs', id)
+    flash('FAQ deleted.', 'success')
     return redirect(url_for('admin.manage_faqs'))
 
 # ==================== MEDIA MANAGEMENT ====================
@@ -896,6 +920,7 @@ def manage_media():
 @role_required('admin', 'media')
 def delete_media(id):
     supabase_delete('media', id)
+    flash('Media deleted.', 'success')
     return redirect(url_for('admin.manage_media'))
 
 @admin_bp.route('/users', methods=['GET', 'POST'])
@@ -906,7 +931,7 @@ def manage_users():
     
     if request.method == 'POST':
         action = request.form.get('action')
-                
+        
         if action == 'add':
             username = request.form.get('username')
             password = request.form.get('password')
@@ -914,28 +939,39 @@ def manage_users():
             department = request.form.get('department', '')
             roles = request.form.getlist('roles')
             roles_string = ','.join(roles) if roles else 'user'
-
+            primary_role = roles[0] if roles else 'user'
+            
             supabase_insert('admin_users', {
                 'username': username,
                 'password': password,
                 'display_name': display_name,
-                'role': roles[0] if roles else 'user',
+                'role': primary_role,
                 'roles': roles_string,
                 'department': department
             })
-            message = f"User {display_name} added!"
-        
-        elif action == 'delete':
-            user_id = request.form.get('user_id')
-            supabase_delete('admin_users', int(user_id))
-            message = "User removed."
+            flash(f'User {display_name} added!', 'success')
+            return redirect(url_for('admin.manage_users'))
         
         elif action == 'toggle':
             user_id = request.form.get('user_id')
             user = supabase_get_one('admin_users', int(user_id))
             if user:
                 supabase_update('admin_users', int(user_id), {'is_active': not user['is_active']})
-                message = "User status updated."
+                status = 'disabled' if user['is_active'] else 'enabled'
+                flash(f'User {status}.', 'success')
+            return redirect(url_for('admin.manage_users'))
+        
+        elif action == 'delete':
+            user_id = request.form.get('user_id')
+            current_user_id = session.get('admin_user', {}).get('id')
+            
+            if int(user_id) == current_user_id:
+                flash('You cannot delete your own account.', 'error')
+                return redirect(url_for('admin.manage_users'))
+            
+            supabase_delete('admin_users', int(user_id))
+            flash('User removed.', 'success')
+            return redirect(url_for('admin.manage_users'))
     
     users = supabase_get('admin_users', {'order': 'created_at.asc'})
     return render_template('admin/users.html', users=users, message=message, error=error)

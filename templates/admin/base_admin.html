@@ -11,6 +11,17 @@
     
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    showToast('{{ message|replace("'", "\\'") }}', '{{ category }}');
+                });
+            </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     {% block nav %}
     <nav class="admin-nav">
