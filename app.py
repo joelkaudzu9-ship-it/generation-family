@@ -73,6 +73,10 @@ def podcast_rss():
     <description>Life-changing messages from The Generation Family. A spiritual and growth family raising a generation rooted in faith.</description>
     <language>en</language>
     <itunes:author>The Generation Family</itunes:author>
+    <itunes:owner>
+    <itunes:email>joelkaudzu9@gmail.com</itunes:email>
+    <itunes:name>The Generation Family</itunes:name>
+    </itunes:owner>
     <itunes:summary>{settings.get('hero_tagline', 'A Spiritual & Growth Family')}</itunes:summary>
     <itunes:image href="{url_for('static', filename='images/og-image.jpg', _external=True)}"/>
     <itunes:category text="Religion &amp; Spirituality"/>
