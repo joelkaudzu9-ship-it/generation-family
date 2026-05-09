@@ -194,12 +194,15 @@ def delete_family_group(id):
     return redirect(url_for('admin.manage_family_groups'))
 
 # ==================== MARKETPLACE ====================
+
 @admin_bp.route('/marketplace', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_marketplace():
     message = None
     if request.method == 'POST':
-        image_url = ''
+        item_id = request.form.get('item_id')
+        image_url = request.form.get('existing_image_url') or ''
+        
         image_file = request.files.get('image')
         if image_file and image_file.filename:
             try:
@@ -210,9 +213,9 @@ def manage_marketplace():
                 return render_template('admin/marketplace-manage.html', items=items, error=str(e))
             except Exception:
                 items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
-                return render_template('admin/marketplace-manage.html', items=items, error="Upload failed. Try a smaller file.")
+                return render_template('admin/marketplace-manage.html', items=items, error="Upload failed.")
         
-        supabase_insert('marketplace_items', {
+        data = {
             'title': request.form.get('title'),
             'category': request.form.get('category'),
             'description': request.form.get('description'),
@@ -220,10 +223,25 @@ def manage_marketplace():
             'seller_name': request.form.get('seller_name'),
             'seller_contact': request.form.get('seller_contact'),
             'image_url': image_url
-        })
-        message = "Marketplace item added!"
+        }
+        
+        if item_id:
+            supabase_update('marketplace_items', int(item_id), data)
+            flash('Item updated!', 'success')
+        else:
+            supabase_insert('marketplace_items', data)
+            flash('Item added!', 'success')
+        return redirect(url_for('admin.manage_marketplace'))
+    
     items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
-    return render_template('admin/marketplace-manage.html', items=items, message=message)
+    return render_template('admin/marketplace-manage.html', items=items)
+
+@admin_bp.route('/marketplace/<int:id>/edit')
+@login_required
+def edit_marketplace(id):
+    item = supabase_get_one('marketplace_items', id)
+    items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
+    return render_template('admin/marketplace-manage.html', items=items, edit_item=item)
 
 @admin_bp.route('/marketplace/<int:id>/delete', methods=['POST'])
 @role_required('admin')
