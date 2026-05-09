@@ -17,7 +17,10 @@
     <meta property="og:url" content="https://generation-family.onrender.com">
     <meta property="og:title" content="{{ self.meta_title() }}">
     <meta property="og:description" content="{{ self.meta_description() }}">
-    <meta property="og:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
+    <meta property="og:image" content="https://generation-family.onrender.com/static/images/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/jpeg">
@@ -27,7 +30,7 @@
     <meta property="twitter:url" content="https://generation-family.onrender.com">
     <meta property="twitter:title" content="{{ self.meta_title() }}">
     <meta property="twitter:description" content="{{ self.meta_description() }}">
-    <meta property="twitter:image" content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}">
+    <meta property="twitter:image" content="https://generation-family.onrender.com/static/images/og-image.jpg">
     
     <!-- Canonical -->
     <link rel="canonical" href="https://generation-family.onrender.com{{ request.path }}">
@@ -72,6 +75,12 @@
             <nav class="desktop-nav">
                 <a href="/">Home</a>
                 <a href="/about">About</a>
+                <a href="/story">Our Story</a>
+                <a href="/prayer-rhythms">Prayer & Fasting</a>
+                <a href="/family-groups">Family Groups</a>
+                <a href="/marketplace">Marketplace</a>
+                <a href="/creatives">Creatives</a>
+                <a href="/retreats">Retreats</a>
                 <a href="/programs">Programs</a>
                 <a href="/sermons">Sermons</a>
                 <a href="/giving">Giving</a>
