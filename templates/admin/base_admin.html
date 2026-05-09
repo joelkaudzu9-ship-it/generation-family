@@ -24,6 +24,7 @@
     {% endblock %}
 
     <main class="admin-main">
+        {% include "admin/upload-progress.html" %}
         {% block content %}{% endblock %}
     </main>
 
@@ -75,6 +76,105 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        // Upload progress handler
+        function handleFileUpload(form, btn) {
+            var fileInput = form.querySelector('input[type="file"]');
+            if (!fileInput || !fileInput.files.length) return null;
+            
+            var progressContainer = document.getElementById('uploadProgress');
+            var progressFill = document.getElementById('uploadProgressFill');
+            var progressText = document.getElementById('uploadProgressText');
+            var progressPercent = document.getElementById('uploadProgressPercent');
+            
+            if (!progressContainer) return null;
+            
+            // Show progress bar
+            progressContainer.style.display = 'block';
+            progressContainer.className = 'upload-progress';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Preparing upload...';
+            progressPercent.textContent = '0%';
+            
+            return {
+                update: function(percent, text) {
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = text || 'Uploading...';
+                    progressPercent.textContent = Math.round(percent) + '%';
+                },
+                complete: function() {
+                    progressContainer.classList.add('complete');
+                    progressText.textContent = 'Upload complete! Processing...';
+                    progressPercent.textContent = '100%';
+                },
+                error: function(msg) {
+                    progressContainer.classList.add('error');
+                    progressText.textContent = msg || 'Upload failed';
+                    progressPercent.textContent = 'Error';
+                },
+                hide: function() {
+                    setTimeout(function() {
+                        progressContainer.style.display = 'none';
+                    }, 1500);
+                }
+            };
+        }
+        
+        // Intercept all file upload forms
+        document.querySelectorAll('.admin-form').forEach(function(form) {
+            var hasFileInput = form.querySelector('input[type="file"]');
+            if (!hasFileInput) return;
+            
+            form.addEventListener('submit', function(e) {
+                var fileInput = form.querySelector('input[type="file"]');
+                if (!fileInput.files.length) return; // No file selected, normal submit
+                
+                e.preventDefault();
+                var btn = form.querySelector('.btn-save');
+                var originalText = btn.textContent;
+                btn.classList.add('btn-loading');
+                btn.textContent = 'Uploading...';
+                
+                var progress = handleFileUpload(form, btn);
+                
+                var formData = new FormData(form);
+                var xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable && progress) {
+                        var percent = (e.loaded / e.total) * 100;
+                        var loaded = (e.loaded / (1024 * 1024)).toFixed(1);
+                        var total = (e.total / (1024 * 1024)).toFixed(1);
+                        progress.update(percent, loaded + 'MB / ' + total + 'MB');
+                    }
+                });
+                
+                xhr.addEventListener('load', function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        if (progress) {
+                            progress.complete();
+                            progress.hide();
+                        }
+                        // Reload the page to show updated data
+                        window.location.reload();
+                    } else {
+                        if (progress) progress.error('Upload failed. Please try again.');
+                        btn.classList.remove('btn-loading');
+                        btn.textContent = originalText;
+                    }
+                });
+                
+                xhr.addEventListener('error', function() {
+                    if (progress) progress.error('Network error. Check your connection.');
+                    btn.classList.remove('btn-loading');
+                    btn.textContent = originalText;
+                });
+                
+                xhr.open('POST', form.action || window.location.href);
+                xhr.send(formData);
+            });
         });
     </script>
 </body>
