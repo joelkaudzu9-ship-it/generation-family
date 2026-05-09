@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('resources') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('resources') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Resources</h1>
         <p class="page-subtitle">Explore the creative and media library of the family</p>
@@ -25,6 +25,11 @@
                 <i class="fas fa-download"></i>
                 <h3>Sermons MP3</h3>
                 <p>Download and listen to messages on the go</p>
+            </a>
+            <a href="/resources/media" class="resource-card">
+                <i class="fas fa-photo-video"></i>
+                <h3>Media</h3>
+                <p>Audio, images, and videos from the family</p>
             </a>
             <a href="/resources/apparel" class="resource-card">
                 <i class="fas fa-tshirt"></i>

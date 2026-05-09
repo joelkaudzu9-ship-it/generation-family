@@ -1,32 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('media') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('media') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Media</h1>
-        <p class="page-subtitle">Sermons, merchandise, and reading resources from the family</p>
+        <p class="page-subtitle">Audio, images, and videos from the family</p>
     </div>
 </section>
 
-<section class="resources-section">
+<section class="media-gallery">
     <div class="container">
-        <div class="resources-grid">
-            <a href="/resources/sermons-mp3" class="resource-card">
-                <i class="fas fa-headphones"></i>
-                <h3>Sermons MP3</h3>
-                <p>Download and listen to life-changing messages on the go</p>
-            </a>
-            <a href="/resources/apparel" class="resource-card">
-                <i class="fas fa-tshirt"></i>
-                <h3>Apparel</h3>
-                <p>Generation Family branded clothing and merchandise</p>
-            </a>
-            <a href="/resources/books" class="resource-card">
-                <i class="fas fa-book"></i>
-                <h3>Books</h3>
-                <p>Faith-building books and reading resources</p>
-            </a>
+        {% if media_items %}
+        <div class="media-grid">
+            {% for item in media_items %}
+            <div class="media-card">
+                {% if item.media_type == 'audio' %}
+                <div class="media-preview audio-preview">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                <audio controls style="width:100%;margin-top:12px;">
+                    <source src="{{ item.media_url }}" type="audio/mpeg">
+                </audio>
+                {% elif item.media_type == 'video' %}
+                <div class="media-preview video-preview">
+                    <i class="fas fa-play"></i>
+                </div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                <video controls style="width:100%;margin-top:12px;border-radius:12px;">
+                    <source src="{{ item.media_url }}" type="video/mp4">
+                </video>
+                {% else %}
+                <div class="media-image">
+                    <img src="{{ item.media_url }}" alt="{{ item.title }}">
+                </div>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-photo-video"></i>
+            <h3>Media Coming Soon</h3>
+            <p>Audio, images, and videos from the family will appear here.</p>
+        </div>
+        {% endif %}
     </div>
 </section>
 
