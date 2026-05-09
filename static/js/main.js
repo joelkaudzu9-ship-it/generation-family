@@ -26,6 +26,14 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
+const socialLinks = {
+    whatsapp: 'https://wa.me/265983142415',
+    email: 'mailto:gizmokzu@gmail.com',
+    facebook: 'https://www.facebook.com/profile.php?id=61563027572825',
+    instagram: 'https://www.instagram.com/thegenerationfamily/',
+    tiktok: 'https://www.tiktok.com/@thegenerationfamily'
+};
+
 // ==================== LOADING SCREEN ====================
 window.addEventListener('load', () => {
     const loader = document.getElementById('loaderWrapper');
