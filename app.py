@@ -262,7 +262,6 @@ def contact():
         subject = request.form.get('subject')
         message = request.form.get('message')
         
-        # Save to Supabase
         supabase_insert('contact_submissions', {
             'name': name,
             'email': email,
@@ -270,17 +269,16 @@ def contact():
             'message': message
         })
         
-        # Send email via Brevo
         try:
             from brevo_client import send_contact_notification
-            result = send_contact_notification(name, email, subject, message)
-            print(f"DEBUG Brevo result: {result}")
+            send_contact_notification(name, email, subject, message)
         except Exception as e:
-            print(f"DEBUG Brevo failed: {e}")
+            print(f"Brevo failed: {e}")
         
-        return render_template('contact.html', settings=settings, success=True)
+        return redirect(url_for('contact') + '?success=1')
     
-    return render_template('contact.html', settings=settings, success=False)
+    success = request.args.get('success') == '1'
+    return render_template('contact.html', settings=settings, success=success)
 
 
 

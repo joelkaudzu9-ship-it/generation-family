@@ -90,7 +90,12 @@ def login():
 @admin_bp.route('/logout')
 def logout():
     session.pop('admin_logged_in', None)
-    return redirect(url_for('admin.login'))
+    session.pop('admin_user', None)
+    response = redirect(url_for('admin.login'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 # ==================== DASHBOARD ====================
 @admin_bp.route('/')
