@@ -78,4 +78,18 @@
     </div>
 </section>
 
+<script>
+    var contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function() {
+            var btn = this.querySelector('.btn-gold');
+            if (btn) {
+                btn.classList.add('btn-loading');
+                btn.textContent = 'Sending...';
+                btn.disabled = true;
+            }
+        });
+    }
+</script>
+
 {% endblock %}
