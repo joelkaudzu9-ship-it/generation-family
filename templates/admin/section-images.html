@@ -71,5 +71,17 @@
         <p class="empty-state"><i class="fas fa-layer-group"></i> No section images yet. Upload your first one above.</p>
         {% endif %}
     </main>
+    <script>
+        document.querySelector('.admin-form').addEventListener('submit', function() {
+            var btn = this.querySelector('.btn-save');
+            btn.classList.add('btn-loading');
+            btn.textContent = 'Uploading...';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
 </body>
 </html>

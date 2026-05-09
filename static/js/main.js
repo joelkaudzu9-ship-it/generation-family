@@ -398,10 +398,12 @@ function showConfirm(title, message, onConfirm) {
         okBtn.removeEventListener('click', handleConfirm);
     }
     
-    function handleConfirm() {
-        close();
-        onConfirm();
-    }
+   function handleConfirm() {
+    okBtn.classList.add('btn-loading');
+    okBtn.textContent = 'Deleting...';
+    close();
+    if (onConfirm) onConfirm();
+}
     
     cancelBtn.addEventListener('click', close);
     okBtn.addEventListener('click', handleConfirm);

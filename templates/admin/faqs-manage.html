@@ -75,5 +75,17 @@
         <p class="empty-state">No FAQs yet.</p>
         {% endif %}
     </main>
+    <script>
+        document.querySelector('.admin-form').addEventListener('submit', function() {
+            var btn = this.querySelector('.btn-save');
+            btn.classList.add('btn-loading');
+            btn.textContent = 'Saving...';
+        });
+        {% if message %}
+        setTimeout(function() {
+            document.querySelector('.msg-success')?.remove();
+        }, 4000);
+        {% endif %}
+    </script>
 </body>
 </html>
