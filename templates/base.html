@@ -71,20 +71,6 @@
             <nav class="desktop-nav">
                 <a href="/">Home</a>
                 <a href="/about">About</a>
-                <div class="nav-dropdown">
-                    <a href="/resources">Resources <i class="fas fa-chevron-down"></i></a>
-                    <div class="dropdown-panel">
-                        <span class="dropdown-label">Canvas</span>
-                        <a href="/resources/tgf-music">TGF Music</a>
-                        <a href="/resources/tgf-drama">TGF Drama</a>
-                        <a href="/resources/tgf-poems">Poems & Spoken Word</a>
-                        <span class="dropdown-label">Media</span>
-                        <a href="/resources/sermons-mp3">Sermons MP3</a>
-                        <a href="/resources/media">Photos & Videos</a>
-                        <a href="/resources/apparel">Apparel</a>
-                        <a href="/resources/books">Books</a>
-                    </div>
-                </div>
                 <a href="/programs">Programs</a>
                 <a href="/sermons">Sermons</a>
                 <a href="/giving">Giving</a>
@@ -97,6 +83,7 @@
                         <a href="/resources/tgf-poems">Poems & Spoken Word</a>
                         <span class="dropdown-label">Media</span>
                         <a href="/resources/sermons-mp3">Sermons MP3</a>
+                        <a href="/resources/media">Photos & Videos</a>
                         <a href="/resources/apparel">Apparel</a>
                         <a href="/resources/books">Books</a>
                     </div>
@@ -201,6 +188,14 @@
                 <button class="btn-delete" id="confirmOk">Confirm</button>
             </div>
         </div>
+    </div>
+
+        <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <button class="lightbox-prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-next" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="lightbox-content" id="lightboxContent"></div>
     </div>
 </body>
 </html>

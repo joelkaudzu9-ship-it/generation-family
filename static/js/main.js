@@ -414,6 +414,112 @@ function showConfirm(title, message, onConfirm) {
     });
 }
 
+// ==================== LIGHTBOX ====================
+(function() {
+    var lightbox = document.getElementById('lightbox');
+    var lightboxContent = document.getElementById('lightboxContent');
+    var lightboxClose = document.getElementById('lightboxClose');
+    var lightboxPrev = document.getElementById('lightboxPrev');
+    var lightboxNext = document.getElementById('lightboxNext');
+    
+    var currentGroup = [];
+    var currentIndex = 0;
+    
+    function openLightbox(items, index) {
+        currentGroup = items;
+        currentIndex = index;
+        showItem();
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        lightboxContent.innerHTML = '';
+        document.body.style.overflow = '';
+        currentGroup = [];
+        currentIndex = 0;
+    }
+    
+    function showItem() {
+        var item = currentGroup[currentIndex];
+        lightboxContent.innerHTML = '';
+        
+        if (item.tagName === 'IMG') {
+            var img = document.createElement('img');
+            img.src = item.src;
+            img.alt = item.alt || '';
+            lightboxContent.appendChild(img);
+        } else if (item.tagName === 'VIDEO') {
+            var video = document.createElement('video');
+            video.src = item.querySelector('source')?.src || item.src;
+            video.controls = true;
+            video.autoplay = true;
+            lightboxContent.appendChild(video);
+        } else if (item.tagName === 'AUDIO' || (item.dataset && item.dataset.audio)) {
+            var audio = document.createElement('audio');
+            audio.src = item.querySelector('source')?.src || item.dataset.audio || item.src;
+            audio.controls = true;
+            audio.autoplay = true;
+            lightboxContent.appendChild(audio);
+        }
+        
+        // Hide prev/next if only one item
+        lightboxPrev.style.display = currentGroup.length <= 1 ? 'none' : '';
+        lightboxNext.style.display = currentGroup.length <= 1 ? 'none' : '';
+    }
+    
+    function nextItem() {
+        currentIndex = (currentIndex + 1) % currentGroup.length;
+        showItem();
+    }
+    
+    function prevItem() {
+        currentIndex = (currentIndex - 1 + currentGroup.length) % currentGroup.length;
+        showItem();
+    }
+    
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxNext.addEventListener('click', nextItem);
+    lightboxPrev.addEventListener('click', prevItem);
+    
+    lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) closeLightbox();
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') nextItem();
+        if (e.key === 'ArrowLeft') prevItem();
+    });
+    
+    // Make images clickable
+    document.addEventListener('click', function(e) {
+        var mediaImage = e.target.closest('.media-image img');
+        var mediaVideo = e.target.closest('.media-card video');
+        var eventImage = e.target.closest('.event-image img');
+        var blogImage = e.target.closest('.blog-image img');
+        
+        if (mediaImage || eventImage || blogImage) {
+            var clicked = mediaImage || eventImage || blogImage;
+            var siblings = [];
+            
+            // Find all images in the same gallery
+            var container = clicked.closest('.media-grid, .events-grid, .blog-grid');
+            if (container) {
+                siblings = Array.from(container.querySelectorAll('img'));
+            } else {
+                siblings = [clicked];
+            }
+            
+            var index = siblings.indexOf(clicked);
+            openLightbox(siblings, index >= 0 ? index : 0);
+        }
+    });
+})();
+
 // ==================== DELETE FORM HANDLER ====================
 document.addEventListener('click', function(e) {
     const deleteBtn = e.target.closest('.delete-form button') || e.target.closest('form[action*="/delete"]')?.querySelector('button');
