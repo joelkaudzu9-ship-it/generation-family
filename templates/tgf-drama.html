@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('tgf-drama') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('tgf-drama') }}'); background-size: cover; background-position: center;"{% endif %}>-header">
     <div class="container">
         <h1 class="page-title">TGF Drama</h1>
         <p class="page-subtitle">Powerful skits and dramatic presentations from the family</p>
