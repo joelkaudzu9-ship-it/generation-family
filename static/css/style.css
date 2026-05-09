@@ -3693,9 +3693,7 @@ html {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 600;
-    position: absolute;
-    top: -12px;
-    left: 24px;
+    margin-bottom: 8px;
 }
 
 .countdown-card {
@@ -3734,8 +3732,7 @@ html {
     }
     
     .countdown-badge {
-        left: 50%;
-        transform: translateX(-50%);
+        margin: 0 auto 8px;
     }
     
     .countdown-meta {
