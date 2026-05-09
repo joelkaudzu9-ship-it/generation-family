@@ -1,117 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Newsletter — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .newsletter-preview {
-            background: #0a0a0a;
-            color: #ccc;
-            padding: 25px;
-            border-radius: 10px;
-            border: 1px solid #1a1a1a;
-            line-height: 1.8;
-            margin-top: 20px;
-            min-height: 100px;
-            white-space: pre-wrap;
-        }
-        .newsletter-preview-header {
-            text-align: center;
-            color: #D4AF37;
-            margin-bottom: 15px;
-            font-family: 'Playfair Display', serif;
-        }
-        .subscriber-count {
-            color: var(--gray);
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-        }
-        .subscriber-count strong {
-            color: var(--gold);
-        }
-    </style>
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin/settings">Settings</a>
-            <a href="/admin/hero">Hero</a>
-            <a href="/admin/sermons">Sermons</a>
-            <a href="/admin/leadership">Leadership</a>
-            <a href="/admin/ministries">Ministries</a>
-            <a href="/admin/testimonials">Testimonials</a>
-            <a href="/admin/events">Events</a>
-            <a href="/admin/blog">Blog</a>
-            <a href="/admin/messages">Messages</a>
-            <a href="/admin/newsletter" class="active">Newsletter</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        <h1>Send Newsletter</h1>
-        
-        <div class="subscriber-count">
-            <i class="fas fa-users gold-text"></i>
-            Sending to all active subscribers in the <strong>Website Subscribers</strong> list via Brevo.
-        </div>
-        
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        {% if error %}
-        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-        {% endif %}
-        
-        <form method="POST" class="admin-form" id="newsletterFormAdmin">
-            <div class="form-group">
-                <label>Subject *</label>
-                <input type="text" name="subject" id="nlSubject" placeholder="Sunday Service Update, Weekly Newsletter..." required>
-            </div>
-            <div class="form-group">
-                <label>Message *</label>
-                <textarea name="content" id="nlContent" rows="10" placeholder="Write your newsletter here...&#10;&#10;You can write announcements, share scripture, include event details, or any message for the congregation." required></textarea>
-            </div>
-            <button type="submit" class="btn-save" id="newsletterSendBtn">
-                <i class="fas fa-paper-plane"></i> Send to All Subscribers
-            </button>
-        </form>
-        
-        <div class="newsletter-preview" id="preview" style="display:none;">
-            <div class="newsletter-preview-header">
-                <h2>The Generation Family</h2>
-            </div>
-            <div id="previewContent"></div>
-        </div>
-    </main>
-    
-    <script>
-        const contentInput = document.getElementById('nlContent');
-        const preview = document.getElementById('preview');
-        const previewContent = document.getElementById('previewContent');
-        
-        if (contentInput) {
-            contentInput.addEventListener('input', () => {
-                const text = contentInput.value.trim();
-                if (text) {
-                    preview.style.display = 'block';
-                    previewContent.textContent = text;
-                } else {
-                    preview.style.display = 'none';
-                }
-            });
-        }
-        
-        document.getElementById('newsletterFormAdmin').addEventListener('submit', function() {
-            var btn = document.getElementById('newsletterSendBtn');
-            btn.classList.add('btn-loading');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+{% extends "admin/base_admin.html" %}
+{% block title %}Newsletter{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/newsletter" class="active">Newsletter</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>Send Newsletter</h1>
+<p class="subscriber-count"><i class="fas fa-users gold-text"></i> Sending to all active subscribers via Brevo.</p>
+
+<form method="POST" class="admin-form" id="newsletterFormAdmin">
+    <div class="form-group"><label>Subject *</label><input type="text" name="subject" required></div>
+    <div class="form-group"><label>Message *</label><textarea name="content" id="nlContent" rows="10" required></textarea></div>
+    <button type="submit" class="btn-save" id="newsletterSendBtn"><i class="fas fa-paper-plane"></i> Send to All Subscribers</button>
+</form>
+
+<div class="newsletter-preview" id="preview" style="display:none;">
+    <div class="newsletter-preview-header"><h2>The Generation Family</h2></div>
+    <div id="previewContent"></div>
+</div>
+
+<script>
+    var contentInput = document.getElementById('nlContent');
+    var preview = document.getElementById('preview');
+    var previewContent = document.getElementById('previewContent');
+    if (contentInput) {
+        contentInput.addEventListener('input', function() {
+            var text = contentInput.value.trim();
+            if (text) { preview.style.display = 'block'; previewContent.textContent = text; }
+            else { preview.style.display = 'none'; }
         });
-    </script>
-</body>
-</html>
+    }
+</script>
+
+<style>
+    .newsletter-preview { background: #0a0a0a; color: #ccc; padding: 25px; border-radius: 10px; border: 1px solid #1a1a1a; line-height: 1.8; margin-top: 20px; min-height: 100px; white-space: pre-wrap; }
+    .newsletter-preview-header { text-align: center; color: #D4AF37; margin-bottom: 15px; font-family: 'Playfair Display', serif; }
+    .subscriber-count { color: var(--gray); font-size: 0.85rem; margin-bottom: 24px; }
+    .subscriber-count strong { color: var(--gold); }
+</style>
+{% endblock %}

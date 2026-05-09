@@ -1,140 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Sermons — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin/settings">Settings</a>
-            <a href="/admin/hero">Hero</a>
-            <a href="/admin/sermons" class="active">Sermons</a>
-            <a href="/admin/leadership">Leadership</a>
-            <a href="/admin/ministries">Ministries</a>
-            <a href="/admin/testimonials">Testimonials</a>
-            <a href="/admin/events">Events</a>
-            <a href="/admin/blog">Blog</a>
-            <a href="/admin/messages">Messages</a>
-            <a href="/admin/newsletter">Newsletter</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        {% if error %}
-        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-        {% endif %}
-        
-        <h1>{% if edit_sermon %}Edit Sermon{% else %}Add New Sermon{% endif %}</h1>
-        
-        <form method="POST" enctype="multipart/form-data" class="admin-form" id="sermonForm" action="/admin/sermons">
-            {% if edit_sermon %}
-            <input type="hidden" name="sermon_id" value="{{ edit_sermon.id }}">
-            {% endif %}
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" name="title" value="{{ edit_sermon.title if edit_sermon else '' }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Speaker</label>
-                    <input type="text" name="speaker" value="{{ edit_sermon.speaker if edit_sermon else '' }}">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" name="date" value="{{ edit_sermon.date if edit_sermon else '' }}">
-                </div>
-                <div class="form-group">
-                    <label>Series</label>
-                    <input type="text" name="series" value="{{ edit_sermon.series if edit_sermon else '' }}">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="3">{{ edit_sermon.description if edit_sermon else '' }}</textarea>
-            </div>
-            <div class="form-group">
-                <label>Upload MP3 Audio</label>
-                <input type="file" name="audio_file" accept="audio/mp3,audio/mpeg">
-                <span class="form-hint">Max 40MB. {% if edit_sermon and edit_sermon.audio_url %}Current: {{ edit_sermon.audio_url[:50] }}...{% endif %}</span>
-            </div>
-            <div class="form-group">
-                <label>Or Paste Audio URL</label>
-                <input type="url" name="audio_url" value="{{ edit_sermon.audio_url if edit_sermon and not edit_sermon.audio_url.startswith('http') else '' }}">
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn-save" id="sermonBtn">
-                    {% if edit_sermon %}Update Sermon{% else %}Add Sermon{% endif %}
-                </button>
-                {% if edit_sermon %}
-                <a href="/admin/sermons" class="btn-cancel">Cancel</a>
-                {% endif %}
-            </div>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>All Sermons ({{ sermons|length }})</h2>
-        {% if sermons %}
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Speaker</th>
-                        <th>Date</th>
-                        <th>Series</th>
-                        <th>Audio</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sermon in sermons %}
-                    <tr {% if edit_sermon and edit_sermon.id == sermon.id %}class="highlight-row"{% endif %}>
-                        <td><strong>{{ sermon.title }}</strong></td>
-                        <td>{{ sermon.speaker or '—' }}</td>
-                        <td>{{ sermon.date or '—' }}</td>
-                        <td>{{ sermon.series or '—' }}</td>
-                        <td>{% if sermon.audio_url %}<span class="badge badge-success"><i class="fas fa-check"></i> Yes</span>{% else %}<span class="badge">—</span>{% endif %}</td>
-                        <td class="actions-cell">
-                            <a href="/admin/sermons/{{ sermon.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <form method="POST" action="/admin/sermons/{{ sermon.id }}/delete" class="delete-form" data-name="{{ sermon.title }}" style="display:inline;">
-                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state">No sermons yet. Add your first one above.</p>
-        {% endif %}
-    </main>
-    
-    <script>
-        document.getElementById('sermonForm').addEventListener('submit', function() {
-            var btn = document.getElementById('sermonBtn');
-            btn.classList.add('btn-loading');
-            btn.textContent = '{% if edit_sermon %}Updating...{% else %}Uploading...{% endif %}';
-        });
-        {% if message %}
-        setTimeout(function() {
-            document.querySelector('.msg-success')?.remove();
-        }, 4000);
-        {% endif %}
-    </script>
-</body>
-</html>
+{% extends "admin/base_admin.html" %}
+{% block title %}Sermons{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/sermons" class="active">Sermons</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>{% if edit_sermon %}Edit Sermon{% else %}Add New Sermon{% endif %}</h1>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/sermons">
+    {% if edit_sermon %}<input type="hidden" name="sermon_id" value="{{ edit_sermon.id }}">{% endif %}
+    <div class="form-row">
+        <div class="form-group"><label>Title *</label><input type="text" name="title" value="{{ edit_sermon.title if edit_sermon else '' }}" required></div>
+        <div class="form-group"><label>Speaker</label><input type="text" name="speaker" value="{{ edit_sermon.speaker if edit_sermon else '' }}"></div>
+    </div>
+    <div class="form-row">
+        <div class="form-group"><label>Date</label><input type="date" name="date" value="{{ edit_sermon.date if edit_sermon else '' }}"></div>
+        <div class="form-group"><label>Series</label><input type="text" name="series" value="{{ edit_sermon.series if edit_sermon else '' }}"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3">{{ edit_sermon.description if edit_sermon else '' }}</textarea></div>
+    <div class="form-group"><label>Upload MP3</label><input type="file" name="audio_file" accept="audio/mp3,audio/mpeg"><span class="form-hint">Max 40MB</span></div>
+    <div class="form-group"><label>Or Audio URL</label><input type="url" name="audio_url" value="{{ edit_sermon.audio_url if edit_sermon else '' }}"></div>
+    <button type="submit" class="btn-save">{% if edit_sermon %}Update{% else %}Add{% endif %} Sermon</button>
+    {% if edit_sermon %}<a href="/admin/sermons" class="btn-cancel">Cancel</a>{% endif %}
+</form>
+
+<hr class="admin-divider">
+
+<h2>All Sermons ({{ sermons|length }})</h2>
+{% if sermons %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead><tr><th>Title</th><th>Speaker</th><th>Date</th><th>Audio</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for sermon in sermons %}
+            <tr>
+                <td><strong>{{ sermon.title }}</strong></td>
+                <td>{{ sermon.speaker or '—' }}</td>
+                <td>{{ sermon.date or '—' }}</td>
+                <td>{% if sermon.audio_url %}<span class="badge badge-success">Yes</span>{% else %}<span class="badge">—</span>{% endif %}</td>
+                <td class="actions-cell">
+                    <a href="/admin/sermons/{{ sermon.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                    <form method="POST" action="/admin/sermons/{{ sermon.id }}/delete" class="delete-form" data-name="{{ sermon.title }}" style="display:inline;">
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty-state">No sermons yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,137 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Events — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin/settings">Settings</a>
-            <a href="/admin/hero">Hero</a>
-            <a href="/admin/sermons">Sermons</a>
-            <a href="/admin/leadership">Leadership</a>
-            <a href="/admin/ministries">Ministries</a>
-            <a href="/admin/testimonials">Testimonials</a>
-            <a href="/admin/events" class="active">Events</a>
-            <a href="/admin/blog">Blog</a>
-            <a href="/admin/messages">Messages</a>
-            <a href="/admin/newsletter">Newsletter</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        {% if error %}
-        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-        {% endif %}
-        
-        <h1>{% if edit_event %}Edit Event{% else %}Add Event{% endif %}</h1>
-        
-        <form method="POST" enctype="multipart/form-data" class="admin-form" id="eventForm" action="/admin/events">
-            {% if edit_event %}
-            <input type="hidden" name="event_id" value="{{ edit_event.id }}">
-            <input type="hidden" name="existing_image_url" value="{{ edit_event.image_url }}">
-            {% endif %}
-            
-            <div class="form-group">
-                <label>Event Title *</label>
-                <input type="text" name="title" value="{{ edit_event.title if edit_event else '' }}" required>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" name="event_date" value="{{ edit_event.event_date if edit_event else '' }}">
-                </div>
-                <div class="form-group">
-                    <label>Time</label>
-                    <input type="time" name="event_time" value="{{ edit_event.event_time if edit_event else '' }}">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Location</label>
-                <input type="text" name="location" value="{{ edit_event.location if edit_event else '' }}" placeholder="Church auditorium, etc.">
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="3">{{ edit_event.description if edit_event else '' }}</textarea>
-            </div>
-            <div class="form-group">
-                <label>Image</label>
-                {% if edit_event and edit_event.image_url %}
-                <div class="current-image">
-                    <img src="{{ edit_event.image_url }}" alt="Current" class="admin-thumb-sm">
-                </div>
-                {% endif %}
-                <input type="file" name="image" accept="image/*">
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn-save" id="eventBtn">
-                    {% if edit_event %}Update Event{% else %}Add Event{% endif %}
-                </button>
-                {% if edit_event %}
-                <a href="/admin/events" class="btn-cancel">Cancel</a>
-                {% endif %}
-            </div>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>All Events ({{ events|length }})</h2>
-        {% if events %}
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for event in events %}
-                    <tr {% if edit_event and edit_event.id == event.id %}class="highlight-row"{% endif %}>
-                        <td><strong>{{ event.title }}</strong></td>
-                        <td>{{ event.event_date or '—' }}</td>
-                        <td>{{ event.event_time or '—' }}</td>
-                        <td>{{ event.location or '—' }}</td>
-                        <td class="actions-cell">
-                            <a href="/admin/events/{{ event.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <form method="POST" action="/admin/events/{{ event.id }}/delete" class="delete-form" data-name="{{ event.title }}" style="display:inline;">
-                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state"><i class="fas fa-calendar-alt"></i> No events yet.</p>
-        {% endif %}
-    </main>
-    
-    <script>
-        document.getElementById('eventForm').addEventListener('submit', function() {
-            var btn = document.getElementById('eventBtn');
-            btn.classList.add('btn-loading');
-            btn.textContent = '{% if edit_event %}Updating...{% else %}Saving...{% endif %}';
-        });
-        {% if message %}
-        setTimeout(function() {
-            document.querySelector('.msg-success')?.remove();
-        }, 4000);
-        {% endif %}
-    </script>
-</body>
-</html>
+{% extends "admin/base_admin.html" %}
+{% block title %}Events{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/events" class="active">Events</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>{% if edit_event %}Edit{% else %}Add{% endif %} Event</h1>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/events">
+    {% if edit_event %}<input type="hidden" name="event_id" value="{{ edit_event.id }}"><input type="hidden" name="existing_image_url" value="{{ edit_event.image_url }}">{% endif %}
+    <div class="form-group"><label>Title *</label><input type="text" name="title" value="{{ edit_event.title if edit_event else '' }}" required></div>
+    <div class="form-row">
+        <div class="form-group"><label>Date</label><input type="date" name="event_date" value="{{ edit_event.event_date if edit_event else '' }}"></div>
+        <div class="form-group"><label>Time</label><input type="time" name="event_time" value="{{ edit_event.event_time if edit_event else '' }}"></div>
+    </div>
+    <div class="form-group"><label>Location</label><input type="text" name="location" value="{{ edit_event.location if edit_event else '' }}"></div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3">{{ edit_event.description if edit_event else '' }}</textarea></div>
+    <div class="form-group"><label>Image</label><input type="file" name="image" accept="image/*"></div>
+    <button type="submit" class="btn-save">{% if edit_event %}Update{% else %}Add{% endif %} Event</button>
+    {% if edit_event %}<a href="/admin/events" class="btn-cancel">Cancel</a>{% endif %}
+</form>
+
+<hr class="admin-divider">
+
+<h2>All Events ({{ events|length }})</h2>
+{% if events %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead><tr><th>Title</th><th>Date</th><th>Time</th><th>Location</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for e in events %}
+            <tr>
+                <td><strong>{{ e.title }}</strong></td>
+                <td>{{ e.event_date or '—' }}</td>
+                <td>{{ e.event_time or '—' }}</td>
+                <td>{{ e.location or '—' }}</td>
+                <td class="actions-cell">
+                    <a href="/admin/events/{{ e.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                    <form method="POST" action="/admin/events/{{ e.id }}/delete" class="delete-form" data-name="{{ e.title }}" style="display:inline;">
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty-state">No events yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,87 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Section Images — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/section-images" class="active">Section Images</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        
-        <h1>Section Background Images</h1>
-        <p>Upload background images for each page section. Best size: 1200 x 400px. These appear as the header background on each page.</p>
-        
-        <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/section-images">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Section *</label>
-                    <select name="section" required>
-                        <option value="prayer-rhythms">Prayer & Fasting</option>
-                        <option value="family-groups">Family Groups</option>
-                        <option value="marketplace">Marketplace</option>
-                        <option value="retreats">Retreats</option>
-                        <option value="creatives">Creatives</option>
-                        <option value="sermons">Sermons</option>
-                        <option value="story">Our Story</option>
-                        <option value="giving">Give</option>
-                        <option value="events">Gatherings & Events</option>
-                        <option value="blog">Blog</option>
-                        <option value="contact">Contact</option>
-                        <option value="faqs">FAQs</option>
-                        <option value="about">About</option>
-                    </select>
+{% extends "admin/base_admin.html" %}
+{% block title %}Section Images{% endblock %}
 
-                </div>
-                <div class="form-group">
-                    <label>Image (1200 x 400px recommended)</label>
-                    <input type="file" name="image" accept="image/*" required>
-                </div>
-            </div>
-            <button type="submit" class="btn-save">Upload Section Image</button>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>Current Section Images</h2>
-        {% if images %}
-        <div class="admin-grid">
-            {% for img in images %}
-            <div class="admin-card-small">
-                <img src="{{ img.image_url }}" alt="{{ img.section_name }}" class="admin-thumb-sm" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">
-                <h4 style="margin-top:8px;">{{ img.section_name }}</h4>
-            </div>
-            {% endfor %}
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/section-images" class="active">Section Images</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>Section Images</h1>
+<p>Upload background images for page headers. Best size: 1200 x 400px.</p>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/section-images">
+    <div class="form-row">
+        <div class="form-group"><label>Section</label>
+            <select name="section" required>
+                <option value="about">About</option>
+                <option value="prayer-rhythms">Prayer & Fasting</option>
+                <option value="family-groups">Family Groups</option>
+                <option value="marketplace">Marketplace</option>
+                <option value="retreats">Retreats</option>
+                <option value="creatives">Creatives</option>
+                <option value="sermons">Sermons</option>
+                <option value="story">Our Story</option>
+                <option value="giving">Give</option>
+                <option value="events">Gatherings & Events</option>
+                <option value="blog">Blog</option>
+                <option value="contact">Contact</option>
+                <option value="faqs">FAQs</option>
+            </select>
         </div>
-        {% else %}
-        <p class="empty-state"><i class="fas fa-layer-group"></i> No section images yet. Upload your first one above.</p>
-        {% endif %}
-    </main>
-    <script>
-        document.querySelector('.admin-form').addEventListener('submit', function() {
-            var btn = this.querySelector('.btn-save');
-            btn.classList.add('btn-loading');
-            btn.textContent = 'Uploading...';
-        });
-        {% if message %}
-        setTimeout(function() {
-            document.querySelector('.msg-success')?.remove();
-        }, 4000);
-        {% endif %}
-    </script>
-</body>
-</html>
+        <div class="form-group"><label>Image</label><input type="file" name="image" accept="image/*" required></div>
+    </div>
+    <button type="submit" class="btn-save">Upload</button>
+</form>
+
+<hr class="admin-divider">
+
+<h2>Current Images</h2>
+{% if images %}
+<div class="admin-grid">
+    {% for img in images %}
+    <div class="admin-card-small">
+        <img src="{{ img.image_url }}" alt="{{ img.section_name }}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">
+        <h4 style="margin-top:8px;">{{ img.section_name }}</h4>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">No section images yet.</p>
+{% endif %}
+{% endblock %}

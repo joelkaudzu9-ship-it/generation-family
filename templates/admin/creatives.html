@@ -1,99 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Creatives — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/creatives" class="active">Creatives</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
+{% extends "admin/base_admin.html" %}
+{% block title %}Creatives{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/creatives" class="active">Creatives</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>Add Creative Content</h1>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/creatives">
+    <div class="form-row">
+        <div class="form-group"><label>Section *</label>
+            <select name="section" required>
+                <option value="music">TGF Music</option><option value="drama">TGF Drama</option><option value="poems">Poems & Spoken Word</option><option value="art">Visual Art</option>
+            </select>
         </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        {% if error %}
-        <div class="msg-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-        {% endif %}
-        
-        <h1>Add Creative Content</h1>
-        
-        <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/creatives">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Section *</label>
-                    <select name="section" required>
-                        <option value="music">TGF Music</option>
-                        <option value="drama">TGF Drama</option>
-                        <option value="poems">Poems & Spoken Word</option>
-                        <option value="art">Visual Art</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" name="title" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="3"></textarea>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Upload File</label>
-                    <input type="file" name="content_file" accept="image/*,audio/*,video/*">
-                </div>
-                <div class="form-group">
-                    <label>Or Paste URL</label>
-                    <input type="url" name="content_url" placeholder="https://...">
-                </div>
-            </div>
-            <button type="submit" class="btn-save">Add Content</button>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>All Creative Content</h2>
-        {% if creatives %}
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Section</th>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in creatives %}
-                    <tr>
-                        <td><span class="badge">{{ item.section }}</span></td>
-                        <td>{{ item.title }}</td>
-                        <td>{{ item.created_at[:10] if item.created_at else '—' }}</td>
-                        <td>
-                            <form method="POST" action="/admin/creatives/{{ item.id }}/delete" class="delete-form" data-name="{{ item.title }}" style="display:inline;">
-                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state">No creative content yet.</p>
-        {% endif %}
-    </main>
-</body>
-</html>
+        <div class="form-group"><label>Title *</label><input type="text" name="title" required></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3"></textarea></div>
+    <div class="form-row">
+        <div class="form-group"><label>Upload File</label><input type="file" name="content_file"></div>
+        <div class="form-group"><label>Or URL</label><input type="url" name="content_url"></div>
+    </div>
+    <button type="submit" class="btn-save">Add Content</button>
+</form>
+
+<hr class="admin-divider">
+
+<h2>All Creative Content</h2>
+{% if creatives %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead><tr><th>Section</th><th>Title</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for item in creatives %}
+            <tr>
+                <td><span class="badge">{{ item.section }}</span></td>
+                <td>{{ item.title }}</td>
+                <td>{{ item.created_at[:10] if item.created_at else '—' }}</td>
+                <td>
+                    <form method="POST" action="/admin/creatives/{{ item.id }}/delete" class="delete-form" data-name="{{ item.title }}" style="display:inline;">
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty-state">No creative content yet.</p>
+{% endif %}
+{% endblock %}

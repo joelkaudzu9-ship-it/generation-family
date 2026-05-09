@@ -1,98 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giving Info — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/giving-info" class="active">Giving Info</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        
-        <h1>Add Giving Method</h1>
-        
-        <form method="POST" class="admin-form" action="/admin/giving-info">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Method Name *</label>
-                    <input type="text" name="method" placeholder="e.g. Mobile Money" required>
-                </div>
-                <div class="form-group">
-                    <label>Icon (Font Awesome)</label>
-                    <input type="text" name="icon" value="fa-hand-holding-heart" placeholder="e.g. fa-mobile-alt">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Details *</label>
-                <textarea name="details" rows="3" placeholder="e.g. Airtel Money: 0999 123 456" required></textarea>
-                <span class="form-hint">Phone number, bank details, or instructions.</span>
-            </div>
-            <div class="form-group">
-                <label>Display Order</label>
-                <input type="number" name="display_order" value="0" min="0">
-            </div>
-            <button type="submit" class="btn-save">Add Method</button>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>Current Methods</h2>
-        {% if methods %}
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Order</th>
-                        <th>Method</th>
-                        <th>Details</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for method in methods %}
-                    <tr>
-                        <td>{{ method.display_order }}</td>
-                        <td><strong>{{ method.method }}</strong></td>
-                        <td>{{ method.details }}</td>
-                        <td>
-                            <form method="POST" action="/admin/giving-info/{{ method.id }}/delete" class="delete-form" data-name="{{ method.method }}" style="display:inline;">
-                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state">No giving methods yet.</p>
-        {% endif %}
-    </main>
-    <script>
-        document.querySelector('.admin-form').addEventListener('submit', function() {
-            var btn = this.querySelector('.btn-save');
-            btn.classList.add('btn-loading');
-            btn.textContent = 'Saving...';
-        });
-        {% if message %}
-        setTimeout(function() {
-            document.querySelector('.msg-success')?.remove();
-        }, 4000);
-        {% endif %}
-    </script>
-</body>
-</html>
+{% extends "admin/base_admin.html" %}
+{% block title %}Giving Info{% endblock %}
+{% block nav %}
+<nav class="admin-nav"><h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2><div class="admin-nav-links"><a href="/admin">Dashboard</a><a href="/admin/giving-info" class="active">Giving Info</a><a href="/">View Site</a><a href="/admin/logout" class="logout-link">Logout</a></div></nav>
+{% endblock %}
+{% block content %}
+<h1>Add Giving Method</h1>
+<form method="POST" class="admin-form">
+    <div class="form-row"><div class="form-group"><label>Method *</label><input type="text" name="method" required></div><div class="form-group"><label>Icon</label><input type="text" name="icon" value="fa-hand-holding-heart"></div></div>
+    <div class="form-group"><label>Details *</label><textarea name="details" rows="3" required></textarea></div>
+    <div class="form-group"><label>Display Order</label><input type="number" name="display_order" value="0" min="0"></div>
+    <button type="submit" class="btn-save">Add Method</button>
+</form>
+<hr class="admin-divider">
+<h2>Current Methods</h2>
+{% if methods %}
+<div class="admin-table-wrapper"><table class="admin-table"><thead><tr><th>Order</th><th>Method</th><th>Details</th><th>Actions</th></tr></thead><tbody>
+{% for m in methods %}<tr><td>{{ m.display_order }}</td><td><strong>{{ m.method }}</strong></td><td>{{ m.details }}</td><td><form method="POST" action="/admin/giving-info/{{ m.id }}/delete" class="delete-form" data-name="{{ m.method }}" style="display:inline;"><button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<p class="empty-state">No methods yet.</p>{% endif %}
+{% endblock %}

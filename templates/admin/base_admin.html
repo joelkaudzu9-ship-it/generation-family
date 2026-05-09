@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TGF Admin{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-body">
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    {% block nav %}
+    <nav class="admin-nav">
+        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+        <div class="admin-nav-links">
+            <a href="/admin">Dashboard</a>
+            <a href="/">View Site</a>
+            <a href="/admin/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <main class="admin-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Toast system
+        function showToast(message, type) {
+            type = type || 'success';
+            var container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.innerHTML = 
+                '<span class="toast-icon"><i class="fas ' + (icons[type] || icons.success) + '"></i></span>' +
+                '<span class="toast-message">' + message + '</span>' +
+                '<button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+            
+            container.appendChild(toast);
+            
+            setTimeout(function() {
+                toast.classList.add('removing');
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 4000);
+        }
+
+        // Auto-toast messages from server
+        {% if message %}
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ message|replace("'", "\\'") }}', 'success');
+        });
+        {% endif %}
+        {% if error %}
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ error|replace("'", "\\'") }}', 'error');
+        });
+        {% endif %}
+
+        // Form loading states
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.querySelector('.admin-form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    var btn = this.querySelector('.btn-save');
+                    if (btn) {
+                        btn.classList.add('btn-loading');
+                        btn.textContent = 'Saving...';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

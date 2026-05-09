@@ -1,71 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin/settings">Settings</a>
-            <a href="/admin/hero">Hero</a>
-            <a href="/admin/sermons">Sermons</a>
-            <a href="/admin/leadership">Leadership</a>
-            <a href="/admin/ministries">Ministries</a>
-            <a href="/admin/testimonials">Testimonials</a>
-            <a href="/admin/events">Events</a>
-            <a href="/admin/blog">Blog</a>
-            <a href="/admin/messages" class="active">Messages</a>
-            <a href="/admin/newsletter">Newsletter</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        <h1>Contact Messages ({{ submissions|length }})</h1>
-        <p>Messages submitted through the website contact form.</p>
-        
-        {% if submissions %}
-        <div class="messages-list">
-            {% for msg in submissions %}
-            <div class="message-card {% if not msg.is_read %}unread{% endif %}" id="msg-{{ msg.id }}">
-                <div class="message-header">
-                    <div class="message-sender">
-                        <strong>{{ msg.name }}</strong>
-                        <span class="message-email">{{ msg.email }}</span>
-                    </div>
-                    <div class="message-meta">
-                        <span class="message-date">{{ msg.created_at[:10] if msg.created_at else '' }}</span>
-                        {% if not msg.is_read %}
-                        <span class="badge badge-new">New</span>
-                        {% endif %}
-                    </div>
-                </div>
-                {% if msg.subject %}
-                <div class="message-subject"><strong>Subject:</strong> {{ msg.subject }}</div>
-                {% endif %}
-                <div class="message-body">{{ msg.message }}</div>
-                <div class="message-actions">
-                    {% if not msg.is_read %}
-                    <form method="POST" action="/admin/messages/{{ msg.id }}/read" style="display:inline;">
-                        <button type="submit" class="btn-edit small"><i class="fas fa-check"></i> Mark Read</button>
-                    </form>
-                    {% endif %}
-                    <form method="POST" action="/admin/messages/{{ msg.id }}/delete" class="delete-form" data-name="message from {{ msg.name }}" style="display:inline;">
-                        <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i> Delete</button>
-                    </form>
-                </div>
+{% extends "admin/base_admin.html" %}
+{% block title %}Messages{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/messages" class="active">Messages</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>Messages ({{ submissions|length }})</h1>
+<p>Messages from the contact form.</p>
+
+{% if submissions %}
+<div class="messages-list">
+    {% for msg in submissions %}
+    <div class="message-card {% if not msg.is_read %}unread{% endif %}">
+        <div class="message-header">
+            <div class="message-sender"><strong>{{ msg.name }}</strong><span class="message-email">{{ msg.email }}</span></div>
+            <div class="message-meta">
+                <span class="message-date">{{ msg.created_at[:10] if msg.created_at else '' }}</span>
+                {% if not msg.is_read %}<span class="badge badge-new">New</span>{% endif %}
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <p class="empty-state"><i class="fas fa-envelope-open-text"></i> No messages yet.</p>
-        {% endif %}
-    </main>
-</body>
-</html>
+        {% if msg.subject %}<div class="message-subject"><strong>Subject:</strong> {{ msg.subject }}</div>{% endif %}
+        <div class="message-body">{{ msg.message }}</div>
+        <div class="message-actions">
+            {% if not msg.is_read %}
+            <form method="POST" action="/admin/messages/{{ msg.id }}/read" style="display:inline;">
+                <button type="submit" class="btn-edit small"><i class="fas fa-check"></i> Mark Read</button>
+            </form>
+            {% endif %}
+            <form method="POST" action="/admin/messages/{{ msg.id }}/delete" class="delete-form" data-name="message from {{ msg.name }}" style="display:inline;">
+                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i> Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">No messages yet.</p>
+{% endif %}
+{% endblock %}

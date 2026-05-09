@@ -1,119 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketplace — TGF Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="admin-body">
-    <nav class="admin-nav">
-        <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-        <div class="admin-nav-links">
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/marketplace" class="active">Marketplace</a>
-            <a href="/">View Site</a>
-            <a href="/admin/logout" class="logout-link">Logout</a>
-        </div>
-    </nav>
-    
-    <main class="admin-main">
-        {% if message %}
-        <div class="msg-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
-        {% endif %}
-        
-        <h1>Add Marketplace Item</h1>
-        
-        <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/marketplace">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" name="title" placeholder="e.g. Handmade Baskets" required>
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select name="category">
-                        <option value="Goods">Goods</option>
-                        <option value="Services">Services</option>
-                        <option value="Food">Food & Produce</option>
-                        <option value="Books">Books</option>
-                        <option value="Apparel">Apparel</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="3" placeholder="Describe the item or service..."></textarea>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Price</label>
-                    <input type="text" name="price" placeholder="e.g. MWK 5,000">
-                </div>
-                <div class="form-group">
-                    <label>Seller Name</label>
-                    <input type="text" name="seller_name" placeholder="e.g. Grace M.">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Seller Contact (optional)</label>
-                <input type="text" name="seller_contact" placeholder="Phone or email">
-            </div>
-            <div class="form-group">
-                <label>Image</label>
-                <input type="file" name="image" accept="image/*">
-            </div>
-            <button type="submit" class="btn-save">Add Item</button>
-        </form>
-        
-        <hr class="admin-divider">
-        
-        <h2>Current Listings</h2>
-        {% if items %}
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Seller</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items %}
-                    <tr>
-                        <td><strong>{{ item.title }}</strong></td>
-                        <td><span class="badge">{{ item.category }}</span></td>
-                        <td>{{ item.price or '—' }}</td>
-                        <td>{{ item.seller_name or '—' }}</td>
-                        <td>
-                            <form method="POST" action="/admin/marketplace/{{ item.id }}/delete" class="delete-form" data-name="{{ item.title }}" style="display:inline;">
-                                <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="empty-state">No marketplace items yet.</p>
-        {% endif %}
-    </main>
-    <script>
-        document.querySelector('.admin-form').addEventListener('submit', function() {
-            var btn = this.querySelector('.btn-save');
-            btn.classList.add('btn-loading');
-            btn.textContent = 'Saving...';
-        });
-        {% if message %}
-        setTimeout(function() {
-            document.querySelector('.msg-success')?.remove();
-        }, 4000);
-        {% endif %}
-    </script>
-</body>
-</html>
+{% extends "admin/base_admin.html" %}
+{% block title %}Marketplace{% endblock %}
+{% block nav %}
+<nav class="admin-nav"><h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2><div class="admin-nav-links"><a href="/admin">Dashboard</a><a href="/admin/marketplace" class="active">Marketplace</a><a href="/">View Site</a><a href="/admin/logout" class="logout-link">Logout</a></div></nav>
+{% endblock %}
+{% block content %}
+<h1>Add Marketplace Item</h1>
+<form method="POST" enctype="multipart/form-data" class="admin-form">
+    <div class="form-row"><div class="form-group"><label>Title *</label><input type="text" name="title" required></div><div class="form-group"><label>Category</label><select name="category"><option value="Goods">Goods</option><option value="Services">Services</option><option value="Food">Food & Produce</option><option value="Books">Books</option><option value="Apparel">Apparel</option></select></div></div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3"></textarea></div>
+    <div class="form-row"><div class="form-group"><label>Price</label><input type="text" name="price"></div><div class="form-group"><label>Seller Name</label><input type="text" name="seller_name"></div></div>
+    <div class="form-group"><label>Seller Contact</label><input type="text" name="seller_contact"></div>
+    <div class="form-group"><label>Image</label><input type="file" name="image" accept="image/*"></div>
+    <button type="submit" class="btn-save">Add Item</button>
+</form>
+<hr class="admin-divider">
+<h2>Current Listings</h2>
+{% if items %}
+<div class="admin-table-wrapper"><table class="admin-table"><thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Seller</th><th>Actions</th></tr></thead><tbody>
+{% for item in items %}<tr><td><strong>{{ item.title }}</strong></td><td><span class="badge">{{ item.category }}</span></td><td>{{ item.price or '—' }}</td><td>{{ item.seller_name or '—' }}</td><td><form method="POST" action="/admin/marketplace/{{ item.id }}/delete" class="delete-form" data-name="{{ item.title }}" style="display:inline;"><button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<p class="empty-state">No items yet.</p>{% endif %}
+{% endblock %}
