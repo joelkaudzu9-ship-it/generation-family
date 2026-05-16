@@ -67,7 +67,7 @@
     </div>
 </section>
 
-<!-- Ministries -->
+<!-- Ministries Section with Images -->
 <section class="ministries-home">
     <div class="container">
         <h2 class="section-heading">Our Ministries</h2>
@@ -75,8 +75,18 @@
             {% if ministries %}
                 {% for ministry in ministries[:4] %}
                 <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
+                    {% if ministry.image_url %}
+                    <div class="ministry-card-image">
+                        <img src="{{ ministry.image_url }}" alt="{{ ministry.name }}">
+                        <div class="ministry-card-overlay">
+                            <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
+                            <h4>{{ ministry.name }}</h4>
+                        </div>
+                    </div>
+                    {% else %}
                     <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
                     <h4>{{ ministry.name }}</h4>
+                    {% endif %}
                 </a>
                 {% endfor %}
             {% endif %}
@@ -87,27 +97,27 @@
     </div>
 </section>
 
-<!-- Resources -->
+<!-- Resources Section -->
 <section class="resources-home">
     <div class="container">
         <h2 class="section-heading">Resources</h2>
         <div class="resources-grid">
-            <a href="/sermons" class="resource-card">
+            <a href="/sermons" class="resource-card" {% if section_images.get('sermons') %}style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ section_images.get('sermons') }}'); background-size: cover; background-position: center;"{% endif %}>
                 <i class="fas fa-microphone-alt"></i>
                 <h3>Sermons</h3>
                 <p>Life-changing messages from our gatherings</p>
             </a>
-            <a href="/blog" class="resource-card">
+            <a href="/blog" class="resource-card" {% if section_images.get('blog') %}style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ section_images.get('blog') }}'); background-size: cover; background-position: center;"{% endif %}>
                 <i class="fas fa-blog"></i>
                 <h3>Blog</h3>
                 <p>Stories, teachings, and reflections</p>
             </a>
-            <a href="/creatives" class="resource-card">
+            <a href="/creatives" class="resource-card" {% if section_images.get('creatives') %}style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ section_images.get('creatives') }}'); background-size: cover; background-position: center;"{% endif %}>
                 <i class="fas fa-palette"></i>
                 <h3>Creatives</h3>
                 <p>Music, drama, poetry, and art</p>
             </a>
-            <a href="/giving" class="resource-card">
+            <a href="/giving" class="resource-card" {% if section_images.get('giving') %}style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ section_images.get('giving') }}'); background-size: cover; background-position: center;"{% endif %}>
                 <i class="fas fa-hand-holding-heart"></i>
                 <h3>Give</h3>
                 <p>Support the movement</p>
@@ -155,8 +165,8 @@
 </section>
 {% endif %}
 
-<!-- Final CTA -->
-<section class="cta">
+<!-- Final CTA with Image -->
+<section class="cta" {% if section_images.get('cta') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('cta') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h2>Revival in me. Awakening through us.</h2>
         <p>Join a generation of passionate lovers of Jesus Christ.</p>
