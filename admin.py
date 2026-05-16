@@ -725,6 +725,13 @@ def delete_section_image(id):
         return redirect_with_toast('admin.dashboard', 'Section image deleted successfully.', 'success')
     except Exception as e:
         return redirect_with_toast('admin.dashboard', f'Delete failed: {str(e)}', 'error')
+    
+@admin_bp.route('/testimonials/<int:id>/edit')
+@login_required
+def edit_testimonial(id):
+    testimonial = supabase_get_one('testimonials', id)
+    testimonials = supabase_get('testimonials', {'order': 'created_at.desc'})
+    return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
 
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])
