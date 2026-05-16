@@ -4807,3 +4807,63 @@ html {
     font-size: 0.88rem;
     line-height: 1.7;
 }
+
+/* Header Actions - Compact */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.login-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.join-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.join-link:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+}
+
+/* Desktop nav - ensure it doesn't overflow */
+.desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+@media (max-width: 1024px) {
+    .desktop-nav {
+        gap: 0px;
+    }
+    
+    .login-link, .join-link {
+        padding: 4px 8px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .header-actions {
+        gap: 4px;
+    }
+}
+
+@media (max-width: 860px) {
+    .desktop-nav {
+        display: none;
+    }
+    
+    .login-link, .join-link {
+        padding: 6px 10px !important;
+        font-size: 0.7rem !important;
+    }
+}

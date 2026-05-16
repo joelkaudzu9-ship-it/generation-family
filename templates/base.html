@@ -102,14 +102,8 @@
                 <a href="/contact">Contact</a>
             </nav>
             
-            <!-- HEADER ACTIONS WITH LOGIN/JOIN BUTTONS -->
+            <!-- HEADER ACTIONS - HAMBURGER ONLY -->
             <div class="header-actions">
-                <a href="/member/login" class="login-link" style="color:var(--gray-light); font-size:0.78rem; padding:8px 12px; text-decoration:none; transition:color 0.2s;">
-                    <i class="fas fa-user"></i> Login
-                </a>
-                <a href="/member/signup" class="btn-gold" style="font-size:0.78rem; padding:8px 16px;">
-                    <i class="fas fa-user-plus"></i> Join
-                </a>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span>
                     <span></span>
@@ -152,14 +146,27 @@
             <a href="/giving">Give</a>
             <a href="/contact">Contact</a>
             
-            <div class="mobile-auth-links" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
-                <a href="/member/login" style="display: block; padding: 12px 0; color: var(--gray-light);">
-                    <i class="fas fa-user"></i> Login
+            <!-- Login/Register - Only appear when user is NOT logged in -->
+            {% if not session.get('user_logged_in') %}
+            <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
+                <a href="/login" style="display: block; padding: 12px 0; color: var(--gray-light);">
+                    <i class="fas fa-sign-in-alt"></i> Login
                 </a>
-                <a href="/member/signup" style="display: block; padding: 12px 0; color: var(--gold);">
-                    <i class="fas fa-user-plus"></i> Join TGF
+                <a href="/register" style="display: block; padding: 12px 0; color: var(--gold);">
+                    <i class="fas fa-user-plus"></i> Register
                 </a>
             </div>
+            {% else %}
+            <!-- Show user info and logout when logged in -->
+            <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
+                <div style="padding: 12px 0; color: var(--gold);">
+                    <i class="fas fa-user-circle"></i> {{ session.get('user_name', 'Member') }}
+                </div>
+                <a href="/logout" style="display: block; padding: 12px 0; color: #e74c3c;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -220,7 +227,6 @@
     
     <!-- Mobile Search JavaScript -->
     <script>
-        // Mobile search functionality
         var mobileSearchInput = document.getElementById('mobileSearchInput');
         if (mobileSearchInput) {
             mobileSearchInput.addEventListener('keypress', function(e) {

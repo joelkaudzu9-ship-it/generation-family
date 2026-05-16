@@ -38,8 +38,8 @@ def inject_settings():
 @app.context_processor
 def inject_member():
     member = None
-    if member_session.get('member_id'):
-        members = supabase_get('members', {'id': f'eq.{member_session["member_id"]}'})
+    if session.get('member_id'):
+        members = supabase_get('members', {'id': f'eq.{session["member_id"]}'})
         member = members[0] if members else None
     return {'current_member': member}
 
@@ -386,11 +386,11 @@ def member_signup():
         password = request.form.get('password')
         group_id = request.form.get('group_id')
         
-        # Check if email already exists
         if email:
             existing = supabase_get('members', {'email': f'eq.{email}'})
             if existing:
-                return render_template('member-signup.html', error='Email already registered. Please login instead.')
+                groups = get_family_groups()
+                return render_template('member-signup.html', groups=groups, error='Email already registered.')
         
         result = supabase_insert('members', {
             'full_name': full_name,
@@ -401,20 +401,20 @@ def member_signup():
         
         member_id = result[0]['id']
         
-        # Auto-join selected group
         if group_id:
             supabase_insert('member_groups', {
                 'member_id': member_id,
                 'group_id': int(group_id)
             })
         
-        member_session['member_id'] = member_id
-        member_session['member_name'] = full_name
+        session['member_id'] = member_id
+        session['member_name'] = full_name
         flash('Welcome to the family!', 'success')
         return redirect(url_for('member_dashboard'))
     
     groups = get_family_groups()
     return render_template('member-signup.html', groups=groups)
+
 
 @app.route('/member/login', methods=['GET', 'POST'])
 def member_login():
@@ -426,8 +426,8 @@ def member_login():
         
         if members and members[0]['password'] == password:
             member = members[0]
-            member_session['member_id'] = member['id']
-            member_session['member_name'] = member['full_name']
+            session['member_id'] = member['id']
+            session['member_name'] = member['full_name']
             flash(f'Welcome back, {member["full_name"]}!', 'success')
             return redirect(url_for('member_dashboard'))
         
@@ -435,19 +435,21 @@ def member_login():
     
     return render_template('member-login.html')
 
+
 @app.route('/member/logout')
 def member_logout():
-    member_session.pop('member_id', None)
-    member_session.pop('member_name', None)
+    session.pop('member_id', None)
+    session.pop('member_name', None)
     flash('You have been logged out.', 'info')
     return redirect('/')
 
+
 @app.route('/member/dashboard')
 def member_dashboard():
-    if not member_session.get('member_id'):
+    if not session.get('member_id'):
         return redirect(url_for('member_login'))
     
-    member_id = member_session['member_id']
+    member_id = session['member_id']
     my_groups = supabase_get('member_groups', {'member_id': f'eq.{member_id}'})
     
     groups_data = []
