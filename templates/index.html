@@ -67,17 +67,18 @@
     </div>
 </section>
 
-<!-- Ministries Section with Images -->
+<!-- Ministries Section with Section Images -->
 <section class="ministries-home">
     <div class="container">
         <h2 class="section-heading">Our Ministries</h2>
         <div class="ministries-grid">
             {% if ministries %}
                 {% for ministry in ministries[:4] %}
+                {% set section_key = 'ministries-' + ministry.slug %}
                 <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
-                    {% if ministry.image_url %}
+                    {% if section_images.get(section_key) %}
                     <div class="ministry-card-image">
-                        <img src="{{ ministry.image_url }}" alt="{{ ministry.name }}">
+                        <img src="{{ section_images.get(section_key) }}" alt="{{ ministry.name }}">
                         <div class="ministry-card-overlay">
                             <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
                             <h4>{{ ministry.name }}</h4>
