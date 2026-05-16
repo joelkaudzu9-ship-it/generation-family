@@ -735,19 +735,39 @@ def edit_testimonial(id):
     return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
 
 # ==================== MINISTRY CONTENT EDITOR ====================
-
-
-@app.route('/ministries/<slug>')
-def ministry_detail(slug):
-    ministries = get_ministries()
-    ministry = next((m for m in ministries if m['slug'] == slug), None)
+# ==================== MINISTRY CONTENT EDITOR ====================
+@admin_bp.route('/ministry-content/<slug>', methods=['GET', 'POST'])
+@role_required('admin', 'ministries')
+def manage_ministry_content(slug):
+    # Get the ministry
+    ministries = supabase_get('ministries', {'slug': f'eq.{slug}'})
+    if not ministries:
+        return redirect_with_toast('admin.dashboard', f'Ministry not found: {slug}', 'error')
     
-    # Get ministry content
-    content = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
-    ministry_content = content[0]['content'] if content else None
+    ministry = ministries[0]
     
-    return render_template('ministry-detail.html', ministry=ministry, ministry_content=ministry_content)
-
+    # Get existing content
+    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
+    current_content = content_records[0]['content'] if content_records else ''
+    
+    if request.method == 'POST':
+        new_content = request.form.get('content', '')
+        
+        if content_records:
+            # Update existing
+            supabase_update('ministry_content', content_records[0]['id'], {'content': new_content})
+        else:
+            # Create new
+            supabase_insert('ministry_content', {
+                'ministry_slug': slug,
+                'content': new_content
+            })
+        
+        return redirect_with_toast('admin.dashboard', f'Content for {ministry["name"]} updated!', 'success')
+    
+    return render_template('admin/ministry-content.html', 
+                         ministry=ministry, 
+                         content=current_content)
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])
 @role_required('admin')
