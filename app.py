@@ -454,7 +454,8 @@ def member_dashboard():
     
     groups_data = []
     for mg in my_groups:
-        group = supabase_get_one('family_groups', mg['group_id'])
+        group_result = supabase_get('family_groups', {'id': f'eq.{mg["group_id"]}'})
+        group = group_result[0] if group_result else None
         if group:
             posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '3'})
             groups_data.append({'group': group, 'posts': posts})
