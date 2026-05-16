@@ -240,11 +240,6 @@ def tgf_poems():
     poems = get_creatives(section='poems')
     return render_template('tgf-poems.html', items=poems)
 
-@app.route('/resources/sermons-mp3')
-def sermons_mp3():
-    sermons_list = get_sermons()
-    return render_template('sermons-mp3.html', sermons=sermons_list)
-
 @app.route('/terms')
 def terms():
     return render_template('terms.html')

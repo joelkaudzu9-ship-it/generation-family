@@ -4790,3 +4790,149 @@ html {
     transform: translateY(-5px);
 }
 
+/* Ministries Grid */
+.ministries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.ministry-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: block;
+    text-decoration: none;
+    background: var(--dark);
+    border: 1px solid #222;
+}
+
+.ministry-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--gold);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* With Image */
+.ministry-card-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+
+.ministry-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ministry-card:hover .ministry-card-image img {
+    transform: scale(1.08);
+}
+
+.ministry-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.9) 0%,
+        rgba(0,0,0,0.4) 50%,
+        rgba(0,0,0,0.2) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.ministry-card:hover .ministry-card-overlay {
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.95) 0%,
+        rgba(212,175,55,0.3) 100%
+    );
+}
+
+.ministry-card-overlay .ministry-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    background: rgba(0,0,0,0.5);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.ministry-card:hover .ministry-card-overlay .ministry-icon {
+    transform: scale(1.1);
+    background: rgba(212,175,55,0.2);
+}
+
+.ministry-card-overlay h4 {
+    color: var(--white);
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Without Image (Fallback) */
+.ministry-card-no-image {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ministry-card-no-image .ministry-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+}
+
+.ministry-card-no-image h4 {
+    color: var(--white);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.ministry-card-no-image p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ministries-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+    }
+    
+    .ministry-card-image {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ministries-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

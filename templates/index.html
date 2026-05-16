@@ -67,13 +67,14 @@
     </div>
 </section>
 
+<!-- Ministries Section with Images -->
 <section class="ministries-home">
     <div class="container">
         <h2 class="section-heading">Our Ministries</h2>
         <div class="ministries-grid">
             {% if ministries %}
                 {% for ministry in ministries[:4] %}
-                <a href="/ministries/{{ ministry.slug }}" class="ministry-card {% if not ministry.image_url %}no-image{% endif %}">
+                <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
                     {% if ministry.image_url %}
                     <div class="ministry-card-image">
                         <img src="{{ ministry.image_url }}" alt="{{ ministry.name }}">
@@ -83,8 +84,11 @@
                         </div>
                     </div>
                     {% else %}
-                    <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
-                    <h4>{{ ministry.name }}</h4>
+                    <div class="ministry-card-no-image">
+                        <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
+                        <h4>{{ ministry.name }}</h4>
+                        <p>{{ ministry.description[:80] if ministry.description else 'Join us in this ministry' }}</p>
+                    </div>
                     {% endif %}
                 </a>
                 {% endfor %}
