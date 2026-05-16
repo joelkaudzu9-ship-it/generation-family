@@ -102,7 +102,18 @@
                 <a href="/contact">Contact</a>
             </nav>
             
-            <!-- HEADER ACTIONS - HAMBURGER ONLY -->
+            <!-- DESKTOP AUTH SECTION (Login/Register) -->
+            <div class="desktop-auth">
+                {% if not session.get('user_logged_in') %}
+                <a href="/login" class="auth-link">Log in</a>
+                <a href="/register" class="auth-join">Join</a>
+                {% else %}
+                <span class="auth-user"><i class="fas fa-user-circle"></i> {{ session.get('user_name', 'Member') }}</span>
+                <a href="/logout" class="auth-logout">Logout</a>
+                {% endif %}
+            </div>
+            
+            <!-- HAMBURGER (Mobile Only) -->
             <div class="header-actions">
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span>
@@ -146,7 +157,7 @@
             <a href="/giving">Give</a>
             <a href="/contact">Contact</a>
             
-            <!-- Login/Register - Only appear when user is NOT logged in -->
+            <!-- Mobile Auth Section -->
             {% if not session.get('user_logged_in') %}
             <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
                 <a href="/login" style="display: block; padding: 12px 0; color: var(--gray-light);">
@@ -157,7 +168,6 @@
                 </a>
             </div>
             {% else %}
-            <!-- Show user info and logout when logged in -->
             <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
                 <div style="padding: 12px 0; color: var(--gold);">
                     <i class="fas fa-user-circle"></i> {{ session.get('user_name', 'Member') }}
@@ -225,7 +235,6 @@
         <div class="lightbox-content" id="lightboxContent"></div>
     </div>
     
-    <!-- Mobile Search JavaScript -->
     <script>
         var mobileSearchInput = document.getElementById('mobileSearchInput');
         if (mobileSearchInput) {
