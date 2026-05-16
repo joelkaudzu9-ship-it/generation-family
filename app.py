@@ -159,18 +159,15 @@ def ministry_detail(slug):
     if not ministry:
         return render_template('404.html'), 404
     
-    # Get ministry content
-    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
-    ministry_title = content_records[0]['title'] if content_records else None
-    ministry_content = content_records[0]['content'] if content_records else None
+    # Get posts
+    posts = supabase_get('ministry_posts', {'ministry_slug': f'eq.{slug}', 'order': 'created_at.desc'})
     
     # Get attachments
     attachments = supabase_get('ministry_attachments', {'ministry_slug': f'eq.{slug}', 'order': 'created_at.desc'})
     
     return render_template('ministry-detail.html', 
                          ministry=ministry, 
-                         ministry_title=ministry_title,
-                         ministry_content=ministry_content,
+                         posts=posts,
                          attachments=attachments)
 
 

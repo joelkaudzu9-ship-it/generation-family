@@ -735,6 +735,8 @@ def edit_testimonial(id):
     return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
 
 # ==================== MINISTRY CONTENT EDITOR ====================
+# ==================== MINISTRY POSTS ====================
+
 @admin_bp.route('/ministry-content/<slug>', methods=['GET', 'POST'])
 @role_required('admin', 'ministries')
 def manage_ministry_content(slug):
@@ -744,34 +746,38 @@ def manage_ministry_content(slug):
     if not ministry:
         return redirect_with_toast('admin.dashboard', 'Ministry not found.', 'error')
     
-    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
-    current_content = content_records[0]['content'] if content_records else ''
-    current_title = content_records[0]['title'] if content_records else ''
+    posts = supabase_get('ministry_posts', {'ministry_slug': f'eq.{slug}', 'order': 'display_order.asc'})
     attachments = supabase_get('ministry_attachments', {'ministry_slug': f'eq.{slug}', 'order': 'created_at.desc'})
     
     if request.method == 'POST':
-        new_title = request.form.get('title', '')
-        new_content = request.form.get('content', '')
+        title = request.form.get('title')
+        content = request.form.get('content')
+        post_type = request.form.get('post_type', 'content')
         
-        if content_records:
-            supabase_update('ministry_content', content_records[0]['id'], {
-                'title': new_title,
-                'content': new_content
-            })
-        else:
-            supabase_insert('ministry_content', {
-                'ministry_slug': slug,
-                'title': new_title,
-                'content': new_content
-            })
-        
-        return redirect_with_toast('admin.manage_ministry_content', 'Content saved!', 'success', slug=slug)
+        supabase_insert('ministry_posts', {
+            'ministry_slug': slug,
+            'title': title,
+            'content': content,
+            'post_type': post_type,
+            'display_order': 0
+        })
+        return redirect_with_toast('admin.manage_ministry_content', 'Post added!', 'success', slug=slug)
     
     return render_template('admin/ministry-content.html', 
                          ministry=ministry, 
-                         content=current_content,
-                         title=current_title,
+                         posts=posts,
                          attachments=attachments)
+
+
+@admin_bp.route('/ministry-posts/<int:post_id>/delete', methods=['POST'])
+@role_required('admin', 'ministries')
+def delete_ministry_post(post_id):
+    post = supabase_get_one('ministry_posts', post_id)
+    if post:
+        slug = post['ministry_slug']
+        supabase_delete('ministry_posts', post_id)
+        return redirect_with_toast('admin.manage_ministry_content', 'Post deleted.', 'success', slug=slug)
+    return redirect_with_toast('admin.dashboard', 'Post not found.', 'error')
     
 @admin_bp.route('/upload-image', methods=['POST'])
 @login_required

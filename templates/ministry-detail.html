@@ -19,48 +19,49 @@
                 <i class="fas {{ ministry.icon }}"></i>
             </div>
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
-            
-            <!-- Dynamic Content from Admin Editor -->
-            {% if ministry_title or ministry_content %}
-            <div class="ministry-rich-content">
-                {% if ministry_title %}
-                <h2>{{ ministry_title }}</h2>
-                {% endif %}
-                {% if ministry_content %}
-                <div class="content-text" style="white-space: pre-wrap; line-height: 1.6;">
-                    {{ ministry_content }}
+
+            <!-- Posts Section (like sermons cards) -->
+            {% if posts and posts|length > 0 %}
+            <div class="ministry-posts">
+                <h2>Updates & Resources</h2>
+                <div class="posts-list">
+                    {% for post in posts %}
+                    <div class="post-card">
+                        <div class="post-header">
+                            <span class="post-type-badge {{ post.post_type }}">{{ post.post_type|title }}</span>
+                            <h3>{{ post.title }}</h3>
+                        </div>
+                        {% if post.content %}
+                        <div class="post-content" style="white-space: pre-wrap; line-height: 1.6;">
+                            {{ post.content }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endif %}
             </div>
             {% endif %}
-            
+
             <!-- Attachments Section -->
-            {% if attachments %}
+            {% if attachments and attachments|length > 0 %}
             <div class="ministry-attachments">
-                <h3>Downloads & Resources</h3>
+                <h2>Downloads & Resources</h2>
                 <div class="attachments-list">
                     {% for file in attachments %}
-                    <a href="{{ file.file_url }}" class="attachment-item" target="_blank" download>
-                        <i class="fas 
-                            {% if file.file_type == 'audio' %}fa-headphones
-                            {% elif file.file_type == 'pdf' %}fa-file-pdf
-                            {% elif file.file_type == 'document' %}fa-file-word
-                            {% elif file.file_type == 'image' %}fa-image
-                            {% else %}fa-paperclip
-                            {% endif %}
-                        "></i>
+                    <a href="{{ file.file_url }}" class="attachment-item" target="_blank">
+                        <i class="fas fa-download"></i>
                         <span class="attachment-name">{{ file.file_name }}</span>
-                        <span class="attachment-type">{{ file.file_type }}</span>
+                        <span class="attachment-type">{{ file.file_type|upper }}</span>
                     </a>
                     {% endfor %}
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Campus Ministry: Show campuses -->
             {% if ministry.slug == 'campus-ministry' or ministry.slug == 'campus' %}
             <div class="campus-list">
-                <h3>Our Campuses</h3>
+                <h2>Our Campuses</h2>
                 <div class="campus-grid">
                     <div class="campus-item">KUHeS BT</div>
                     <div class="campus-item">KUHeS LL</div>
@@ -73,11 +74,11 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Canvas: Show sub-ministries -->
             {% if ministry.slug == 'canvas' %}
             <div class="sub-ministries">
-                <h3>Canvas Expressions</h3>
+                <h2>Canvas Expressions</h2>
                 <div class="sub-ministry-grid">
                     <a href="/resources/tgf-music" class="sub-ministry-card">
                         <i class="fas fa-music"></i>
@@ -94,11 +95,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Ladies' Ministry: Show specific content -->
+
+            <!-- Ladies' Ministry -->
             {% if ministry.slug == 'ladies-ministry' or ministry.slug == 'ladies' %}
             <div class="sub-ministries">
-                <h3>Ladies' Ministry Programs</h3>
+                <h2>Ladies' Ministry Programs</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-praying-hands"></i>
@@ -115,11 +116,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Men's Ministry: Show specific content -->
+
+            <!-- Men's Ministry -->
             {% if ministry.slug == 'mens-ministry' or ministry.slug == 'men' %}
             <div class="sub-ministries">
-                <h3>Men's Ministry Programs</h3>
+                <h2>Men's Ministry Programs</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-users"></i>
@@ -136,11 +137,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Worship Ministry: Show specific content -->
+
+            <!-- Worship Ministry -->
             {% if ministry.slug == 'worship-ministry' or ministry.slug == 'worship' %}
             <div class="sub-ministries">
-                <h3>Worship Ministry</h3>
+                <h2>Worship Ministry</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-drum"></i>
@@ -157,11 +158,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Foundation School: Show specific content -->
+
+            <!-- Foundation School -->
             {% if ministry.slug == 'foundation-school' %}
             <div class="sub-ministries">
-                <h3>Foundation School Programs</h3>
+                <h2>Foundation School Programs</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-book-bible"></i>
@@ -178,11 +179,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Advance: Show sub-branches -->
+
+            <!-- Advance -->
             {% if ministry.slug == 'advance' %}
             <div class="sub-ministries">
-                <h3>Advance Branches</h3>
+                <h2>Advance Branches</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-church"></i>
@@ -203,11 +204,11 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Business Development Ministry -->
+
+            <!-- Business Development -->
             {% if ministry.slug == 'business-ministry' or ministry.slug == 'business-development-ministry' %}
             <div class="sub-ministries">
-                <h3>Business Development Initiatives</h3>
+                <h2>Business Development Initiatives</h2>
                 <div class="sub-ministry-grid">
                     <div class="sub-ministry-card">
                         <i class="fas fa-chart-line"></i>
@@ -224,7 +225,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <div class="ministry-cta">
                 <a href="/contact" class="btn-gold">Get Involved</a>
                 <a href="/family-groups" class="btn-outline">Join a Family Group</a>
@@ -241,67 +242,73 @@
 </section>
 
 <style>
-    .ministry-rich-content {
-        margin: 2rem 0;
-        padding: 1.5rem;
-        background: rgba(255,255,255,0.03);
-        border-radius: 16px;
-        border-left: 3px solid var(--gold);
+    /* Posts Section */
+    .ministry-posts {
+        margin: 3rem 0;
     }
-    
-    .ministry-rich-content h2,
-    .ministry-rich-content h3 {
+    .ministry-posts h2 {
         color: var(--gold);
-        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+    .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .post-card {
+        background: var(--dark);
+        border: 1px solid #222;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s;
+    }
+    .post-card:hover {
+        border-color: var(--gold);
+    }
+    .post-header {
+        margin-bottom: 1rem;
+    }
+    .post-type-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
         margin-bottom: 0.75rem;
     }
-    
-    .ministry-rich-content h2:first-child,
-    .ministry-rich-content h3:first-child {
-        margin-top: 0;
+    .post-type-badge.content { background: rgba(212, 175, 55, 0.15); color: var(--gold); }
+    .post-type-badge.announcement { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+    .post-type-badge.teaching { background: rgba(76, 175, 80, 0.15); color: #4caf50; }
+    .post-type-badge.schedule { background: rgba(255, 152, 0, 0.15); color: #ff9800; }
+    .post-card h3 {
+        font-size: 1.1rem;
+        margin: 0;
+        color: var(--white);
     }
-    
-    .ministry-rich-content p {
-        margin-bottom: 1rem;
+    .post-content {
+        color: var(--gray-light);
+        font-size: 0.95rem;
         line-height: 1.7;
     }
-    
-    .ministry-rich-content ul, 
-    .ministry-rich-content ol {
-        margin: 1rem 0;
-        padding-left: 1.5rem;
-    }
-    
-    .ministry-rich-content li {
-        margin-bottom: 0.5rem;
-    }
-    
-    .ministry-rich-content img {
-        max-width: 100%;
-        border-radius: 12px;
-        margin: 1rem 0;
-    }
-    
-    /* Attachments Styles */
+
+    /* Attachments Section */
     .ministry-attachments {
         margin: 2rem 0;
         padding: 1.5rem;
         background: var(--dark);
         border-radius: 16px;
     }
-    
-    .ministry-attachments h3 {
+    .ministry-attachments h2 {
         color: var(--gold);
         margin-bottom: 1rem;
         font-size: 1.3rem;
     }
-    
     .attachments-list {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
     }
-    
     .attachment-item {
         display: flex;
         align-items: center;
@@ -313,54 +320,40 @@
         transition: all 0.3s;
         text-decoration: none;
     }
-    
     .attachment-item:hover {
         border-color: var(--gold);
         transform: translateX(5px);
     }
-    
     .attachment-item i {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         color: var(--gold);
         width: 30px;
     }
-    
     .attachment-name {
         flex: 1;
         font-size: 0.9rem;
         color: var(--white);
     }
-    
     .attachment-type {
         font-size: 0.7rem;
         color: var(--gray);
-        text-transform: uppercase;
         background: rgba(255,255,255,0.05);
         padding: 2px 8px;
         border-radius: 12px;
     }
-    
-    .ministry-cta {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-    }
-    
-    .campus-list h3,
-    .sub-ministries h3 {
+
+    /* Campus Grid */
+    .campus-list h2, .sub-ministries h2 {
         color: var(--gold);
         margin-bottom: 1rem;
         font-size: 1.3rem;
     }
-    
     .campus-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
     }
-    
     .campus-item {
         background: var(--dark);
         padding: 0.75rem 1rem;
@@ -369,18 +362,15 @@
         border: 1px solid #222;
         transition: all 0.3s;
     }
-    
     .campus-item:hover {
         border-color: var(--gold);
     }
-    
     .sub-ministry-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
     }
-    
     .sub-ministry-card {
         background: var(--dark);
         padding: 1.5rem 1rem;
@@ -392,34 +382,28 @@
         color: var(--white);
         display: block;
     }
-    
     .sub-ministry-card:hover {
         border-color: var(--gold);
         transform: translateY(-3px);
     }
-    
     .sub-ministry-card i {
         font-size: 2rem;
         color: var(--gold);
         margin-bottom: 0.75rem;
         display: block;
     }
-    
     .sub-ministry-card h4 {
         font-size: 0.9rem;
         margin: 0;
     }
-    
     .ministry-detail-icon {
         text-align: center;
         margin-bottom: 1.5rem;
     }
-    
     .ministry-detail-icon i {
         font-size: 3rem;
         color: var(--gold);
     }
-    
     .ministry-detail-desc {
         text-align: center;
         font-size: 1.1rem;
@@ -427,37 +411,35 @@
         margin: 0 auto 2rem auto;
         color: var(--gray-light);
     }
-    
+    .ministry-cta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
     .empty-state-page {
         text-align: center;
         padding: 4rem 2rem;
     }
-    
     .empty-state-page i {
         font-size: 3rem;
         color: var(--gray);
         margin-bottom: 1rem;
         display: block;
     }
-    
     @media (max-width: 768px) {
-        .campus-grid,
-        .sub-ministry-grid {
+        .campus-grid, .sub-ministry-grid {
             grid-template-columns: repeat(2, 1fr);
         }
-        
         .ministry-cta {
             flex-direction: column;
         }
-        
         .ministry-cta a {
             text-align: center;
         }
     }
-    
     @media (max-width: 480px) {
-        .campus-grid,
-        .sub-ministry-grid {
+        .campus-grid, .sub-ministry-grid {
             grid-template-columns: 1fr;
         }
     }

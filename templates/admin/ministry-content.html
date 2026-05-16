@@ -32,34 +32,83 @@
 </div>
 {% endif %}
 
-<h1>{{ ministry.name }} — Content</h1>
+<h1>{{ ministry.name }} — Posts & Resources</h1>
+<p>Add announcements, schedules, teachings, and files for visitors.</p>
 
-<!-- Simple Text Content Form -->
+<!-- Add New Post Form -->
 <form method="POST" class="admin-form">
-    <div class="form-group">
-        <label>Section Title (e.g. "Announcements", "Meeting Schedule", "Our Vision")</label>
-        <input type="text" name="title" value="{{ title or '' }}" placeholder="Enter a title for this content block">
-        <span class="form-hint">Optional — leave blank to show only the content without a heading</span>
+    <h3>➕ Add New Post</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" placeholder="e.g. Weekly Announcements" required>
+        </div>
+        <div class="form-group">
+            <label>Post Type</label>
+            <select name="post_type">
+                <option value="content">📄 Content</option>
+                <option value="announcement">📢 Announcement</option>
+                <option value="teaching">📖 Teaching</option>
+                <option value="schedule">📅 Schedule</option>
+            </select>
+        </div>
     </div>
     <div class="form-group">
         <label>Content</label>
-        <textarea name="content" rows="12" placeholder="Write your content here... Paragraphs are separated by blank lines.">{{ content or '' }}</textarea>
-        <span class="form-hint">Plain text only. Line breaks will be preserved.</span>
+        <textarea name="content" rows="6" placeholder="Write your post content here... Use plain text. Line breaks will be preserved."></textarea>
     </div>
-    <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Content</button>
+    <button type="submit" class="btn-save"><i class="fas fa-plus"></i> Add Post</button>
 </form>
 
 <hr class="admin-divider">
 
-<!-- File Upload Form -->
-<h2>Upload a File</h2>
+<!-- Existing Posts List -->
+<h2>📋 Existing Posts ({{ posts|length }})</h2>
+{% if posts %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Content Preview</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td><strong>{{ post.title }}</strong></td>
+                <td><span class="badge">{{ post.post_type|title }}</span></td>
+                <td>{% if post.content %}{{ post.content[:80] }}{% else %}<em>No content</em>{% endif %}{% if post.content and post.content|length > 80 %}...{% endif %}</td>
+                <td class="actions-cell">
+                    <form method="POST" action="/admin/ministry-posts/{{ post.id }}/delete" class="delete-form" data-name="{{ post.title }}" style="display:inline;">
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty-state">
+    <i class="fas fa-pencil-alt"></i><br>
+    No posts yet. Add one above.
+</p>
+{% endif %}
+
+<hr class="admin-divider">
+
+<!-- File Upload Section -->
+<h2>📎 Upload File</h2>
 <p>Upload PDFs, audio, documents, or images for visitors to download.</p>
 
 <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/ministry-content/{{ ministry.slug }}/upload-file">
     <div class="form-row">
         <div class="form-group">
             <label>File Name (shown to visitors)</label>
-            <input type="text" name="file_name" placeholder="e.g. January Schedule" required>
+            <input type="text" name="file_name" placeholder="e.g. January Schedule PDF" required>
         </div>
         <div class="form-group">
             <label>Choose File</label>
@@ -69,14 +118,14 @@
     <button type="submit" class="btn-save"><i class="fas fa-upload"></i> Upload File</button>
 </form>
 
-{% if attachments and attachments|length > 0 %}
+{% if attachments %}
 <div class="admin-table-wrapper" style="margin-top:20px;">
-    <h3>Uploaded Files ({{ attachments|length }})</h3>
+    <h3>📁 Uploaded Files ({{ attachments|length }})</h3>
     <table class="admin-table">
         <thead>
             <tr>
                 <th>File Name</th>
-                <th>Size</th>
+                <th>Download</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -84,7 +133,7 @@
             {% for file in attachments %}
             <tr>
                 <td><strong>{{ file.file_name }}</strong></td>
-                <td><a href="{{ file.file_url }}" target="_blank" class="btn-edit" style="padding:4px 10px;"><i class="fas fa-download"></i> Download</a></td>
+                <td><a href="{{ file.file_url }}" target="_blank" class="btn-edit" style="padding:4px 10px;"><i class="fas fa-download"></i> View</a></td>
                 <td>
                     <form method="POST" action="/admin/ministry-content/{{ ministry.slug }}/delete-file/{{ file.id }}" class="delete-form" data-name="{{ file.file_name }}" style="display:inline;">
                         <button type="submit" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
@@ -125,22 +174,6 @@
 </script>
 
 <style>
-    .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: transparent;
-        border: 1px solid var(--gold);
-        color: var(--gold);
-        border-radius: 8px;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .btn-outline:hover {
-        background: var(--gold);
-        color: var(--black);
-    }
     .dashboard-toast {
         position: fixed;
         top: 90px;
@@ -178,6 +211,31 @@
     @keyframes slideOut {
         from { opacity: 1; transform: translateX(0); }
         to { opacity: 0; transform: translateX(100px); }
+    }
+    .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-outline:hover {
+        background: var(--gold);
+        color: var(--black);
+    }
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        background: #1a1a1a;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--gray);
     }
 </style>
 
