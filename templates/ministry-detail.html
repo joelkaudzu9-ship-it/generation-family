@@ -27,6 +27,29 @@
             </div>
             {% endif %}
             
+            <!-- Attachments Section -->
+            {% if attachments %}
+            <div class="ministry-attachments">
+                <h3>Downloads & Resources</h3>
+                <div class="attachments-list">
+                    {% for file in attachments %}
+                    <a href="{{ file.file_url }}" class="attachment-item" target="_blank" download>
+                        <i class="fas 
+                            {% if file.file_type == 'audio' %}fa-headphones
+                            {% elif file.file_type == 'pdf' %}fa-file-pdf
+                            {% elif file.file_type == 'document' %}fa-file-word
+                            {% elif file.file_type == 'image' %}fa-image
+                            {% else %}fa-paperclip
+                            {% endif %}
+                        "></i>
+                        <span class="attachment-name">{{ file.file_name }}</span>
+                        <span class="attachment-type">{{ file.file_type }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Campus Ministry: Show campuses -->
             {% if ministry.slug == 'campus-ministry' or ministry.slug == 'campus' %}
             <div class="campus-list">
@@ -250,6 +273,64 @@
         max-width: 100%;
         border-radius: 12px;
         margin: 1rem 0;
+    }
+    
+    /* Attachments Styles */
+    .ministry-attachments {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: var(--dark);
+        border-radius: 16px;
+    }
+    
+    .ministry-attachments h3 {
+        color: var(--gold);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .attachments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .attachment-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        background: var(--darker);
+        border: 1px solid #222;
+        border-radius: 10px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    
+    .attachment-item:hover {
+        border-color: var(--gold);
+        transform: translateX(5px);
+    }
+    
+    .attachment-item i {
+        font-size: 1.3rem;
+        color: var(--gold);
+        width: 30px;
+    }
+    
+    .attachment-name {
+        flex: 1;
+        font-size: 0.9rem;
+        color: var(--white);
+    }
+    
+    .attachment-type {
+        font-size: 0.7rem;
+        color: var(--gray);
+        text-transform: uppercase;
+        background: rgba(255,255,255,0.05);
+        padding: 2px 8px;
+        border-radius: 12px;
     }
     
     .ministry-cta {

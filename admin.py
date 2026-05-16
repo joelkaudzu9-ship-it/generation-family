@@ -735,39 +735,33 @@ def edit_testimonial(id):
     return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
 
 # ==================== MINISTRY CONTENT EDITOR ====================
-# ==================== MINISTRY CONTENT EDITOR ====================
 @admin_bp.route('/ministry-content/<slug>', methods=['GET', 'POST'])
-@role_required('admin', 'ministries')
+@login_required
 def manage_ministry_content(slug):
-    # Get the ministry
     ministries = supabase_get('ministries', {'slug': f'eq.{slug}'})
-    if not ministries:
-        return redirect_with_toast('admin.dashboard', f'Ministry not found: {slug}', 'error')
+    ministry = ministries[0] if ministries else None
     
-    ministry = ministries[0]
+    if not ministry:
+        flash('Ministry not found.', 'error')
+        return redirect(url_for('admin.dashboard'))
     
-    # Get existing content
-    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
-    current_content = content_records[0]['content'] if content_records else ''
+    content = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
+    current_content = content[0]['content'] if content else ''
+    attachments = supabase_get('ministry_attachments', {'ministry_slug': f'eq.{slug}', 'order': 'created_at.desc'})
     
     if request.method == 'POST':
         new_content = request.form.get('content', '')
-        
-        if content_records:
-            # Update existing
-            supabase_update('ministry_content', content_records[0]['id'], {'content': new_content})
+        if content:
+            supabase_update('ministry_content', content[0]['id'], {'content': new_content})
         else:
-            # Create new
-            supabase_insert('ministry_content', {
-                'ministry_slug': slug,
-                'content': new_content
-            })
-        
-        return redirect_with_toast('admin.dashboard', f'Content for {ministry["name"]} updated!', 'success')
+            supabase_insert('ministry_content', {'ministry_slug': slug, 'content': new_content})
+        flash('Content updated!', 'success')
+        return redirect(url_for('admin.manage_ministry_content', slug=slug))
     
     return render_template('admin/ministry-content.html', 
                          ministry=ministry, 
-                         content=current_content)
+                         content=current_content,
+                         attachments=attachments)
     
 @admin_bp.route('/upload-image', methods=['POST'])
 @login_required
@@ -780,6 +774,49 @@ def upload_image_endpoint():
         except Exception as e:
             return jsonify({'error': str(e)}), 400
     return jsonify({'error': 'No file'}), 400
+
+@admin_bp.route('/ministry-content/<slug>/upload-file', methods=['POST'])
+@login_required
+def upload_ministry_file(slug):
+    file = request.files.get('file')
+    file_name = request.form.get('file_name', 'File')
+    
+    if file and file.filename:
+        try:
+            # Determine file type
+            ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+            if ext in ['mp3', 'wav', 'm4a', 'aac']:
+                result = upload_audio(file, folder=f'generation/ministries/{slug}')
+                file_type = 'audio'
+            elif ext in ['pdf']:
+                result = upload_image(file, folder=f'generation/ministries/{slug}')
+                file_type = 'pdf'
+            elif ext in ['doc', 'docx']:
+                result = upload_image(file, folder=f'generation/ministries/{slug}')
+                file_type = 'document'
+            else:
+                result = upload_image(file, folder=f'generation/ministries/{slug}')
+                file_type = 'image' if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp'] else 'other'
+            
+            supabase_insert('ministry_attachments', {
+                'ministry_slug': slug,
+                'file_name': file_name,
+                'file_url': result['url'],
+                'file_type': file_type
+            })
+            flash('File uploaded!', 'success')
+        except Exception as e:
+            flash(f'Upload failed: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.manage_ministry_content', slug=slug))
+
+@admin_bp.route('/ministry-content/<slug>/delete-file/<int:file_id>', methods=['POST'])
+@login_required
+def delete_ministry_file(slug, file_id):
+    supabase_delete('ministry_attachments', file_id)
+    flash('File removed.', 'success')
+    return redirect(url_for('admin.manage_ministry_content', slug=slug))
+
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])
 @role_required('admin')

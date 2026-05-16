@@ -4358,3 +4358,61 @@ html {
 .ministry-content li {
     margin-bottom: 6px;
 }
+
+.ministry-attachments {
+    max-width: 700px;
+    margin: 30px auto 0;
+    padding: 24px;
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+}
+
+.ministry-attachments h3 {
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-size: 1rem;
+}
+
+.attachments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid #222;
+    border-radius: 10px;
+    color: var(--gray-light);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.attachment-item:hover {
+    border-color: var(--gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.attachment-item i {
+    color: var(--gold);
+    font-size: 1rem;
+    width: 20px;
+}
+
+.attachment-name {
+    flex: 1;
+}
+
+.attachment-type {
+    color: var(--gray);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    background: #111;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
