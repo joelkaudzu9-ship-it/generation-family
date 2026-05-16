@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — {{ session.get('member_name', 'Member') }}{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Welcome, {{ session.get('member_name', 'Member') }}</h1>
+        <p class="page-subtitle">Your groups, updates, and community</p>
+    </div>
+</section>
+
+<section style="padding:60px 0;background:var(--black);">
+    <div class="container">
+        {% if groups_data %}
+            {% for item in groups_data %}
+            <div style="background:var(--darker);border:1px solid #222;border-radius:16px;padding:28px;margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                    <div>
+                        <h2 style="color:var(--gold);font-size:1.2rem;">{{ item.group.name }}</h2>
+                        <p style="color:var(--gray);font-size:0.85rem;">{{ item.group.city }}{% if item.group.meeting_time %} · {{ item.group.meeting_time }}{% endif %}</p>
+                    </div>
+                    <a href="/family-groups/{{ item.group.id }}" class="btn-outline" style="font-size:0.8rem;">View Group</a>
+                </div>
+                
+                {% if item.posts %}
+                <h3 style="color:var(--gold);font-size:0.9rem;margin-bottom:12px;">Latest Updates</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    {% for post in item.posts %}
+                    <div style="background:rgba(212,175,55,0.03);border:1px solid #1a1a1a;border-radius:10px;padding:14px;">
+                        <strong style="color:#fff;">{{ post.title }}</strong>
+                        <span style="color:#555;font-size:0.7rem;display:block;">{{ post.created_at[:10] if post.created_at else '' }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+        <div style="text-align:center;padding:40px;">
+            <i class="fas fa-users" style="font-size:3rem;color:var(--gold);opacity:0.5;margin-bottom:16px;display:block;"></i>
+            <h3 style="color:var(--white);margin-bottom:8px;">You haven't joined any groups yet</h3>
+            <p style="color:var(--gray);margin-bottom:20px;">Find a family group near you and join the community.</p>
+            <a href="/family-groups" class="btn-gold">Find a Group</a>
+        </div>
+        {% endif %}
+        
+        <div style="text-align:center;margin-top:20px;">
+            <a href="/member/logout" style="color:#e74c3c;font-size:0.85rem;">Logout</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

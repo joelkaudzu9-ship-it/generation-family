@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary Meta Tags -->
-    <title>{% block title %}The Generation Family | A Spiritual & Growth Family{% endblock %}</title>
-    <meta name="title" content="{% block meta_title %}The Generation Family | A Spiritual & Growth Family{% endblock %}">
-    <meta name="description" content="{% block meta_description %}A spiritual and growth family raising a generation rooted in faith, growing in love, and living with purpose.{% endblock %}">
-    <meta name="keywords" content="church, generation family, TGF, spiritual growth, Malawi, Christian, worship, sermons, faith">
+    <title>{% block title %}The Generation Family | Revival in me. Awakening through us.{% endblock %}</title>
+    <meta name="title" content="{% block meta_title %}The Generation Family | Revival in me. Awakening through us.{% endblock %}">
+    <meta name="description" content="{% block meta_description %}Like Jesus: Heavenly minded, Earthly incredible. A revival movement raising Christ-centered leaders across campuses and cities in Malawi.{% endblock %}">
+    <meta name="keywords" content="revival, generation family, TGF, spiritual growth, Malawi, Christian, worship, sermons, faith, Jesus, campus ministry, prayer revival">
     <meta name="author" content="The Generation Family">
     <meta name="robots" content="index, follow">
     
@@ -69,12 +69,12 @@
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TGF Logo" class="logo-img">
                 <div class="logo-text">
                     <span class="logo-name">The Generation Family</span>
-                    <span class="logo-tagline">{{ settings.get('year_theme', 'TGF 2026') }}</span>
+                    <span class="logo-tagline">{{ settings.get('year_theme', 'Revival Generation') }}</span>
                     <span class="service-times-header">Sun 9AM & 11AM · Wed 6PM</span>
                 </div>
             </a>
 
-            <!-- DESKTOP NAVIGATION - Blog under Resources dropdown -->
+            <!-- DESKTOP NAVIGATION -->
             <nav class="desktop-nav">
                 <a href="/">Home</a>
                 <div class="nav-dropdown">
@@ -101,7 +101,15 @@
                 <a href="/giving">Give</a>
                 <a href="/contact">Contact</a>
             </nav>
+            
+            <!-- HEADER ACTIONS WITH LOGIN/JOIN BUTTONS -->
             <div class="header-actions">
+                <a href="/member/login" class="login-link" style="color:var(--gray-light); font-size:0.78rem; padding:8px 12px; text-decoration:none; transition:color 0.2s;">
+                    <i class="fas fa-user"></i> Login
+                </a>
+                <a href="/member/signup" class="btn-gold" style="font-size:0.78rem; padding:8px 16px;">
+                    <i class="fas fa-user-plus"></i> Join
+                </a>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span>
                     <span></span>
@@ -119,9 +127,8 @@
         </div>
         <div class="mobile-search">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search..." class="mobile-search-input">
+            <input type="text" placeholder="Search..." class="mobile-search-input" id="mobileSearchInput">
         </div>
-        <!-- MOBILE MENU - Blog removed as standalone, accessible via Resources -->
         <div class="mobile-menu-body">
             <a href="/">Home</a>
             <a href="/about">About Us</a>
@@ -144,6 +151,15 @@
             <a href="/testimonials">Testimonies</a>
             <a href="/giving">Give</a>
             <a href="/contact">Contact</a>
+            
+            <div class="mobile-auth-links" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
+                <a href="/member/login" style="display: block; padding: 12px 0; color: var(--gray-light);">
+                    <i class="fas fa-user"></i> Login
+                </a>
+                <a href="/member/signup" style="display: block; padding: 12px 0; color: var(--gold);">
+                    <i class="fas fa-user-plus"></i> Join TGF
+                </a>
+            </div>
         </div>
     </div>
 
@@ -201,5 +217,21 @@
         <button class="lightbox-next" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
         <div class="lightbox-content" id="lightboxContent"></div>
     </div>
+    
+    <!-- Mobile Search JavaScript -->
+    <script>
+        // Mobile search functionality
+        var mobileSearchInput = document.getElementById('mobileSearchInput');
+        if (mobileSearchInput) {
+            mobileSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    var query = this.value.trim();
+                    if (query) {
+                        window.location.href = '/search?q=' + encodeURIComponent(query);
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

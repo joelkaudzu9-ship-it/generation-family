@@ -35,6 +35,14 @@ def inject_settings():
         'section_images': get_section_images()
     }
 
+@app.context_processor
+def inject_member():
+    member = None
+    if member_session.get('member_id'):
+        members = supabase_get('members', {'id': f'eq.{member_session["member_id"]}'})
+        member = members[0] if members else None
+    return {'current_member': member}
+
 @app.template_filter('linebreaks')
 def linebreaks_filter(value):
     """Convert newlines to <br> tags, preserve paragraphs"""
@@ -366,6 +374,90 @@ def family_group_detail(group_id):
                          gallery=gallery,
                          posts=posts)
 
+from flask import session as member_session
+
+# ==================== MEMBER AUTH ====================
+@app.route('/member/signup', methods=['GET', 'POST'])
+def member_signup():
+    if request.method == 'POST':
+        full_name = request.form.get('full_name')
+        email = request.form.get('email', '')
+        phone = request.form.get('phone', '')
+        password = request.form.get('password')
+        group_id = request.form.get('group_id')
+        
+        # Check if email already exists
+        if email:
+            existing = supabase_get('members', {'email': f'eq.{email}'})
+            if existing:
+                return render_template('member-signup.html', error='Email already registered. Please login instead.')
+        
+        result = supabase_insert('members', {
+            'full_name': full_name,
+            'email': email,
+            'phone': phone,
+            'password': password
+        })
+        
+        member_id = result[0]['id']
+        
+        # Auto-join selected group
+        if group_id:
+            supabase_insert('member_groups', {
+                'member_id': member_id,
+                'group_id': int(group_id)
+            })
+        
+        member_session['member_id'] = member_id
+        member_session['member_name'] = full_name
+        flash('Welcome to the family!', 'success')
+        return redirect(url_for('member_dashboard'))
+    
+    groups = get_family_groups()
+    return render_template('member-signup.html', groups=groups)
+
+@app.route('/member/login', methods=['GET', 'POST'])
+def member_login():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        members = supabase_get('members', {'email': f'eq.{email}', 'is_active': 'eq.true'})
+        
+        if members and members[0]['password'] == password:
+            member = members[0]
+            member_session['member_id'] = member['id']
+            member_session['member_name'] = member['full_name']
+            flash(f'Welcome back, {member["full_name"]}!', 'success')
+            return redirect(url_for('member_dashboard'))
+        
+        return render_template('member-login.html', error='Invalid email or password.')
+    
+    return render_template('member-login.html')
+
+@app.route('/member/logout')
+def member_logout():
+    member_session.pop('member_id', None)
+    member_session.pop('member_name', None)
+    flash('You have been logged out.', 'info')
+    return redirect('/')
+
+@app.route('/member/dashboard')
+def member_dashboard():
+    if not member_session.get('member_id'):
+        return redirect(url_for('member_login'))
+    
+    member_id = member_session['member_id']
+    my_groups = supabase_get('member_groups', {'member_id': f'eq.{member_id}'})
+    
+    groups_data = []
+    for mg in my_groups:
+        group = supabase_get_one('family_groups', mg['group_id'])
+        if group:
+            posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '3'})
+            groups_data.append({'group': group, 'posts': posts})
+    
+    return render_template('member-dashboard.html', groups_data=groups_data)
 
 @app.route('/subscribe', methods=['POST'])
 def subscribe():

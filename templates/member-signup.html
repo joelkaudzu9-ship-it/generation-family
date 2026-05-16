@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Join The Generation Family{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Join the Family</h1>
+        <p class="page-subtitle">Create your account and find your group</p>
+    </div>
+</section>
+
+<section style="padding:60px 0;background:var(--black);">
+    <div class="container" style="max-width:500px;">
+        {% if error %}
+        <div style="background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:14px;border-radius:10px;margin-bottom:20px;">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" style="background:var(--darker);border:1px solid #222;border-radius:16px;padding:32px;">
+            <div style="margin-bottom:16px;">
+                <label style="color:#ccc;font-size:0.85rem;">Full Name *</label>
+                <input type="text" name="full_name" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="color:#ccc;font-size:0.85rem;">Email</label>
+                <input type="email" name="email" style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="color:#ccc;font-size:0.85rem;">Phone</label>
+                <input type="text" name="phone" style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="color:#ccc;font-size:0.85rem;">Password *</label>
+                <input type="password" name="password" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <div style="margin-bottom:24px;">
+                <label style="color:#ccc;font-size:0.85rem;">Select Your Family Group</label>
+                <select name="group_id" style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+                    <option value="">— Choose a group —</option>
+                    {% for g in groups %}
+                    <option value="{{ g.id }}">{{ g.name }} — {{ g.city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-gold" style="width:100%;">Create Account</button>
+        </form>
+        
+        <p style="text-align:center;margin-top:20px;color:var(--gray);">
+            Already have an account? <a href="/member/login" style="color:var(--gold);">Login</a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}

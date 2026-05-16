@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Member Login{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Welcome Back</h1>
+        <p class="page-subtitle">Login to see your groups and updates</p>
+    </div>
+</section>
+
+<section style="padding:60px 0;background:var(--black);">
+    <div class="container" style="max-width:400px;">
+        {% if error %}
+        <div style="background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:14px;border-radius:10px;margin-bottom:20px;">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" style="background:var(--darker);border:1px solid #222;border-radius:16px;padding:32px;">
+            <div style="margin-bottom:16px;">
+                <label style="color:#ccc;font-size:0.85rem;">Email</label>
+                <input type="email" name="email" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <div style="margin-bottom:24px;">
+                <label style="color:#ccc;font-size:0.85rem;">Password</label>
+                <input type="password" name="password" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+            </div>
+            <button type="submit" class="btn-gold" style="width:100%;">Login</button>
+        </form>
+        
+        <p style="text-align:center;margin-top:20px;color:var(--gray);">
+            Don't have an account? <a href="/member/signup" style="color:var(--gold);">Sign Up</a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}
