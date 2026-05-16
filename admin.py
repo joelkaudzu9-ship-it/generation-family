@@ -735,37 +735,51 @@ def edit_testimonial(id):
     return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
 
 # ==================== MINISTRY CONTENT EDITOR ====================
+# ==================== MINISTRY CONTENT EDITOR ====================
 @admin_bp.route('/ministry-content/<slug>', methods=['GET', 'POST'])
 @role_required('admin', 'ministries')
 def manage_ministry_content(slug):
+    # Get the ministry
     ministries = supabase_get('ministries', {'slug': f'eq.{slug}'})
     if not ministries:
-        return redirect_with_toast('admin.dashboard', 'Ministry not found', 'error')
+        return redirect_with_toast('admin.dashboard', f'Ministry not found: {slug}', 'error')
     
     ministry = ministries[0]
+    
+    # Get existing content
     content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
     current_content = content_records[0]['content'] if content_records else ''
     
     if request.method == 'POST':
         new_content = request.form.get('content', '')
+        
         if content_records:
+            # Update existing
             supabase_update('ministry_content', content_records[0]['id'], {'content': new_content})
         else:
-            supabase_insert('ministry_content', {'ministry_slug': slug, 'content': new_content})
-        return redirect_with_toast('admin.dashboard', f'{ministry["name"]} content updated!', 'success')
+            # Create new
+            supabase_insert('ministry_content', {
+                'ministry_slug': slug,
+                'content': new_content
+            })
+        
+        return redirect_with_toast('admin.dashboard', f'Content for {ministry["name"]} updated!', 'success')
     
-    return render_template('admin/ministry-content.html', ministry=ministry, content=current_content)
+    return render_template('admin/ministry-content.html', 
+                         ministry=ministry, 
+                         content=current_content)
     
-@admin_bp.route('/upload-editor-image', methods=['POST'])
+@admin_bp.route('/upload-image', methods=['POST'])
 @login_required
-def upload_editor_image():
-    file = request.files.get('image')
-    if not file:
-        return jsonify({'error': 'No file'}), 400
-    
-    result = upload_image(file, folder='generation/ministry-content')
-    return jsonify({'url': result['url']})
-
+def upload_image_endpoint():
+    file = request.files.get('file')
+    if file and file.filename:
+        try:
+            result = upload_image(file, folder='generation/content')
+            return jsonify({'location': result['url']})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+    return jsonify({'error': 'No file'}), 400
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])
 @role_required('admin')
