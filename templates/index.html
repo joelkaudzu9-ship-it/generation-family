@@ -119,7 +119,7 @@
     </div>
 </section>
 
-<!-- Testimonials -->
+<!-- Testimonials with Images -->
 {% if testimonials %}
 <section class="testimonials">
     <div class="container">
@@ -127,8 +127,22 @@
         <div class="testimonial-slider">
             {% for testimonial in testimonials %}
             <div class="testimonial-slide {% if loop.first %}active{% endif %}">
-                <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
-                <p class="testimonial-author">— {{ testimonial.name }}</p>
+                <div class="testimony-card">
+                    {% if testimonial.image_url %}
+                    <div class="testimony-photo">
+                        <img src="{{ testimonial.image_url }}" alt="{{ testimonial.name }}">
+                    </div>
+                    {% else %}
+                    <div class="testimony-icon">
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    {% endif %}
+                    <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
+                    <p class="testimonial-author">— {{ testimonial.name }}</p>
+                    {% if testimonial.role %}
+                    <p class="testimony-role">{{ testimonial.role }}</p>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>

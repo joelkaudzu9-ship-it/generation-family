@@ -16,10 +16,31 @@
 {% block content %}
 <h1>{% if edit_testimonial %}Edit{% else %}Add{% endif %} Testimonial</h1>
 
-<form method="POST" class="admin-form" action="/admin/testimonials">
-    {% if edit_testimonial %}<input type="hidden" name="testimonial_id" value="{{ edit_testimonial.id }}">{% endif %}
-    <div class="form-group"><label>Name *</label><input type="text" name="name" value="{{ edit_testimonial.name if edit_testimonial else '' }}" required></div>
-    <div class="form-group"><label>Testimony *</label><textarea name="quote" rows="4" required>{{ edit_testimonial.quote if edit_testimonial else '' }}</textarea></div>
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/testimonials">
+    {% if edit_testimonial %}
+    <input type="hidden" name="testimonial_id" value="{{ edit_testimonial.id }}">
+    <input type="hidden" name="existing_image_url" value="{{ edit_testimonial.image_url }}">
+    {% endif %}
+    
+    <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" value="{{ edit_testimonial.name if edit_testimonial else '' }}" required>
+    </div>
+    <div class="form-group">
+        <label>Testimony *</label>
+        <textarea name="quote" rows="4" required>{{ edit_testimonial.quote if edit_testimonial else '' }}</textarea>
+    </div>
+    <div class="form-group">
+        <label>Photo (optional)</label>
+        {% if edit_testimonial and edit_testimonial.image_url %}
+        <div class="current-image">
+            <img src="{{ edit_testimonial.image_url }}" alt="Current" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);">
+            <span>Current photo</span>
+        </div>
+        {% endif %}
+        <input type="file" name="image" accept="image/*">
+        <span class="form-hint">Square photo recommended. Face should be centered.</span>
+    </div>
     <button type="submit" class="btn-save">{% if edit_testimonial %}Update{% else %}Add{% endif %} Testimonial</button>
     {% if edit_testimonial %}<a href="/admin/testimonials" class="btn-cancel">Cancel</a>{% endif %}
 </form>
@@ -30,12 +51,19 @@
 {% if testimonials %}
 <div class="admin-table-wrapper">
     <table class="admin-table">
-        <thead><tr><th>Name</th><th>Quote</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Photo</th><th>Name</th><th>Quote</th><th>Actions</th></tr></thead>
         <tbody>
             {% for t in testimonials %}
             <tr>
+                <td>
+                    {% if t.image_url %}
+                    <img src="{{ t.image_url }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                    {% else %}
+                    <span style="color:#555;">—</span>
+                    {% endif %}
+                </td>
                 <td><strong>{{ t.name }}</strong></td>
-                <td>{{ t.quote[:100] }}...</td>
+                <td>{{ t.quote[:80] }}...</td>
                 <td class="actions-cell">
                     <a href="/admin/testimonials/{{ t.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
                     <form method="POST" action="/admin/testimonials/{{ t.id }}/delete" class="delete-form" data-name="testimonial from {{ t.name }}" style="display:inline;">

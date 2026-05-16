@@ -997,16 +997,34 @@ legend {
 .toast.error { border-left-color: #e74c3c; }
 .toast.info { border-left-color: #3498db; }
 
-.toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+.toast-icon { 
+    font-size: 1.1rem; 
+    flex-shrink: 0; 
+}
+
 .toast.success .toast-icon { color: #4caf50; }
 .toast.error .toast-icon { color: #e74c3c; }
 .toast.info .toast-icon { color: #3498db; }
 
-.toast-message { flex: 1; font-size: 0.85rem; color: #ccc; }
+.toast .toast-message { 
+    flex: 1; 
+    font-size: 0.85rem; 
+    color: #ccc; 
+}
 
 .toast-close {
-    background: none; border: none; color: #555;
-    cursor: pointer; font-size: 1rem; padding: 0; line-height: 1;
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.toast-close:hover {
+    color: var(--gold);
 }
 
 @keyframes adminToastIn {
@@ -1020,8 +1038,79 @@ legend {
 }
 
 @media (max-width: 480px) {
-    .toast-container { top: 12px; right: 12px; left: 12px; }
-    .toast { min-width: auto; max-width: 100%; }
+    .toast-container { 
+        top: 12px; 
+        right: 12px; 
+        left: 12px; 
+    }
+    .toast { 
+        min-width: auto; 
+        max-width: 100%; 
+    }
+}
+
+/* ==================== DASHBOARD TOAST ==================== */
+/* This is for the admin dashboard toast notification box */
+.dashboard-toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 10000;
+    background: var(--dark);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease;
+}
+
+.dashboard-toast.toast-success { border-left-color: #4caf50; }
+.dashboard-toast.toast-error { border-left-color: #e74c3c; }
+.dashboard-toast.toast-info { border-left-color: #3498db; }
+
+.dashboard-toast .toast-icon {
+    font-size: 1.2rem;
+}
+
+.dashboard-toast.toast-success .toast-icon { color: #4caf50; }
+.dashboard-toast.toast-error .toast-icon { color: #e74c3c; }
+.dashboard-toast.toast-info .toast-icon { color: #3498db; }
+
+.dashboard-toast .toast-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--gray-light);
+}
+
+.dashboard-toast .toast-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+}
+
+.dashboard-toast .toast-close:hover {
+    color: var(--gold);
+}
+
+.dashboard-toast.fade-out {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100px); }
 }
 
 @media (max-width: 768px) {
@@ -1034,5 +1123,11 @@ legend {
     
     .admin-main {
         padding-top: 120px !important;
+    }
+    
+    .dashboard-toast {
+        top: 80px;
+        right: 16px;
+        left: 16px;
     }
 }

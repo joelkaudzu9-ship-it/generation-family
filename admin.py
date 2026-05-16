@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 import os
 from dotenv import load_dotenv
@@ -17,6 +17,20 @@ load_dotenv()
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'generation2026')
+
+# ==================== TOAST HELPER ====================
+def add_toast(response, message, type='success'):
+    """Add toast message to response via cookie"""
+    response.set_cookie('toast_message', message, max_age=5, path='/')
+    response.set_cookie('toast_type', type, max_age=5, path='/')
+    return response
+
+def redirect_with_toast(endpoint, message, type='success', **kwargs):
+    """Redirect with toast message cookie"""
+    response = redirect(url_for(endpoint, **kwargs))
+    response.set_cookie('toast_message', message, max_age=5, path='/')
+    response.set_cookie('toast_type', type, max_age=5, path='/')
+    return response
 
 # ==================== LOGIN DECORATOR ====================
 def login_required(f):
@@ -81,7 +95,7 @@ def login():
                 'roles': roles,
                 'department': user.get('department', '')
             }
-            return redirect(url_for('admin.dashboard'))
+            return redirect_with_toast('admin.dashboard', f'Welcome back, {user["display_name"]}!', 'success')
         else:
             error = 'Invalid username or password.'
     
@@ -95,19 +109,21 @@ def logout():
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
-    return response
+    return add_toast(response, 'You have been logged out.', 'info')
 
 # ==================== DASHBOARD ====================
 @admin_bp.route('/')
 @login_required
 def dashboard():
-    return render_template('admin/dashboard.html')
+    # Check for toast cookies and display them
+    toast_message = request.cookies.get('toast_message')
+    toast_type = request.cookies.get('toast_type', 'success')
+    return render_template('admin/dashboard.html', toast_message=toast_message, toast_type=toast_type)
 
 # ==================== SITE SETTINGS ====================
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @role_required('admin')
 def settings():
-    message = None
     error = None
     
     if request.method == 'POST':
@@ -141,16 +157,15 @@ def settings():
                 except Exception as e:
                     print(f"Error updating {key}: {e}")
         
-        message = "Settings saved successfully!"
+        return redirect_with_toast('admin.dashboard', 'Site settings saved successfully!', 'success')
     
     current_settings = get_site_settings()
-    return render_template('admin/settings.html', settings=current_settings, message=message, error=error)
+    return render_template('admin/settings.html', settings=current_settings, error=error)
 
 # ==================== PRAYER RHYTHMS ====================
 @admin_bp.route('/prayer-rhythms', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_prayer_rhythms():
-    message = None
     if request.method == 'POST':
         supabase_insert('prayer_rhythms', {
             'title': request.form.get('title'),
@@ -159,22 +174,21 @@ def manage_prayer_rhythms():
             'schedule': request.form.get('schedule'),
             'display_order': int(request.form.get('display_order', 0))
         })
-        message = "Prayer rhythm added!"
+        return redirect_with_toast('admin.dashboard', 'Prayer rhythm added successfully!', 'success')
+    
     rhythms = supabase_get('prayer_rhythms', {'order': 'display_order.asc'})
-    return render_template('admin/prayer-rhythms.html', rhythms=rhythms, message=message)
+    return render_template('admin/prayer-rhythms.html', rhythms=rhythms)
 
 @admin_bp.route('/prayer-rhythms/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_prayer_rhythm(id):
     supabase_delete('prayer_rhythms', id)
-    flash('Prayer rhythm deleted.', 'success')
-    return redirect(url_for('admin.manage_prayer_rhythms'))
+    return redirect_with_toast('admin.dashboard', 'Prayer rhythm deleted successfully.', 'success')
 
 # ==================== FAMILY GROUPS ====================
 @admin_bp.route('/family-groups', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_family_groups():
-    message = None
     if request.method == 'POST':
         supabase_insert('family_groups', {
             'name': request.form.get('name'),
@@ -184,23 +198,22 @@ def manage_family_groups():
             'description': request.form.get('description'),
             'contact_email': request.form.get('contact_email')
         })
-        message = "Family group added!"
+        return redirect_with_toast('admin.dashboard', 'Family group added successfully!', 'success')
+    
     groups = supabase_get('family_groups', {'order': 'city.asc'})
-    return render_template('admin/family-groups-manage.html', groups=groups, message=message)
+    return render_template('admin/family-groups-manage.html', groups=groups)
 
 @admin_bp.route('/family-groups/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_family_group(id):
     supabase_delete('family_groups', id)
-    flash('Family group deleted.', 'success')
-    return redirect(url_for('admin.manage_family_groups'))
+    return redirect_with_toast('admin.dashboard', 'Family group deleted successfully.', 'success')
 
 # ==================== MARKETPLACE ====================
 
 @admin_bp.route('/marketplace', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_marketplace():
-    message = None
     if request.method == 'POST':
         item_id = request.form.get('item_id')
         image_url = request.form.get('existing_image_url') or ''
@@ -210,12 +223,8 @@ def manage_marketplace():
             try:
                 result = upload_image(image_file, folder='generation/marketplace')
                 image_url = result['url']
-            except ValueError as e:
-                items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
-                return render_template('admin/marketplace-manage.html', items=items, error=str(e))
-            except Exception:
-                items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
-                return render_template('admin/marketplace-manage.html', items=items, error="Upload failed.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'title': request.form.get('title'),
@@ -229,11 +238,10 @@ def manage_marketplace():
         
         if item_id:
             supabase_update('marketplace_items', int(item_id), data)
-            flash('Item updated!', 'success')
+            return redirect_with_toast('admin.dashboard', 'Marketplace item updated!', 'success')
         else:
             supabase_insert('marketplace_items', data)
-            flash('Item added!', 'success')
-        return redirect(url_for('admin.manage_marketplace'))
+            return redirect_with_toast('admin.dashboard', 'Marketplace item added!', 'success')
     
     items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
     return render_template('admin/marketplace-manage.html', items=items)
@@ -249,14 +257,12 @@ def edit_marketplace(id):
 @role_required('admin')
 def delete_marketplace_item(id):
     supabase_delete('marketplace_items', id)
-    flash('Marketplace item deleted.', 'success')
-    return redirect(url_for('admin.manage_marketplace'))
+    return redirect_with_toast('admin.dashboard', 'Marketplace item deleted.', 'success')
 
 # ==================== RETREATS ====================
 @admin_bp.route('/retreats', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_retreats():
-    message = None
     if request.method == 'POST':
         image_url = ''
         image_file = request.files.get('image')
@@ -264,12 +270,8 @@ def manage_retreats():
             try:
                 result = upload_image(image_file, folder='generation/retreats')
                 image_url = result['url']
-            except ValueError as e:
-                retreats = supabase_get('retreats', {'order': 'start_date.desc'})
-                return render_template('admin/retreats-manage.html', retreats=retreats, error=str(e))
-            except Exception:
-                retreats = supabase_get('retreats', {'order': 'start_date.desc'})
-                return render_template('admin/retreats-manage.html', retreats=retreats, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         supabase_insert('retreats', {
             'title': request.form.get('title'),
@@ -280,24 +282,21 @@ def manage_retreats():
             'image_url': image_url,
             'is_upcoming': request.form.get('is_upcoming') == 'true'
         })
-        message = "Retreat added!"
+        return redirect_with_toast('admin.dashboard', 'Retreat added successfully!', 'success')
+    
     retreats = supabase_get('retreats', {'order': 'start_date.desc'})
-    return render_template('admin/retreats-manage.html', retreats=retreats, message=message)
+    return render_template('admin/retreats-manage.html', retreats=retreats)
 
 @admin_bp.route('/retreats/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_retreat(id):
     supabase_delete('retreats', id)
-    flash('Retreat deleted.', 'success')
-    return redirect(url_for('admin.manage_retreats'))
+    return redirect_with_toast('admin.dashboard', 'Retreat deleted.', 'success')
 
 # ==================== SERMONS (CRUD) ====================
 @admin_bp.route('/sermons', methods=['GET', 'POST'])
 @role_required('admin', 'sermons')
 def manage_sermons():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         sermon_id = request.form.get('sermon_id')
         title = request.form.get('title')
@@ -312,12 +311,8 @@ def manage_sermons():
             try:
                 result = upload_audio(audio_file, folder='generation/sermons')
                 audio_url = result['url']
-            except ValueError as e:
-                sermons = supabase_get('sermons', {'order': 'date.desc'})
-                return render_template('admin/sermons.html', sermons=sermons, error=str(e))
-            except Exception:
-                sermons = supabase_get('sermons', {'order': 'date.desc'})
-                return render_template('admin/sermons.html', sermons=sermons, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Audio upload failed: {str(e)}', 'error')
         
         data = {
             'title': title,
@@ -342,31 +337,21 @@ def manage_sermons():
             except Exception as e:
                 print(f"Sermon notification failed: {e}")
         
+        return redirect_with_toast('admin.dashboard', message, 'success')
     
     sermons = supabase_get('sermons', {'order': 'date.desc'})
-    return render_template('admin/sermons.html', sermons=sermons, message=message, error=error)
-
-@admin_bp.route('/sermons/<int:sermon_id>/edit')
-@login_required
-def edit_sermon(sermon_id):
-    sermon = supabase_get_one('sermons', sermon_id)
-    sermons = supabase_get('sermons', {'order': 'date.desc'})
-    return render_template('admin/sermons.html', sermons=sermons, edit_sermon=sermon)
+    return render_template('admin/sermons.html', sermons=sermons)
 
 @admin_bp.route('/sermons/<int:sermon_id>/delete', methods=['POST'])
 @login_required
 def delete_sermon(sermon_id):
     supabase_delete('sermons', sermon_id)
-    flash('Sermon deleted.', 'success')
-    return redirect(url_for('admin.manage_sermons'))
+    return redirect_with_toast('admin.dashboard', 'Sermon deleted.', 'success')
 
 # ==================== LEADERSHIP (CRUD) ====================
 @admin_bp.route('/leadership', methods=['GET', 'POST'])
 @role_required('admin', 'leadership')
 def manage_leadership():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         leader_id = request.form.get('leader_id')
         name = request.form.get('name')
@@ -380,12 +365,8 @@ def manage_leadership():
             try:
                 result = upload_image(image_file, folder='generation/leadership')
                 image_url = result['url']
-            except ValueError as e:
-                leaders = supabase_get('leadership', {'order': 'display_order.asc'})
-                return render_template('admin/leadership.html', leaders=leaders, error=str(e))
-            except Exception:
-                leaders = supabase_get('leadership', {'order': 'display_order.asc'})
-                return render_template('admin/leadership.html', leaders=leaders, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'name': name,
@@ -397,35 +378,24 @@ def manage_leadership():
         
         if leader_id:
             supabase_update('leadership', int(leader_id), data)
-            message = "Leader updated!"
+            return redirect_with_toast('admin.dashboard', 'Leader updated!', 'success')
         else:
             supabase_insert('leadership', data)
-            message = "Leader added!"
+            return redirect_with_toast('admin.dashboard', 'Leader added!', 'success')
     
     leaders = supabase_get('leadership', {'order': 'display_order.asc'})
-    return render_template('admin/leadership.html', leaders=leaders, message=message, error=error)
-
-@admin_bp.route('/leadership/<int:leader_id>/edit')
-@login_required
-def edit_leader(leader_id):
-    leader = supabase_get_one('leadership', leader_id)
-    leaders = supabase_get('leadership', {'order': 'display_order.asc'})
-    return render_template('admin/leadership.html', leaders=leaders, edit_leader=leader)
+    return render_template('admin/leadership.html', leaders=leaders)
 
 @admin_bp.route('/leadership/<int:leader_id>/delete', methods=['POST'])
 @login_required
 def delete_leader(leader_id):
     supabase_delete('leadership', leader_id)
-    flash('Leader removed.', 'success')
-    return redirect(url_for('admin.manage_leadership'))
+    return redirect_with_toast('admin.dashboard', 'Leader removed.', 'success')
 
 # ==================== MINISTRIES (CRUD) ====================
 @admin_bp.route('/ministries', methods=['GET', 'POST'])
 @role_required('admin', 'ministries')
 def manage_ministries():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         ministry_id = request.form.get('ministry_id')
         name = request.form.get('name')
@@ -440,12 +410,8 @@ def manage_ministries():
             try:
                 result = upload_image(image_file, folder='generation/ministries')
                 image_url = result['url']
-            except ValueError as e:
-                ministries = supabase_get('ministries', {'order': 'display_order.asc'})
-                return render_template('admin/ministries.html', ministries=ministries, error=str(e))
-            except Exception:
-                ministries = supabase_get('ministries', {'order': 'display_order.asc'})
-                return render_template('admin/ministries.html', ministries=ministries, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'name': name,
@@ -458,77 +424,65 @@ def manage_ministries():
         
         if ministry_id:
             supabase_update('ministries', int(ministry_id), data)
-            message = "Ministry updated!"
+            return redirect_with_toast('admin.dashboard', 'Ministry updated!', 'success')
         else:
             supabase_insert('ministries', data)
-            message = "Ministry added!"
+            return redirect_with_toast('admin.dashboard', 'Ministry added!', 'success')
     
     ministries = supabase_get('ministries', {'order': 'display_order.asc'})
-    return render_template('admin/ministries.html', ministries=ministries, message=message, error=error)
-
-@admin_bp.route('/ministries/<int:ministry_id>/edit')
-@login_required
-def edit_ministry(ministry_id):
-    ministry = supabase_get_one('ministries', ministry_id)
-    ministries = supabase_get('ministries', {'order': 'display_order.asc'})
-    return render_template('admin/ministries.html', ministries=ministries, edit_ministry=ministry)
+    return render_template('admin/ministries.html', ministries=ministries)
 
 @admin_bp.route('/ministries/<int:ministry_id>/delete', methods=['POST'])
 @login_required
 def delete_ministry(ministry_id):
     supabase_delete('ministries', ministry_id)
-    flash('Ministry deleted.', 'success')
-    return redirect(url_for('admin.manage_ministries'))
+    return redirect_with_toast('admin.dashboard', 'Ministry deleted.', 'success')
 
 # ==================== TESTIMONIALS (CRUD) ====================
 @admin_bp.route('/testimonials', methods=['GET', 'POST'])
 @role_required('admin', 'testimonials')
 def manage_testimonials():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         testimonial_id = request.form.get('testimonial_id')
         name = request.form.get('name')
         quote = request.form.get('quote')
+        image_url = request.form.get('existing_image_url') or ''
+        
+        image_file = request.files.get('image')
+        if image_file and image_file.filename:
+            try:
+                result = upload_image(image_file, folder='generation/testimonials')
+                image_url = result['url']
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'name': name,
             'quote': quote,
+            'image_url': image_url,
             'is_approved': True
         }
         
         if testimonial_id:
             supabase_update('testimonials', int(testimonial_id), data)
-            message = "Testimonial updated!"
+            return redirect_with_toast('admin.dashboard', 'Testimonial updated!', 'success')
         else:
             supabase_insert('testimonials', data)
-            message = "Testimonial added!"
+            return redirect_with_toast('admin.dashboard', 'Testimonial added!', 'success')
     
     testimonials = supabase_get('testimonials', {'order': 'created_at.desc'})
-    return render_template('admin/testimonials.html', testimonials=testimonials, message=message, error=error)
-
-@admin_bp.route('/testimonials/<int:id>/edit')
-@login_required
-def edit_testimonial(id):
-    testimonial = supabase_get_one('testimonials', id)
-    testimonials = supabase_get('testimonials', {'order': 'created_at.desc'})
-    return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
+    return render_template('admin/testimonials.html', testimonials=testimonials)
 
 @admin_bp.route('/testimonials/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_testimonial(id):
     supabase_delete('testimonials', id)
-    flash('Testimonial deleted.', 'success')
-    return redirect(url_for('admin.manage_testimonials'))
+    return redirect_with_toast('admin.dashboard', 'Testimonial deleted.', 'success')
 
 # ==================== EVENTS (CRUD) ====================
 @admin_bp.route('/events', methods=['GET', 'POST'])
 @role_required('admin', 'events')
 def manage_events():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         event_id = request.form.get('event_id')
         title = request.form.get('title')
@@ -543,12 +497,8 @@ def manage_events():
             try:
                 result = upload_image(image_file, folder='generation/events')
                 image_url = result['url']
-            except ValueError as e:
-                events = supabase_get('events', {'order': 'event_date.asc'})
-                return render_template('admin/events.html', events=events, error=str(e))
-            except Exception:
-                events = supabase_get('events', {'order': 'event_date.asc'})
-                return render_template('admin/events.html', events=events, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'title': title,
@@ -561,35 +511,24 @@ def manage_events():
         
         if event_id:
             supabase_update('events', int(event_id), data)
-            message = "Event updated!"
+            return redirect_with_toast('admin.dashboard', 'Event updated!', 'success')
         else:
             supabase_insert('events', data)
-            message = "Event added!"
+            return redirect_with_toast('admin.dashboard', 'Event added!', 'success')
     
     events = supabase_get('events', {'order': 'event_date.asc'})
-    return render_template('admin/events.html', events=events, message=message, error=error)
-
-@admin_bp.route('/events/<int:event_id>/edit')
-@login_required
-def edit_event(event_id):
-    event = supabase_get_one('events', event_id)
-    events = supabase_get('events', {'order': 'event_date.asc'})
-    return render_template('admin/events.html', events=events, edit_event=event)
+    return render_template('admin/events.html', events=events)
 
 @admin_bp.route('/events/<int:event_id>/delete', methods=['POST'])
 @login_required
 def delete_event(event_id):
     supabase_delete('events', event_id)
-    flash('Event deleted.', 'success')
-    return redirect(url_for('admin.manage_events'))
+    return redirect_with_toast('admin.dashboard', 'Event deleted.', 'success')
 
 # ==================== BLOG POSTS (CRUD) ====================
 @admin_bp.route('/blog', methods=['GET', 'POST'])
 @role_required('admin', 'blog')
 def manage_blog():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         post_id = request.form.get('post_id')
         title = request.form.get('title')
@@ -605,12 +544,8 @@ def manage_blog():
             try:
                 result = upload_image(image_file, folder='generation/blog')
                 image_url = result['url']
-            except ValueError as e:
-                posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
-                return render_template('admin/blog.html', posts=posts, error=str(e))
-            except Exception:
-                posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
-                return render_template('admin/blog.html', posts=posts, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         data = {
             'title': title,
@@ -624,35 +559,24 @@ def manage_blog():
         
         if post_id:
             supabase_update('blog_posts', int(post_id), data)
-            message = "Post updated!"
+            return redirect_with_toast('admin.dashboard', 'Blog post updated!', 'success')
         else:
             supabase_insert('blog_posts', data)
-            message = "Post published!"
+            return redirect_with_toast('admin.dashboard', 'Blog post published!', 'success')
     
     posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
-    return render_template('admin/blog.html', posts=posts, message=message, error=error)
-
-@admin_bp.route('/blog/<int:post_id>/edit')
-@login_required
-def edit_blog(post_id):
-    post = supabase_get_one('blog_posts', post_id)
-    posts = supabase_get('blog_posts', {'order': 'created_at.desc'})
-    return render_template('admin/blog.html', posts=posts, edit_post=post)
+    return render_template('admin/blog.html', posts=posts)
 
 @admin_bp.route('/blog/<int:post_id>/delete', methods=['POST'])
 @login_required
 def delete_blog(post_id):
     supabase_delete('blog_posts', post_id)
-    flash('Post deleted.', 'success')
-    return redirect(url_for('admin.manage_blog'))
+    return redirect_with_toast('admin.dashboard', 'Blog post deleted.', 'success')
 
 # ==================== NEWSLETTER ====================
 @admin_bp.route('/newsletter', methods=['GET', 'POST'])
 @role_required('admin')
 def newsletter():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         subject = request.form.get('subject')
         content = request.form.get('content')
@@ -662,16 +586,15 @@ def newsletter():
                 from brevo_client import send_newsletter_to_all
                 result = send_newsletter_to_all(subject, content)
                 if result:
-                    flash('Newsletter sent to all subscribers!', 'success')
+                    return redirect_with_toast('admin.dashboard', 'Newsletter sent to all subscribers!', 'success')
                 else:
-                    flash('Failed to send. Check Brevo account limits.', 'error')
+                    return redirect_with_toast('admin.dashboard', 'Failed to send. Check Brevo account limits.', 'error')
             except Exception as e:
-                flash(f'Error: {str(e)}', 'error')
+                return redirect_with_toast('admin.dashboard', f'Error: {str(e)}', 'error')
         else:
-            flash('Subject and content are required.', 'error')
-        return redirect(url_for('admin.newsletter'))
+            return redirect_with_toast('admin.dashboard', 'Subject and content are required.', 'error')
     
-    return render_template('admin/newsletter.html', message=message, error=error)
+    return render_template('admin/newsletter.html')
 
 # ==================== CONTACT SUBMISSIONS ====================
 @admin_bp.route('/messages')
@@ -684,81 +607,60 @@ def messages():
 @login_required
 def mark_read(id):
     supabase_update('contact_submissions', id, {'is_read': True})
-    flash('Message marked as read.', 'success')
-    return redirect(url_for('admin.messages'))
+    return redirect_with_toast('admin.dashboard', 'Message marked as read.', 'success')
 
 @admin_bp.route('/messages/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_message(id):
     supabase_delete('contact_submissions', id)
-    flash('Message deleted.', 'success')
-    return redirect(url_for('admin.messages'))
-
+    return redirect_with_toast('admin.dashboard', 'Message deleted.', 'success')
 
 # ==================== HERO IMAGES ====================
 @admin_bp.route('/hero', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_hero():
-    message = None
-    error = None
-    
     if request.method == 'POST':
-        action = request.form.get('action')
-        
-        if action == 'add':
-            image_file = request.files.get('hero_image')
-            if image_file and image_file.filename:
-                try:
-                    result = upload_image(image_file, folder='generation/hero')
-                    supabase_insert('hero_images', {
-                        'image_url': result['url'],
-                        'public_id': result['public_id'],
-                        'is_active': True
-                    })
-                    message = "Hero image added!"
-                except ValueError as e:
-                    hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
-                    return render_template('admin/hero.html', hero_images=hero_images, error=str(e))
-                except Exception:
-                    hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
-                    return render_template('admin/hero.html', hero_images=hero_images, error="Upload failed. Try a smaller file.")
-            else:
-                error = "Please select an image."
-                
-        elif action == 'delete':
-            user_id = request.form.get('user_id')
-            supabase_delete('admin_users', int(user_id))
-            flash('User removed.', 'success')
-            return redirect(url_for('admin.manage_users'))
+        image_file = request.files.get('hero_image')
+        if image_file and image_file.filename:
+            try:
+                result = upload_image(image_file, folder='generation/hero')
+                supabase_insert('hero_images', {
+                    'image_url': result['url'],
+                    'public_id': result['public_id'],
+                    'is_active': True
+                })
+                return redirect_with_toast('admin.dashboard', 'Hero image added!', 'success')
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
+        else:
+            return redirect_with_toast('admin.dashboard', 'Please select an image.', 'error')
     
     hero_images = supabase_get('hero_images', {'order': 'created_at.desc'})
-    return render_template('admin/hero.html', hero_images=hero_images, message=message, error=error)
+    return render_template('admin/hero.html', hero_images=hero_images)
+
+@admin_bp.route('/hero/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_hero_image(id):
+    supabase_delete('hero_images', id)
+    return redirect_with_toast('admin.dashboard', 'Hero image deleted.', 'success')
 
 # ==================== CREATIVES MANAGEMENT ====================
 @admin_bp.route('/creatives', methods=['GET', 'POST'])
 @role_required('admin', 'creatives')
 def manage_creatives():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         section = request.form.get('section')
         title = request.form.get('title')
         description = request.form.get('description')
         content_url = request.form.get('content_url') or ''
         
-        # Handle file upload
         upload_file = request.files.get('content_file')
         if upload_file and upload_file.filename:
             try:
                 result = upload_image(upload_file, folder=f'generation/creatives/{section}')
                 content_url = result['url']
-            except ValueError as e:
-                creatives = supabase_get('creatives', {'order': 'created_at.desc'})
-                return render_template('admin/creatives.html', creatives=creatives, error=str(e))
-            except Exception:
-                creatives = supabase_get('creatives', {'order': 'created_at.desc'})
-                return render_template('admin/creatives.html', creatives=creatives, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
         supabase_insert('creatives', {
             'section': section,
@@ -766,23 +668,21 @@ def manage_creatives():
             'description': description,
             'content_url': content_url
         })
-        message = "Content added!"
+        return redirect_with_toast('admin.dashboard', 'Creative content added!', 'success')
     
     creatives = supabase_get('creatives', {'order': 'created_at.desc'})
-    return render_template('admin/creatives.html', creatives=creatives, message=message, error=error)
+    return render_template('admin/creatives.html', creatives=creatives)
 
 @admin_bp.route('/creatives/<int:id>/delete', methods=['POST'])
 @role_required('admin', 'creatives')
 def delete_creative(id):
     supabase_delete('creatives', id)
-    flash('Creative content deleted.', 'success')
-    return redirect(url_for('admin.manage_creatives'))
+    return redirect_with_toast('admin.dashboard', 'Creative content deleted.', 'success')
 
+# ==================== SECTION IMAGES ====================
 @admin_bp.route('/section-images', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_section_images():
-    message = None
-    
     if request.method == 'POST':
         section = request.form.get('section')
         image_file = request.files.get('image')
@@ -796,22 +696,17 @@ def manage_section_images():
                     supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
                 else:
                     supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
-                message = f"Image for {section} updated!"
-            except ValueError as e:
-                images = supabase_get('section_images')
-                return render_template('admin/section-images.html', images=images, error=str(e))
-            except Exception:
-                images = supabase_get('section_images')
-                return render_template('admin/section-images.html', images=images, error="Upload failed. Try a smaller file.")
+                return redirect_with_toast('admin.dashboard', f'Image for {section} updated!', 'success')
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
     
     images = supabase_get('section_images')
-    return render_template('admin/section-images.html', images=images, message=message)
+    return render_template('admin/section-images.html', images=images)
 
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_story():
-    message = None
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
@@ -821,16 +716,21 @@ def manage_story():
             'content': content,
             'display_order': int(display_order)
         })
-        message = "Story section added!"
+        return redirect_with_toast('admin.dashboard', 'Story section added!', 'success')
     
     sections = supabase_get('story_sections', {'order': 'display_order.asc'})
-    return render_template('admin/story-sections.html', sections=sections, message=message)
+    return render_template('admin/story-sections.html', sections=sections)
+
+@admin_bp.route('/story-sections/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_story(id):
+    supabase_delete('story_sections', id)
+    return redirect_with_toast('admin.dashboard', 'Story section deleted.', 'success')
 
 # ==================== GIVING INFO ====================
 @admin_bp.route('/giving-info', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_giving():
-    message = None
     if request.method == 'POST':
         method = request.form.get('method')
         details = request.form.get('details')
@@ -842,16 +742,21 @@ def manage_giving():
             'icon': icon,
             'display_order': int(display_order)
         })
-        message = "Giving method added!"
+        return redirect_with_toast('admin.dashboard', 'Giving method added!', 'success')
     
     methods = supabase_get('giving_info', {'order': 'display_order.asc'})
-    return render_template('admin/giving-info.html', methods=methods, message=message)
+    return render_template('admin/giving-info.html', methods=methods)
+
+@admin_bp.route('/giving-info/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_giving(id):
+    supabase_delete('giving_info', id)
+    return redirect_with_toast('admin.dashboard', 'Giving method deleted.', 'success')
 
 # ==================== FAQS ====================
 @admin_bp.route('/faqs-manage', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_faqs():
-    message = None
     if request.method == 'POST':
         question = request.form.get('question')
         answer = request.form.get('answer')
@@ -861,48 +766,21 @@ def manage_faqs():
             'answer': answer,
             'display_order': int(display_order)
         })
-        message = "FAQ added!"
+        return redirect_with_toast('admin.dashboard', 'FAQ added!', 'success')
     
     faqs = supabase_get('faqs', {'order': 'display_order.asc'})
-    return render_template('admin/faqs-manage.html', faqs=faqs, message=message)
-
-@admin_bp.route('/story-sections/<int:id>/delete', methods=['POST'])
-@role_required('admin')
-def delete_story(id):
-    supabase_delete('story_sections', id)
-    flash('Story section deleted.', 'success')
-    return redirect(url_for('admin.manage_story'))
-
-@admin_bp.route('/giving-info/<int:id>/delete', methods=['POST'])
-@role_required('admin')
-def delete_giving(id):
-    supabase_delete('giving_info', id)
-    flash('Giving method deleted.', 'success')
-    return redirect(url_for('admin.manage_giving'))
-
-@admin_bp.route('/users/<int:user_id>/edit', methods=['POST'])
-@role_required('admin')
-def edit_user(user_id):
-    password = request.form.get('password')
-    if password:
-        supabase_update('admin_users', user_id, {'password': password})
-        flash('Password updated.', 'success')
-    return redirect(url_for('admin.manage_users'))
+    return render_template('admin/faqs-manage.html', faqs=faqs)
 
 @admin_bp.route('/faqs-manage/<int:id>/delete', methods=['POST'])
 @role_required('admin')
 def delete_faq(id):
     supabase_delete('faqs', id)
-    flash('FAQ deleted.', 'success')
-    return redirect(url_for('admin.manage_faqs'))
+    return redirect_with_toast('admin.dashboard', 'FAQ deleted.', 'success')
 
 # ==================== MEDIA MANAGEMENT ====================
 @admin_bp.route('/media', methods=['GET', 'POST'])
 @role_required('admin', 'media')
 def manage_media():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         media_type = request.form.get('media_type')
         title = request.form.get('title')
@@ -917,38 +795,30 @@ def manage_media():
                 else:
                     result = upload_image(upload_file, folder='generation/media/images')
                 media_url = result['url']
-            except ValueError as e:
-                media_items = supabase_get('media', {'order': 'created_at.desc'})
-                return render_template('admin/media.html', media_items=media_items, error=str(e))
-            except Exception:
-                media_items = supabase_get('media', {'order': 'created_at.desc'})
-                return render_template('admin/media.html', media_items=media_items, error="Upload failed. Try a smaller file.")
+            except Exception as e:
+                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
         
-        if not error:
-            supabase_insert('media', {
-                'media_type': media_type,
-                'title': title,
-                'description': description,
-                'media_url': media_url
-            })
-            message = "Media added!"
+        supabase_insert('media', {
+            'media_type': media_type,
+            'title': title,
+            'description': description,
+            'media_url': media_url
+        })
+        return redirect_with_toast('admin.dashboard', 'Media added!', 'success')
     
     media_items = supabase_get('media', {'order': 'created_at.desc'})
-    return render_template('admin/media.html', media_items=media_items, message=message, error=error)
+    return render_template('admin/media.html', media_items=media_items)
 
 @admin_bp.route('/media/<int:id>/delete', methods=['POST'])
 @role_required('admin', 'media')
 def delete_media(id):
     supabase_delete('media', id)
-    flash('Media deleted.', 'success')
-    return redirect(url_for('admin.manage_media'))
+    return redirect_with_toast('admin.dashboard', 'Media deleted.', 'success')
 
+# ==================== USER MANAGEMENT ====================
 @admin_bp.route('/users', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_users():
-    message = None
-    error = None
-    
     if request.method == 'POST':
         action = request.form.get('action')
         
@@ -967,10 +837,10 @@ def manage_users():
                 'display_name': display_name,
                 'role': primary_role,
                 'roles': roles_string,
-                'department': department
+                'department': department,
+                'is_active': True
             })
-            flash(f'User {display_name} added!', 'success')
-            return redirect(url_for('admin.manage_users'))
+            return redirect_with_toast('admin.dashboard', f'User {display_name} added!', 'success')
         
         elif action == 'toggle':
             user_id = request.form.get('user_id')
@@ -978,20 +848,26 @@ def manage_users():
             if user:
                 supabase_update('admin_users', int(user_id), {'is_active': not user['is_active']})
                 status = 'disabled' if user['is_active'] else 'enabled'
-                flash(f'User {status}.', 'success')
-            return redirect(url_for('admin.manage_users'))
+                return redirect_with_toast('admin.dashboard', f'User {status}.', 'success')
         
         elif action == 'delete':
             user_id = request.form.get('user_id')
             current_user_id = session.get('admin_user', {}).get('id')
             
             if int(user_id) == current_user_id:
-                flash('You cannot delete your own account.', 'error')
-                return redirect(url_for('admin.manage_users'))
+                return redirect_with_toast('admin.dashboard', 'You cannot delete your own account.', 'error')
             
             supabase_delete('admin_users', int(user_id))
-            flash('User removed.', 'success')
-            return redirect(url_for('admin.manage_users'))
+            return redirect_with_toast('admin.dashboard', 'User removed.', 'success')
     
     users = supabase_get('admin_users', {'order': 'created_at.asc'})
-    return render_template('admin/users.html', users=users, message=message, error=error)
+    return render_template('admin/users.html', users=users)
+
+@admin_bp.route('/users/<int:user_id>/edit', methods=['POST'])
+@role_required('admin')
+def edit_user(user_id):
+    password = request.form.get('password')
+    if password:
+        supabase_update('admin_users', user_id, {'password': password})
+        return redirect_with_toast('admin.dashboard', 'Password updated.', 'success')
+    return redirect_with_toast('admin.dashboard', 'No password provided.', 'error')
