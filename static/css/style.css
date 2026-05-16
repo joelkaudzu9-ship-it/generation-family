@@ -4469,3 +4469,90 @@ html {
 .download-link:hover {
     text-decoration: underline;
 }
+
+/* Post Attachment on Top */
+.post-attachment-top {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #222;
+}
+
+.attachment-audio {
+    background: var(--darker);
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+
+.attachment-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.attachment-info i {
+    font-size: 1.3rem;
+    color: var(--gold);
+}
+
+.attachment-audio audio {
+    width: 100%;
+    margin: 10px 0;
+    height: 40px;
+}
+
+.attachment-image-top img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.attachment-file-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: var(--darker);
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+
+.attachment-file-top i {
+    font-size: 1.5rem;
+    color: var(--gold);
+}
+
+.download-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.download-link:hover {
+    text-decoration: underline;
+}
+
+.post-header {
+    margin-bottom: 1rem;
+}
+
+.post-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    margin-bottom: 0.75rem;
+}
+
+.post-card h3 {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.post-content {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}

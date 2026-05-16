@@ -20,13 +20,50 @@
             </div>
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
 
-            <!-- Posts Section (like sermons) -->
+            <!-- Posts Section (like sermons - file on top, content below) -->
             {% if posts and posts|length > 0 %}
             <div class="ministry-posts">
                 <h2>Updates & Resources</h2>
                 <div class="posts-list">
                     {% for post in posts %}
                     <div class="post-card">
+                        <!-- ATTACHMENT / RESOURCE ON TOP -->
+                        {% if post.file_url %}
+                        <div class="post-attachment-top">
+                            {% if post.file_type == 'audio' %}
+                            <div class="attachment-audio">
+                                <div class="attachment-info">
+                                    <i class="fas fa-headphones"></i>
+                                    <span>{{ post.file_name or 'Audio Message' }}</span>
+                                </div>
+                                <audio controls>
+                                    <source src="{{ post.file_url }}" type="audio/mpeg">
+                                </audio>
+                                <a href="{{ post.file_url }}" download class="download-link">Download</a>
+                            </div>
+                            {% elif post.file_type == 'image' %}
+                            <div class="attachment-image-top">
+                                <img src="{{ post.file_url }}" alt="{{ post.file_name or post.title }}">
+                                <a href="{{ post.file_url }}" download class="download-link">Download Image</a>
+                            </div>
+                            {% elif post.file_type == 'pdf' %}
+                            <div class="attachment-file-top">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>{{ post.file_name or 'PDF Document' }}</span>
+                                <a href="{{ post.file_url }}" target="_blank" class="download-link">View PDF</a>
+                                <a href="{{ post.file_url }}" download>Download</a>
+                            </div>
+                            {% else %}
+                            <div class="attachment-file-top">
+                                <i class="fas fa-paperclip"></i>
+                                <span>{{ post.file_name or 'Download Resource' }}</span>
+                                <a href="{{ post.file_url }}" download class="download-link">Download</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- CONTENT BELOW -->
                         <div class="post-header">
                             <span class="post-type-badge {{ post.post_type }}">{{ post.post_type|title }}</span>
                             <h3>{{ post.title }}</h3>
@@ -35,40 +72,6 @@
                         {% if post.content %}
                         <div class="post-content">
                             {{ post.content|replace('\n', '<br>')|safe }}
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Display attached file if exists -->
-                        {% if post.file_url %}
-                        <div class="post-attachment">
-                            {% if post.file_type == 'audio' %}
-                            <div class="attachment-audio">
-                                <i class="fas fa-headphones"></i>
-                                <span>{{ post.file_name or 'Audio' }}</span>
-                                <audio controls>
-                                    <source src="{{ post.file_url }}" type="audio/mpeg">
-                                </audio>
-                                <a href="{{ post.file_url }}" download class="download-link">Download</a>
-                            </div>
-                            {% elif post.file_type == 'image' %}
-                            <div class="attachment-image">
-                                <img src="{{ post.file_url }}" alt="{{ post.file_name or post.title }}">
-                                <a href="{{ post.file_url }}" download class="download-link">Download Image</a>
-                            </div>
-                            {% elif post.file_type == 'pdf' %}
-                            <div class="attachment-pdf">
-                                <i class="fas fa-file-pdf"></i>
-                                <span>{{ post.file_name or 'PDF Document' }}</span>
-                                <a href="{{ post.file_url }}" target="_blank" class="download-link">View PDF</a>
-                                <a href="{{ post.file_url }}" download>Download</a>
-                            </div>
-                            {% else %}
-                            <div class="attachment-file">
-                                <i class="fas fa-paperclip"></i>
-                                <span>{{ post.file_name or 'Download' }}</span>
-                                <a href="{{ post.file_url }}" download class="download-link">Download</a>
-                            </div>
-                            {% endif %}
                         </div>
                         {% endif %}
                     </div>
