@@ -15,15 +15,34 @@
         {% if ministries %}
         <div class="ministries-full-grid">
             {% for ministry in ministries %}
+            {% set section_key = 'ministries-' + ministry.slug %}
             <a href="/ministries/{{ ministry.slug }}" class="ministry-detail-card">
-                <div class="ministry-detail-icon">
-                    <i class="fas {{ ministry.icon }}"></i>
+                {% if section_images.get(section_key) %}
+                <div class="ministry-card-image">
+                    <img src="{{ section_images.get(section_key) }}" alt="{{ ministry.name }}">
+                    <div class="ministry-card-overlay">
+                        <div class="ministry-detail-icon">
+                            <i class="fas {{ ministry.icon }}"></i>
+                        </div>
+                        <h3>{{ ministry.name }}</h3>
+                        {% if ministry.description %}
+                        <p>{{ ministry.description[:100] if ministry.description else '' }}</p>
+                        {% endif %}
+                        <span class="ministry-link">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
                 </div>
-                <h3>{{ ministry.name }}</h3>
-                {% if ministry.description %}
-                <p>{{ ministry.description }}</p>
+                {% else %}
+                <div class="ministry-card-no-image">
+                    <div class="ministry-detail-icon">
+                        <i class="fas {{ ministry.icon }}"></i>
+                    </div>
+                    <h3>{{ ministry.name }}</h3>
+                    {% if ministry.description %}
+                    <p>{{ ministry.description[:100] if ministry.description else '' }}</p>
+                    {% endif %}
+                    <span class="ministry-link">Learn More <i class="fas fa-arrow-right"></i></span>
+                </div>
                 {% endif %}
-                <span class="ministry-link">Learn More <i class="fas fa-arrow-right"></i></span>
             </a>
             {% endfor %}
         </div>
@@ -36,5 +55,184 @@
         {% endif %}
     </div>
 </section>
+
+<style>
+/* Ministries Page Cards with Section Images */
+.ministries-full-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.ministry-detail-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    background: var(--dark);
+    border: 1px solid #222;
+}
+
+.ministry-detail-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--gold);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* With Image */
+.ministry-card-image {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+}
+
+.ministry-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ministry-detail-card:hover .ministry-card-image img {
+    transform: scale(1.08);
+}
+
+.ministry-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.95) 0%,
+        rgba(0,0,0,0.5) 50%,
+        rgba(0,0,0,0.3) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.ministry-detail-card:hover .ministry-card-overlay {
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.98) 0%,
+        rgba(212,175,55,0.25) 100%
+    );
+}
+
+.ministry-card-overlay .ministry-detail-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    background: rgba(0,0,0,0.5);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.ministry-detail-card:hover .ministry-card-overlay .ministry-detail-icon {
+    transform: scale(1.1);
+    background: rgba(212,175,55,0.2);
+}
+
+.ministry-card-overlay h3 {
+    color: var(--white);
+    font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.ministry-card-overlay p {
+    color: var(--gray-light);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+    max-width: 90%;
+}
+
+.ministry-link {
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s;
+}
+
+.ministry-link:hover {
+    gap: 10px;
+}
+
+/* Without Image (Fallback) */
+.ministry-card-no-image {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ministry-card-no-image .ministry-detail-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+}
+
+.ministry-card-no-image h3 {
+    color: var(--white);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.ministry-card-no-image p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .ministries-full-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ministries-full-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .ministry-card-image {
+        height: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ministries-full-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ministry-card-image {
+        height: 220px;
+    }
+}
+</style>
 
 {% endblock %}
