@@ -17,7 +17,7 @@
         {% if groups %}
         <div class="fg-grid">
             {% for group in groups %}
-            <div class="fg-card">
+            <a href="/family-groups/{{ group.id }}" class="fg-card" style="display:block;text-decoration:none;">
                 <div class="fg-card-icon"><i class="fas fa-home"></i></div>
                 <h3>{{ group.name }}</h3>
                 <div class="fg-details">
@@ -25,8 +25,9 @@
                     {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
                     {% if group.leader %}<p><i class="fas fa-user gold-text"></i> Led by {{ group.leader }}</p>{% endif %}
                 </div>
-                {% if group.description %}<p class="fg-desc">{{ group.description }}</p>{% endif %}
-            </div>
+                {% if group.description %}<p class="fg-desc">{{ group.description[:100] }}...</p>{% endif %}
+                <span style="color:var(--gold);font-size:0.8rem;font-weight:500;">View Details →</span>
+            </a>
             {% endfor %}
         </div>
         {% else %}
