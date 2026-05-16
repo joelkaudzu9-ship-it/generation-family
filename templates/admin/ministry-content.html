@@ -15,45 +15,68 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ ministry.name }} — Content Editor</h1>
-<p>Add announcements, schedules, teachings, images, and resources. Works like a document editor — no coding needed.</p>
 
-<form method="POST" class="admin-form" id="contentForm">
+<!-- Toast Notification -->
+{% if toast_message %}
+<div class="dashboard-toast toast-{{ toast_type }}" id="adminToast">
+    <span class="toast-icon">
+        <i class="fas 
+            {% if toast_type == 'success' %}fa-check-circle
+            {% elif toast_type == 'error' %}fa-exclamation-circle
+            {% else %}fa-info-circle
+            {% endif %}
+        "></i>
+    </span>
+    <span class="toast-text">{{ toast_message }}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+</div>
+{% endif %}
+
+<h1>{{ ministry.name }} — Content</h1>
+
+<!-- Simple Text Content Form -->
+<form method="POST" class="admin-form">
     <div class="form-group">
-        <label>Page Content</label>
-        <textarea name="content" id="ministryContentEditor" rows="25">{{ content }}</textarea>
+        <label>Section Title (e.g. "Announcements", "Meeting Schedule", "Our Vision")</label>
+        <input type="text" name="title" value="{{ title or '' }}" placeholder="Enter a title for this content block">
+        <span class="form-hint">Optional — leave blank to show only the content without a heading</span>
     </div>
-    <button type="submit" class="btn-save">Save Content</button>
+    <div class="form-group">
+        <label>Content</label>
+        <textarea name="content" rows="12" placeholder="Write your content here... Paragraphs are separated by blank lines.">{{ content or '' }}</textarea>
+        <span class="form-hint">Plain text only. Line breaks will be preserved.</span>
+    </div>
+    <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Content</button>
 </form>
 
 <hr class="admin-divider">
 
-<h2>Attachments</h2>
-<p>Upload files, documents, audio, or PDFs. They'll appear as download links on the ministry page.</p>
+<!-- File Upload Form -->
+<h2>Upload a File</h2>
+<p>Upload PDFs, audio, documents, or images for visitors to download.</p>
 
-<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/ministry-content/{{ ministry.slug }}/upload-file" id="fileUploadForm">
+<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/ministry-content/{{ ministry.slug }}/upload-file">
     <div class="form-row">
         <div class="form-group">
             <label>File Name (shown to visitors)</label>
-            <input type="text" name="file_name" placeholder="e.g. January Schedule PDF" required>
+            <input type="text" name="file_name" placeholder="e.g. January Schedule" required>
         </div>
         <div class="form-group">
             <label>Choose File</label>
             <input type="file" name="file" required>
-            <span class="form-hint">PDF, DOC, MP3, images — any file type supported.</span>
         </div>
     </div>
     <button type="submit" class="btn-save"><i class="fas fa-upload"></i> Upload File</button>
 </form>
 
-{% if attachments %}
+{% if attachments and attachments|length > 0 %}
 <div class="admin-table-wrapper" style="margin-top:20px;">
+    <h3>Uploaded Files ({{ attachments|length }})</h3>
     <table class="admin-table">
         <thead>
             <tr>
                 <th>File Name</th>
-                <th>Type</th>
-                <th>Link</th>
+                <th>Size</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -61,11 +84,10 @@
             {% for file in attachments %}
             <tr>
                 <td><strong>{{ file.file_name }}</strong></td>
-                <td><span class="badge">{{ file.file_type }}</span></td>
-                <td><a href="{{ file.file_url }}" target="_blank" style="color:var(--gold);">View</a></td>
+                <td><a href="{{ file.file_url }}" target="_blank" class="btn-edit" style="padding:4px 10px;"><i class="fas fa-download"></i> Download</a></td>
                 <td>
                     <form method="POST" action="/admin/ministry-content/{{ ministry.slug }}/delete-file/{{ file.id }}" class="delete-form" data-name="{{ file.file_name }}" style="display:inline;">
-                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
                     </form>
                 </td>
             </tr>
@@ -73,65 +95,90 @@
         </tbody>
     </table>
 </div>
+{% else %}
+<p class="empty-state" style="margin-top:20px;">
+    <i class="fas fa-paperclip"></i><br>
+    No files uploaded yet. Upload one above.
+</p>
 {% endif %}
 
-<div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-    <a href="/ministries/{{ ministry.slug }}" target="_blank" class="btn-outline" style="display:inline-flex;align-items:center;gap:6px;">
+<div style="margin-top:20px; display:flex; gap:12px;">
+    <a href="/ministries/{{ ministry.slug }}" target="_blank" class="btn-outline">
         <i class="fas fa-external-link-alt"></i> View Public Page
     </a>
-    <a href="/admin/ministries" class="btn-cancel" style="display:inline-flex;align-items:center;gap:6px;">
+    <a href="/admin/ministries" class="btn-cancel">
         <i class="fas fa-arrow-left"></i> Back to Ministries
     </a>
 </div>
 
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-    tinymce.init({
-        selector: '#ministryContentEditor',
-        height: 600,
-        menubar: true,
-        plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'help', 'wordcount'
-        ],
-        toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | forecolor backcolor | removeformat | fullscreen preview',
-        images_upload_url: '/admin/upload-image',
-        images_upload_handler: function (blobInfo, progress) {
-            return new Promise((resolve, reject) => {
-                var formData = new FormData();
-                formData.append('file', blobInfo.blob(), blobInfo.filename());
-                
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', '/admin/upload-image', true);
-                
-                xhr.upload.onprogress = function(e) {
-                    if (e.lengthComputable) {
-                        progress(e.loaded / e.total * 100);
-                    }
-                };
-                
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        var json = JSON.parse(xhr.responseText);
-                        if (json.location) {
-                            resolve(json.location);
-                        } else {
-                            reject('Upload failed: ' + xhr.responseText);
-                        }
-                    } else {
-                        reject('HTTP Error: ' + xhr.status);
-                    }
-                };
-                
-                xhr.onerror = function() {
-                    reject('Network error');
-                };
-                
-                xhr.send(formData);
-            });
-        },
-        content_style: 'body { font-family: Aptos, sans-serif; font-size: 14px; color: #ccc; background: #111; } a { color: #D4AF37; } img { max-width: 100%; border-radius: 8px; }'
-    });
+    // Auto-hide toast after 4 seconds
+    var adminToast = document.getElementById('adminToast');
+    if (adminToast) {
+        setTimeout(function() {
+            adminToast.classList.add('fade-out');
+            setTimeout(function() {
+                if (adminToast.parentElement) adminToast.remove();
+            }, 300);
+        }, 4000);
+    }
 </script>
+
+<style>
+    .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-outline:hover {
+        background: var(--gold);
+        color: var(--black);
+    }
+    .dashboard-toast {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 10000;
+        background: var(--dark);
+        border-left: 4px solid var(--gold);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    }
+    .dashboard-toast.toast-success { border-left-color: #4caf50; }
+    .dashboard-toast.toast-error { border-left-color: #e74c3c; }
+    .dashboard-toast.toast-info { border-left-color: #3498db; }
+    .dashboard-toast .toast-text { flex: 1; font-size: 0.85rem; color: var(--gray-light); }
+    .dashboard-toast .toast-close {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0;
+        line-height: 1;
+    }
+    .dashboard-toast .toast-close:hover { color: var(--gold); }
+    .dashboard-toast.fade-out { animation: slideOut 0.3s ease forwards; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100px); }
+    }
+</style>
+
 {% endblock %}

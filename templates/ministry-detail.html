@@ -21,9 +21,14 @@
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
             
             <!-- Dynamic Content from Admin Editor -->
-            {% if ministry_content %}
+            {% if ministry_title or ministry_content %}
             <div class="ministry-rich-content">
-                {{ ministry_content|safe }}
+                {% if ministry_title %}
+                <h2>{{ ministry_title }}</h2>
+                {% endif %}
+                {% if ministry_content %}
+                <div class="content-text">{{ ministry_content|linebreaks|safe }}</div>
+                {% endif %}
             </div>
             {% endif %}
             

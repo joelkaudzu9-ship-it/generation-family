@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from functools import wraps
 import os
 from dotenv import load_dotenv
@@ -736,31 +736,41 @@ def edit_testimonial(id):
 
 # ==================== MINISTRY CONTENT EDITOR ====================
 @admin_bp.route('/ministry-content/<slug>', methods=['GET', 'POST'])
-@login_required
+@role_required('admin', 'ministries')
 def manage_ministry_content(slug):
     ministries = supabase_get('ministries', {'slug': f'eq.{slug}'})
     ministry = ministries[0] if ministries else None
     
     if not ministry:
-        flash('Ministry not found.', 'error')
-        return redirect(url_for('admin.dashboard'))
+        return redirect_with_toast('admin.dashboard', 'Ministry not found.', 'error')
     
-    content = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
-    current_content = content[0]['content'] if content else ''
+    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
+    current_content = content_records[0]['content'] if content_records else ''
+    current_title = content_records[0]['title'] if content_records else ''
     attachments = supabase_get('ministry_attachments', {'ministry_slug': f'eq.{slug}', 'order': 'created_at.desc'})
     
     if request.method == 'POST':
+        new_title = request.form.get('title', '')
         new_content = request.form.get('content', '')
-        if content:
-            supabase_update('ministry_content', content[0]['id'], {'content': new_content})
+        
+        if content_records:
+            supabase_update('ministry_content', content_records[0]['id'], {
+                'title': new_title,
+                'content': new_content
+            })
         else:
-            supabase_insert('ministry_content', {'ministry_slug': slug, 'content': new_content})
-        flash('Content updated!', 'success')
-        return redirect(url_for('admin.manage_ministry_content', slug=slug))
+            supabase_insert('ministry_content', {
+                'ministry_slug': slug,
+                'title': new_title,
+                'content': new_content
+            })
+        
+        return redirect_with_toast('admin.manage_ministry_content', 'Content saved!', 'success', slug=slug)
     
     return render_template('admin/ministry-content.html', 
                          ministry=ministry, 
                          content=current_content,
+                         title=current_title,
                          attachments=attachments)
     
 @admin_bp.route('/upload-image', methods=['POST'])
