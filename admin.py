@@ -680,6 +680,7 @@ def delete_creative(id):
     return redirect_with_toast('admin.dashboard', 'Creative content deleted.', 'success')
 
 # ==================== SECTION IMAGES ====================
+# ==================== SECTION IMAGES ====================
 @admin_bp.route('/section-images', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_section_images():
@@ -687,21 +688,43 @@ def manage_section_images():
         section = request.form.get('section')
         image_file = request.files.get('image')
         
-        if image_file and image_file.filename:
-            try:
-                result = upload_image(image_file, folder='generation/sections')
-                image_url = result['url']
-                existing = supabase_get('section_images', {'section_name': f'eq.{section}'})
-                if existing:
-                    supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
-                else:
-                    supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
-                return redirect_with_toast('admin.dashboard', f'Image for {section} updated!', 'success')
-            except Exception as e:
-                return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
+        if not section:
+            return redirect_with_toast('admin.dashboard', 'Section name is required.', 'error')
+        
+        if not image_file or not image_file.filename:
+            return redirect_with_toast('admin.dashboard', 'Please select an image file.', 'error')
+        
+        try:
+            result = upload_image(image_file, folder='generation/sections')
+            image_url = result['url']
+            
+            existing = supabase_get('section_images', {'section_name': f'eq.{section}'})
+            if existing:
+                supabase_update('section_images', existing[0]['id'], {'image_url': image_url})
+                message = f'Image for "{section}" updated successfully!'
+            else:
+                supabase_insert('section_images', {'section_name': section, 'image_url': image_url})
+                message = f'Image for "{section}" added successfully!'
+            
+            return redirect_with_toast('admin.dashboard', message, 'success')
+            
+        except ValueError as e:
+            return redirect_with_toast('admin.dashboard', f'Invalid file: {str(e)}', 'error')
+        except Exception as e:
+            return redirect_with_toast('admin.dashboard', f'Upload failed: {str(e)}', 'error')
     
+    # GET request - show the form page
     images = supabase_get('section_images')
     return render_template('admin/section-images.html', images=images)
+
+@admin_bp.route('/section-images/<int:id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_section_image(id):
+    try:
+        supabase_delete('section_images', id)
+        return redirect_with_toast('admin.dashboard', 'Section image deleted successfully.', 'success')
+    except Exception as e:
+        return redirect_with_toast('admin.dashboard', f'Delete failed: {str(e)}', 'error')
 
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])

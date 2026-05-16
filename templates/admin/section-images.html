@@ -1,76 +1,246 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Section Images{% endblock %}
 
-{% block nav %}
-<nav class="admin-nav">
-    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-    <div class="admin-nav-links">
-        <a href="/admin">Dashboard</a>
-        <a href="/admin/section-images" class="active">Section Images</a>
-        <a href="/">View Site</a>
-        <a href="/admin/logout" class="logout-link">Logout</a>
-    </div>
-</nav>
-{% endblock %}
-
 {% block content %}
+
+<!-- Toast Notification Display -->
+{% if toast_message %}
+<div class="dashboard-toast toast-{{ toast_type }}" id="adminToast">
+    <span class="toast-icon">
+        <i class="fas 
+            {% if toast_type == 'success' %}fa-check-circle
+            {% elif toast_type == 'error' %}fa-exclamation-circle
+            {% else %}fa-info-circle
+            {% endif %}
+        "></i>
+    </span>
+    <span class="toast-text">{{ toast_message }}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+</div>
+{% endif %}
+
 <h1>Section Images</h1>
 <p>Upload background images for page headers. Best size: 1200 x 400px.</p>
 
-<form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/section-images">
+<form method="POST" enctype="multipart/form-data" class="admin-form" id="sectionImageForm">
     <div class="form-row">
-        <div class="form-group"><label>Section</label>
+        <div class="form-group">
+            <label>Section</label>
             <select name="section" required>
-                <option value="about">About — Profile</option>
-                <option value="story">About — Our Story</option>
-                <option value="leadership">About — Leadership</option>
-                <option value="ministries">Ministries Hub</option>
-                <option value="ministries-ladies">Ministries — Ladies'</option>
-                <option value="ministries-campus">Ministries — Campus</option>
-                <option value="ministries-canvas">Ministries — Canvas</option>
-                <option value="ministries-worship">Ministries — Worship</option>
-                <option value="ministries-foundation-school">Ministries — Foundation School</option>
-                <option value="ministries-advance">Ministries — Advance</option>
-                <option value="ministries-men">Ministries — Men's</option>
-                <option value="ministries-business-development">Ministries — Business Development</option>
-                <option value="testimonials">Testimonies</option>
-                <option value="resources">Resources Hub</option>
-                <option value="sermons">Sermons</option>
-                <option value="creatives">Creatives</option>
-                <option value="media">Media Gallery</option>
-                <option value="sermons-mp3">Sermons MP3</option>
-                <option value="blog">Blog</option>
-                <option value="giving">Give</option>
-                <option value="marketplace">Marketplace</option>
-                <option value="retreats">Retreats</option>
-                <option value="family-groups">Family Groups</option>
-                <option value="prayer-rhythms">Prayer & Fasting</option>
-                <option value="events">Gatherings & Events</option>
-                <option value="contact">Contact</option>
-                <option value="faqs">FAQs</option>
-                <option value="tgf-music">TGF Music</option>
-                <option value="tgf-drama">TGF Drama</option>
-                <option value="tgf-poems">Poems & Spoken Word</option>
+                <option value="">-- Select a section --</option>
+                <optgroup label="About Pages">
+                    <option value="about">About — Profile</option>
+                    <option value="story">About — Our Story</option>
+                    <option value="leadership">About — Leadership</option>
+                </optgroup>
+                <optgroup label="Ministries">
+                    <option value="ministries">Ministries Hub</option>
+                    <option value="ministries-ladies">Ministries — Ladies'</option>
+                    <option value="ministries-campus">Ministries — Campus</option>
+                    <option value="ministries-canvas">Ministries — Canvas</option>
+                    <option value="ministries-worship">Ministries — Worship</option>
+                    <option value="ministries-foundation-school">Ministries — Foundation School</option>
+                    <option value="ministries-advance">Ministries — Advance</option>
+                    <option value="ministries-men">Ministries — Men's</option>
+                    <option value="ministries-business-development">Ministries — Business Development</option>
+                </optgroup>
+                <optgroup label="Content Pages">
+                    <option value="testimonials">Testimonies</option>
+                    <option value="resources">Resources Hub</option>
+                    <option value="sermons">Sermons</option>
+                    <option value="sermons-mp3">Sermons MP3</option>
+                    <option value="creatives">Creatives</option>
+                    <option value="media">Media Gallery</option>
+                    <option value="blog">Blog</option>
+                    <option value="giving">Give</option>
+                </optgroup>
+                <optgroup label="Other">
+                    <option value="marketplace">Marketplace</option>
+                    <option value="retreats">Retreats</option>
+                    <option value="family-groups">Family Groups</option>
+                    <option value="prayer-rhythms">Prayer & Fasting</option>
+                    <option value="events">Gatherings & Events</option>
+                    <option value="contact">Contact</option>
+                    <option value="faqs">FAQs</option>
+                    <option value="tgf-music">TGF Music</option>
+                    <option value="tgf-drama">TGF Drama</option>
+                    <option value="tgf-poems">Poems & Spoken Word</option>
+                </optgroup>
             </select>
         </div>
-        <div class="form-group"><label>Image</label><input type="file" name="image" accept="image/*" required></div>
+        <div class="form-group">
+            <label>Image (JPG, PNG, WEBP)</label>
+            <input type="file" name="image" accept="image/*" required>
+            <p class="form-hint">Recommended: 1200x400px, max 2MB</p>
+        </div>
     </div>
-    <button type="submit" class="btn-save">Upload</button>
+    <div class="form-actions">
+        <button type="submit" class="btn-save" id="uploadBtn">
+            <i class="fas fa-upload"></i> Upload Image
+        </button>
+        <a href="/admin" class="btn-cancel">Cancel</a>
+    </div>
 </form>
 
 <hr class="admin-divider">
 
 <h2>Current Images</h2>
-{% if images %}
+{% if images and images|length > 0 %}
 <div class="admin-grid">
     {% for img in images %}
     <div class="admin-card-small">
-        <img src="{{ img.image_url }}" alt="{{ img.section_name }}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">
-        <h4 style="margin-top:8px;">{{ img.section_name }}</h4>
+        {% if img.image_url %}
+        <img src="{{ img.image_url }}" alt="{{ img.section_name }}" class="admin-thumb-sm">
+        {% else %}
+        <div class="admin-thumb-placeholder"><i class="fas fa-image"></i></div>
+        {% endif %}
+        <h4>{{ img.section_name|replace('-', ' ')|title }}</h4>
+        <div class="admin-card-actions">
+            <form method="POST" action="/admin/section-images/{{ img.id }}/delete" class="delete-form" data-name="{{ img.section_name }}">
+                <button type="submit" class="btn-delete small">Delete</button>
+            </form>
+        </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<p class="empty-state">No section images yet.</p>
+<p class="empty-state">
+    <i class="fas fa-image"></i><br>
+    No section images yet. Upload one above.
+</p>
 {% endif %}
+
+<!-- Loading Indicator (hide by default) -->
+<div id="uploadLoading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 20px 30px; border-radius: 12px; z-index: 10001;">
+    <i class="fas fa-spinner fa-spin" style="color: var(--gold); font-size: 1.5rem;"></i>
+    <span style="margin-left: 10px;">Uploading...</span>
+</div>
+
+<script>
+    // Auto-hide toast after 4 seconds
+    var adminToast = document.getElementById('adminToast');
+    if (adminToast) {
+        setTimeout(function() {
+            adminToast.classList.add('fade-out');
+            setTimeout(function() {
+                if (adminToast.parentElement) adminToast.remove();
+            }, 300);
+        }, 4000);
+    }
+
+    // Show loading indicator on form submit
+    var form = document.getElementById('sectionImageForm');
+    var uploadBtn = document.getElementById('uploadBtn');
+    var loadingDiv = document.getElementById('uploadLoading');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            var section = form.querySelector('select[name="section"]').value;
+            var file = form.querySelector('input[name="image"]').files[0];
+            
+            if (!section) {
+                e.preventDefault();
+                alert('Please select a section');
+                return;
+            }
+            
+            if (!file) {
+                e.preventDefault();
+                alert('Please select an image file');
+                return;
+            }
+            
+            // Show loading indicator
+            if (loadingDiv) loadingDiv.style.display = 'flex';
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            }
+            
+            // Form will submit normally - no preventDefault()
+        });
+    }
+    
+    // Hide loading if page loads with error (fallback)
+    window.addEventListener('pageshow', function() {
+        if (loadingDiv) loadingDiv.style.display = 'none';
+        if (uploadBtn) {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Image';
+        }
+    });
+</script>
+
+<style>
+    .admin-card-small {
+        position: relative;
+    }
+    .admin-card-small .admin-thumb-sm {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .admin-card-small h4 {
+        font-size: 0.8rem;
+        margin: 8px 0 4px;
+        text-align: center;
+    }
+    .admin-card-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    .btn-delete.small {
+        padding: 4px 12px;
+        font-size: 0.7rem;
+    }
+    optgroup {
+        background: var(--darker);
+        color: var(--gold);
+        font-weight: 600;
+    }
+    optgroup option {
+        color: var(--gray-light);
+        padding-left: 20px;
+    }
+    .dashboard-toast {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 10000;
+        background: var(--dark);
+        border-left: 4px solid var(--gold);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    }
+    .dashboard-toast.toast-success { border-left-color: #4caf50; }
+    .dashboard-toast.toast-error { border-left-color: #e74c3c; }
+    .dashboard-toast.toast-info { border-left-color: #3498db; }
+    .dashboard-toast .toast-text { flex: 1; font-size: 0.85rem; }
+    .dashboard-toast .toast-close {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    .dashboard-toast.fade-out {
+        animation: slideOut 0.3s ease forwards;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100px); }
+    }
+</style>
+
 {% endblock %}
