@@ -44,7 +44,7 @@ window.addEventListener('load', () => {
     }
 });
 
-// ==================== SMOOTH PAGE TRANSITIONS (FIXED) ====================
+// ==================== SMOOTH PAGE TRANSITIONS ====================
 document.addEventListener('click', (e) => {
     // Don't intercept if modifier keys are pressed (ctrl/cmd click = new tab)
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
@@ -66,25 +66,29 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// ==================== MOBILE MENU (FIXED BACK BUTTON) ====================
+// ==================== MOBILE MENU (PROFESSIONAL & STABLE) ====================
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileClose = document.getElementById('mobileClose');
 
-const overlay = document.createElement('div');
-overlay.className = 'mobile-menu-overlay';
-document.body.appendChild(overlay);
+// Create overlay if it doesn't exist
+let overlay = document.querySelector('.mobile-menu-overlay');
+if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'mobile-menu-overlay';
+    document.body.appendChild(overlay);
+}
 
 function openMenu() {
+    if (!hamburger || !mobileMenu || !overlay) return;
     hamburger.classList.add('active');
     mobileMenu.classList.add('active');
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-    // Push state so back button closes menu instead of navigating
-    history.pushState({ menuOpen: true }, '');
 }
 
 function closeMenu() {
+    if (!hamburger || !mobileMenu || !overlay) return;
     hamburger.classList.remove('active');
     mobileMenu.classList.remove('active');
     overlay.classList.remove('active');
@@ -101,31 +105,45 @@ function closeMenu() {
 
 if (hamburger) hamburger.addEventListener('click', openMenu);
 if (mobileClose) mobileClose.addEventListener('click', closeMenu);
-overlay.addEventListener('click', closeMenu);
+if (overlay) overlay.addEventListener('click', closeMenu);
 
-// FIXED: Proper back button handling for mobile menu
-window.addEventListener('popstate', function(event) {
-    if (mobileMenu && mobileMenu.classList.contains('active')) {
-        closeMenu();
-        // Don't use replaceState - just prevent navigation
-        // The menu state was pushed, so popstate fires correctly
-        return;
-    }
-    // Let browser navigate normally when menu is closed
-});
-
+// Accordion functionality
 document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const content = btn.nextElementSibling;
         const isOpen = btn.classList.contains('active');
         document.querySelectorAll('.mobile-accordion-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.mobile-accordion-content').forEach(c => c.style.maxHeight = null);
-        if (!isOpen) {
+        if (!isOpen && content) {
             btn.classList.add('active');
             content.style.maxHeight = content.scrollHeight + 'px';
         }
     });
 });
+
+// ==================== ENSURE MENU IS CLOSED ON PAGE LOAD ====================
+// Fixes "back button with open menu" problem
+(function ensureMenuClosedOnLoad() {
+    // Close menu immediately if open
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        closeMenu();
+    }
+    
+    // Handle pageshow event (fires when page comes from back/forward cache)
+    window.addEventListener('pageshow', function() {
+        if (mobileMenu && mobileMenu.classList.contains('active')) {
+            closeMenu();
+        }
+        document.body.style.overflow = '';
+    });
+    
+    // Safety timeout for any edge cases
+    setTimeout(() => {
+        if (mobileMenu && mobileMenu.classList.contains('active')) {
+            closeMenu();
+        }
+    }, 10);
+})();
 
 // ==================== HERO SLIDESHOW ====================
 const slides = document.querySelectorAll('.hero-slide');
@@ -139,6 +157,7 @@ function getDots() {
 }
 
 function goToSlide(index) {
+    if (!slides.length) return;
     slides.forEach(s => s.classList.remove('active'));
     const currentDots = getDots();
     currentDots.forEach(d => d.classList.remove('active'));
@@ -181,10 +200,12 @@ function buildHeroDots() {
     dots = document.querySelectorAll('.hero-dot');
 }
 
-buildHeroDots();
-startSlideshow();
+if (slides.length) {
+    buildHeroDots();
+    startSlideshow();
+}
 
-// ==================== PARALLAX HERO (THROTTLED FIX) ====================
+// ==================== PARALLAX HERO (THROTTLED) ====================
 const hero = document.querySelector('.hero');
 if (hero) {
     let ticking = false;
@@ -273,6 +294,7 @@ const tDots = document.querySelectorAll('.t-dot');
 let currentT = 0;
 
 function goToTestimonial(index) {
+    if (!tSlides.length) return;
     tSlides.forEach(s => s.classList.remove('active'));
     tDots.forEach(d => d.classList.remove('active'));
     if (tSlides[index]) tSlides[index].classList.add('active');
@@ -293,10 +315,12 @@ tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)
 const backToTop = document.getElementById('backToTop');
 
 window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 500) {
-        backToTop.classList.add('visible');
-    } else {
-        backToTop.classList.remove('visible');
+    if (backToTop) {
+        if (window.pageYOffset > 500) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
     }
 });
 
@@ -310,10 +334,12 @@ if (backToTop) {
 const header = document.getElementById('header');
 
 window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 50) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
+    if (header) {
+        if (window.pageYOffset > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
     }
 });
 
@@ -323,7 +349,10 @@ const newsletterForm = document.getElementById('newsletterForm');
 if (newsletterForm) {
     newsletterForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('newsletterEmail').value.trim();
+        const emailInput = document.getElementById('newsletterEmail');
+        if (!emailInput) return;
+        
+        const email = emailInput.value.trim();
         const button = newsletterForm.querySelector('button');
         
         if (!email) {
@@ -331,8 +360,10 @@ if (newsletterForm) {
             return;
         }
         
-        button.classList.add('btn-loading');
-        button.textContent = 'Subscribing';
+        if (button) {
+            button.classList.add('btn-loading');
+            button.textContent = 'Subscribing';
+        }
         
         try {
             const formData = new FormData();
@@ -342,7 +373,7 @@ if (newsletterForm) {
             
             if (data.status === 'success') {
                 showToast('Welcome to the family! Check your inbox.', 'success');
-                document.getElementById('newsletterEmail').value = '';
+                emailInput.value = '';
             } else {
                 showToast(data.message || 'Subscription failed.', 'error');
             }
@@ -350,8 +381,10 @@ if (newsletterForm) {
             showToast('Network error. Please try again.', 'error');
         }
         
-        button.classList.remove('btn-loading');
-        button.textContent = 'Subscribe';
+        if (button) {
+            button.classList.remove('btn-loading');
+            button.textContent = 'Subscribe';
+        }
     });
 }
 
@@ -429,7 +462,7 @@ function showConfirm(title, message, onConfirm) {
     });
 }
 
-// ==================== LIGHTBOX (FIXED NULL CHECKS) ====================
+// ==================== LIGHTBOX (STABLE WITH NULL CHECKS) ====================
 (function() {
     const lightbox = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightboxContent');
