@@ -190,6 +190,7 @@ def delete_prayer_rhythm(id):
 @admin_bp.route('/family-groups', methods=['GET', 'POST'])
 @role_required('admin')
 def manage_family_groups():
+    message = None
     if request.method == 'POST':
         supabase_insert('family_groups', {
             'name': request.form.get('name'),
@@ -197,12 +198,21 @@ def manage_family_groups():
             'leader': request.form.get('leader'),
             'meeting_time': request.form.get('meeting_time'),
             'description': request.form.get('description'),
-            'contact_email': request.form.get('contact_email')
+            'contact_email': request.form.get('contact_email'),
+            'whatsapp_link': request.form.get('whatsapp_link'),
+            'meeting_location': request.form.get('meeting_location'),
+            'location_map_url': request.form.get('location_map_url'),
+            'what_to_expect': request.form.get('what_to_expect'),
+            'leader_bio': request.form.get('leader_bio'),
+            'leader_phone': request.form.get('leader_phone'),
+            'leader_user_id': request.form.get('leader_user_id') or None
         })
-        return redirect_with_toast('admin.dashboard', 'Family group added successfully!', 'success')
+        flash('Family group added!', 'success')
+        return redirect(url_for('admin.manage_family_groups'))
     
     groups = supabase_get('family_groups', {'order': 'city.asc'})
-    return render_template('admin/family-groups-manage.html', groups=groups)
+    users = supabase_get('admin_users', {'is_active': 'eq.true', 'order': 'display_name.asc'})
+    return render_template('admin/family-groups-manage.html', groups=groups, users=users)
 
 @admin_bp.route('/family-groups/<int:id>/delete', methods=['POST'])
 @role_required('admin')
@@ -1047,17 +1057,29 @@ def edit_user(user_id):
 
 # ==================== GROUP LEADER DASHBOARD ====================
 @admin_bp.route('/family-groups/<int:group_id>/manage')
-@role_required('admin')
+@login_required
 def manage_single_group(group_id):
+    user = session.get('admin_user', {})
+    user_roles = user.get('roles', [])
+    user_id = user.get('id')
+    
     group = supabase_get_one('family_groups', group_id)
     if not group:
         flash('Group not found.', 'error')
-        return redirect(url_for('admin.manage_family_groups'))
+        return redirect(url_for('admin.dashboard'))
     
-    announcements = get_group_announcements(group_id)
-    members = get_group_members(group_id)
+    # Allow access if admin OR if user is assigned as this group's leader
+    is_admin = 'admin' in user_roles
+    is_group_leader = str(group.get('leader_user_id')) == str(user_id)
+    
+    if not is_admin and not is_group_leader:
+        flash('You do not have access to this group.', 'error')
+        return redirect(url_for('admin.dashboard'))
+    
+    announcements = supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
+    members = supabase_get('group_members', {'group_id': f'eq.{group_id}', 'is_visible': 'eq.true'})
     join_requests = supabase_get('group_join_requests', {'group_id': f'eq.{group_id}', 'is_contacted': 'eq.false', 'order': 'created_at.desc'})
-    gallery = get_group_gallery(group_id)
+    gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
     
     return render_template('admin/group-manage.html', 
                          group=group,
