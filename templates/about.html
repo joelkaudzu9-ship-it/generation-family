@@ -1,85 +1,48 @@
 {% extends "base.html" %}
+{% block title %}About The Generation Family{% endblock %}
+
 {% block content %}
 
 <section class="page-header" {% if section_images.get('about') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('about') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
-        <h1 class="page-title">About Us</h1>
-        <p class="page-subtitle">The story, the heartbeat, and the people of The Generation Family</p>
+        <h1 class="page-title">About The Generation Family</h1>
+        <p class="page-subtitle">Revival in me. Awakening through us. On earth as in heaven.</p>
     </div>
 </section>
 
 <section class="about-section">
     <div class="container">
-        <div class="about-grid">
-            <div class="about-content">
-                <h2>Who We Are</h2>
-                <p>{{ settings.get('about_intro', 'The Generation Family is a spiritual movement born at Kamuzu University of Health Sciences. Founded by two students, built on prayer, sustained by fasting, and growing through family — we are a community of believers passionate about faith, family, and purpose.') }}</p>
-                <p>{{ settings.get('about_description', 'What started as two students praying together has grown into a movement spanning multiple cities, with family groups that share meals and resources, a marketplace where members trade with one another, and retreats every midsemester break funded entirely by the generous giving of the community.') }}</p>
-                
-                <div class="about-mvv">
-                    <div class="about-mvv-item">
-                        <h3><i class="fas fa-cross gold-text"></i> Our Mission</h3>
-                        <p>{{ settings.get('mission', 'To raise a generation that prays without ceasing, fasts with purpose, and loves like family.') }}</p>
-                    </div>
-                    <div class="about-mvv-item">
-                        <h3><i class="fas fa-eye gold-text"></i> Our Vision</h3>
-                        <p>{{ settings.get('vision', 'A community in every city where believers eat together, trade together, and grow together.') }}</p>
-                    </div>
-                    <div class="about-mvv-item">
-                        <h3><i class="fas fa-heart gold-text"></i> Our Values</h3>
-                        <p>{{ settings.get('values', 'Prayer. Fasting. Family. Generosity. Simplicity. Joy.') }}</p>
-                    </div>
-                </div>
+        <div class="about-mvv">
+            <div class="about-mvv-item">
+                <h3><i class="fas fa-eye gold-text"></i> Our Vision</h3>
+                <p>{{ settings.get('vision', 'Become a revivalistic generation of passionate and connected lovers of Jesus Christ that will steward the fire of God and kingdom values from one generation to the next creating a regional, & global expansion of God\'s Kingdom.') }}</p>
             </div>
-            
-            <div class="about-sidebar">
-                <div class="about-stats">
-                    <div class="about-stat">
-                        <span class="stat-number gold-text">{{ settings.get('lives_impacted', '2500+') }}</span>
-                        <span class="stat-label">Lives Touched</span>
-                    </div>
-                    <div class="about-stat">
-                        <span class="stat-number gold-text">{{ settings.get('years_in_existence', '12') }}</span>
-                        <span class="stat-label">Years Growing</span>
-                    </div>
-                    <div class="about-stat">
-                        <span class="stat-number gold-text">{{ settings.get('cities', '5') }}</span>
-                        <span class="stat-label">Cities Reached</span>
-                    </div>
-                    <div class="about-stat">
-                        <span class="stat-number gold-text">{{ settings.get('meetings_held', '1200+') }}</span>
-                        <span class="stat-label">Gatherings Held</span>
-                    </div>
-                </div>
+            <div class="about-mvv-item">
+                <h3><i class="fas fa-cross gold-text"></i> Our Mission</h3>
+                <p>{{ settings.get('mission', 'Our mission is revival through raising Christ-centered leaders who will transform every sphere of life through Kingdom values and lifestyle.') }}</p>
             </div>
+            <div class="about-mvv-item">
+                <h3><i class="fas fa-fire gold-text"></i> Our Mandate</h3>
+                <p>{{ settings.get('mandate', 'Revival in me. Awakening through us. On earth as in heaven.') }}</p>
+            </div>
+            <div class="about-mvv-item">
+                <h3><i class="fas fa-star gold-text"></i> Our Motto</h3>
+                <p>{{ settings.get('motto', 'Like Jesus: Heavenly minded, Earthly incredible.') }}</p>
+            </div>
+        </div>
+        
+        <hr class="about-divider">
+        
+        <h2 class="section-heading">Core Values</h2>
+        <div class="values-grid">
+            <div class="value-card">Christ-centeredness</div>
+            <div class="value-card">Intimacy with God</div>
+            <div class="value-card">Familyship</div>
+            <div class="value-card">Honor</div>
+            <div class="value-card">Personal and territorial transformation</div>
+            <div class="value-card">Nothing is impossible with God</div>
         </div>
     </div>
 </section>
-
-{% if leadership %}
-<section class="about-leadership">
-    <div class="container">
-        <h2 class="section-heading">Our Founders & Leaders</h2>
-        <div class="leadership-grid">
-            {% for leader in leadership %}
-            <div class="leader-card">
-                <div class="leader-img">
-                    {% if leader.image_url %}
-                    <img src="{{ leader.image_url }}" alt="{{ leader.name }}">
-                    {% else %}
-                    <img src="https://via.placeholder.com/300x300/1a1a1a/D4AF37?text={{ leader.name[:1] }}" alt="{{ leader.name }}">
-                    {% endif %}
-                </div>
-                <h4>{{ leader.name }}</h4>
-                <p>{{ leader.title }}</p>
-                {% if leader.bio %}
-                <p class="leader-bio">{{ leader.bio }}</p>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
 
 {% endblock %}

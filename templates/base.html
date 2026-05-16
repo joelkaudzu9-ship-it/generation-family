@@ -21,9 +21,6 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/jpeg">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -40,8 +37,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
+
+<style>
+    body {
+        font-family: 'Aptos', 'Aptos Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+</style>
+
 <body>
 
     <!-- Loading Screen -->
@@ -71,47 +74,31 @@
                 </div>
             </a>
 
+            <!-- DESKTOP NAVIGATION - Blog under Resources dropdown -->
             <nav class="desktop-nav">
                 <a href="/">Home</a>
-                <a href="/story">Our Story</a>
                 <div class="nav-dropdown">
-                    <a href="#">Movement <i class="fas fa-chevron-down"></i></a>
+                    <a href="/about">About Us <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-panel">
-                        <a href="/prayer-rhythms">Prayer & Fasting</a>
-                        <a href="/family-groups">Family Groups</a>
-                        <a href="/marketplace">Marketplace</a>
-                        <a href="/retreats">Retreats</a>
+                        <a href="/about">Profile</a>
+                        <a href="/story">Our Story</a>
+                        <a href="/leadership">Leadership</a>
                     </div>
                 </div>
-                <div class="nav-dropdown">
-                    <a href="/ministries">Ministries <i class="fas fa-chevron-down"></i></a>
-                    <a href="/programs">Events</a>
-                    <div class="dropdown-panel">
-                        <a href="/ministries/children">Children</a>
-                        <a href="/ministries/youth">Youth</a>
-                        <a href="/ministries/men">Men's Fellowship</a>
-                        <a href="/ministries/women">Women's Ministry</a>
-                        <a href="/ministries/worship">Worship Team</a>
-                        <a href="/ministries/prayer">Prayer Ministry</a>
-                    </div>
-                </div>
-                <a href="/sermons">Sermons</a>
-                <a href="/creatives">Creatives</a>
+                <a href="/ministries">Ministries</a>
                 <div class="nav-dropdown">
                     <a href="/resources">Resources <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-panel">
-                        <span class="dropdown-label">Canvas</span>
-                        <a href="/resources/tgf-music">TGF Music</a>
-                        <a href="/resources/tgf-drama">TGF Drama</a>
-                        <a href="/resources/tgf-poems">Poems & Spoken Word</a>
-                        <span class="dropdown-label">Media</span>
+                        <a href="/sermons">Sermons</a>
+                        <a href="/blog">Blog</a>
+                        <a href="/creatives">Creatives</a>
+                        <a href="/resources/media">Media</a>
                         <a href="/resources/sermons-mp3">Sermons MP3</a>
-                        <a href="/resources/media">Photos & Videos</a>
-                        <a href="/resources/apparel">Apparel</a>
-                        <a href="/resources/books">Books</a>
+                        <a href="/marketplace">Marketplace</a>
                     </div>
                 </div>
-                <a href="/blog">Blog</a>
+                <a href="/testimonials">Testimonies</a>
+                <a href="/giving">Give</a>
                 <a href="/contact">Contact</a>
             </nav>
             <div class="header-actions">
@@ -130,59 +117,33 @@
             <span class="gold-text">Menu</span>
             <button class="mobile-menu-close" id="mobileClose">&times;</button>
         </div>
-        <!-- Add this -->
         <div class="mobile-search">
             <i class="fas fa-search"></i>
             <input type="text" placeholder="Search..." class="mobile-search-input">
         </div>
+        <!-- MOBILE MENU - Blog removed as standalone, accessible via Resources -->
         <div class="mobile-menu-body">
             <a href="/">Home</a>
+            <a href="/about">About Us</a>
             <a href="/story">Our Story</a>
-            <a href="/programs">Events</a>
-            
-            <div class="mobile-accordion">
-                <button class="mobile-accordion-btn">Movement <i class="fas fa-plus"></i></button>
-                <div class="mobile-accordion-content">
-                    <a href="/prayer-rhythms">Prayer & Fasting</a>
-                    <a href="/family-groups">Family Groups</a>
-                    <a href="/marketplace">Marketplace</a>
-                    <a href="/retreats">Retreats</a>
-                </div>
-            </div>
-            
-            <div class="mobile-accordion">
-                <button class="mobile-accordion-btn">Ministries <i class="fas fa-plus"></i></button>
-                <div class="mobile-accordion-content">
-                    <a href="/ministries/children">Children</a>
-                    <a href="/ministries/youth">Youth</a>
-                    <a href="/ministries/men">Men's Fellowship</a>
-                    <a href="/ministries/women">Women's Ministry</a>
-                    <a href="/ministries/worship">Worship Team</a>
-                    <a href="/ministries/prayer">Prayer Ministry</a>
-                </div>
-            </div>
-            
-            <a href="/sermons">Sermons</a>
-            <a href="/creatives">Creatives</a>
+            <a href="/leadership">Leadership</a>
+            <a href="/ministries">Ministries</a>
             
             <div class="mobile-accordion">
                 <button class="mobile-accordion-btn">Resources <i class="fas fa-plus"></i></button>
                 <div class="mobile-accordion-content">
-                    <span class="mobile-sub-label">Canvas</span>
-                    <a href="/resources/tgf-music">TGF Music</a>
-                    <a href="/resources/tgf-drama">TGF Drama</a>
-                    <a href="/resources/tgf-poems">Poems & Spoken Word</a>
-                    <span class="mobile-sub-label">Media</span>
+                    <a href="/sermons">Sermons</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/creatives">Creatives</a>
+                    <a href="/resources/media">Media</a>
                     <a href="/resources/sermons-mp3">Sermons MP3</a>
-                    <a href="/resources/media">Photos & Videos</a>
-                    <a href="/resources/apparel">Apparel</a>
-                    <a href="/resources/books">Books</a>
+                    <a href="/marketplace">Marketplace</a>
                 </div>
             </div>
             
-            <a href="/blog">Blog</a>
+            <a href="/testimonials">Testimonies</a>
+            <a href="/giving">Give</a>
             <a href="/contact">Contact</a>
-            <a href="/faqs">FAQs</a>
         </div>
     </div>
 
@@ -218,7 +179,7 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-        <!-- Confirmation Modal -->
+    <!-- Confirmation Modal -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-box">
             <div class="modal-icon">
@@ -233,7 +194,7 @@
         </div>
     </div>
 
-        <!-- Lightbox -->
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" id="lightboxClose">&times;</button>
         <button class="lightbox-prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>

@@ -7,9 +7,9 @@
     --white: #ffffff;
     --gray: #999999;
     --gray-light: #cccccc;
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'Inter', -apple-system, sans-serif;
-}
+    --font-display: 'Aptos', 'Aptos Display', -apple-system, sans-serif;
+    --font-body: 'Aptos', -apple-system, sans-serif;
+    }
 
 *, *::before, *::after {
     margin: 0;
@@ -25,7 +25,6 @@ html {
 body {
     background: var(--black);
     color: var(--white);
-    font-family: var(--font-body);
     font-weight: 300;
     line-height: 1.7;
     overflow-x: hidden;
@@ -130,7 +129,7 @@ a {
 }
 
 .logo-name {
-    font-family: var(--font-display);
+
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--gold);
@@ -307,7 +306,6 @@ a {
     border: 1px solid #333;
     border-radius: 8px;
     color: var(--white);
-    font-family: var(--font-body);
     outline: none;
     font-size: 0.85rem;
 }
@@ -379,7 +377,6 @@ a {
     align-items: center;
     padding: 20px 24px;
     border-bottom: 1px solid #1a1a1a;
-    font-family: var(--font-display);
     font-size: 1.1rem;
 }
 
@@ -424,7 +421,6 @@ a {
     border-bottom: 1px solid #111;
     color: var(--gray-light);
     font-size: 0.95rem;
-    font-family: var(--font-body);
     cursor: pointer;
 }
 
@@ -535,7 +531,6 @@ a {
 }
 
 .hero-title {
-    font-family: var(--font-display);
     font-size: clamp(2.5rem, 7vw, 4.5rem);
     font-weight: 700;
     line-height: 1.1;
@@ -655,7 +650,6 @@ a {
 }
 
 .mvv-card h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 12px;
@@ -675,7 +669,6 @@ a {
 
 /* ==================== SECTION HERO HEADINGS ==================== */
 .section-heading {
-    font-family: var(--font-display);
     text-align: center;
     font-size: clamp(1.2rem, 3vw, 1.6rem);
     color: var(--gold);
@@ -731,7 +724,6 @@ a {
 
 .impact-number {
     display: block;
-    font-family: var(--font-display);
     font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 700;
     color: var(--gold);
@@ -855,7 +847,6 @@ a {
 }
 
 .testimonial-quote {
-    font-family: var(--font-display);
     font-size: 1.15rem;
     font-style: italic;
     color: var(--gray-light);
@@ -896,7 +887,6 @@ a {
 }
 
 .cta h2 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: clamp(1.4rem, 4vw, 2rem);
     margin-bottom: 12px;
@@ -929,7 +919,6 @@ a {
 }
 
 .footer-col h4 {
-    font-family: var(--font-display);
     color: var(--gold);
     margin-bottom: 16px;
     font-size: 0.95rem;
@@ -971,7 +960,6 @@ a {
     border: 1px solid #222;
     border-radius: 8px;
     color: var(--white);
-    font-family: var(--font-body);
     font-size: 0.82rem;
     outline: none;
     min-width: 0;
@@ -1024,7 +1012,6 @@ a {
 }
 
 .page-title {
-    font-family: var(--font-display);
     font-size: clamp(2rem, 5vw, 3rem);
     color: var(--gold);
     margin-bottom: 16px;
@@ -1051,7 +1038,6 @@ a {
 
 .contact-info h3,
 .contact-form-wrapper h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     margin-bottom: 28px;
     font-size: 1.3rem;
@@ -1109,7 +1095,6 @@ a {
     border: 1px solid #333;
     border-radius: 10px;
     color: var(--white);
-    font-family: var(--font-body);
     font-size: 0.9rem;
     outline: none;
     transition: border-color 0.2s;
@@ -1124,7 +1109,6 @@ a {
 .contact-form .btn-gold {
     border: none;
     cursor: pointer;
-    font-family: var(--font-body);
     font-size: 0.9rem;
     margin-top: 8px;
 }
@@ -1229,7 +1213,6 @@ a {
 }
 
 .about-content h2 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.6rem;
     margin-bottom: 20px;
@@ -1286,7 +1269,6 @@ a {
 
 .stat-number {
     display: block;
-    font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 700;
 }
@@ -1543,7 +1525,6 @@ a {
 }
 
 .giving-content h2 {
-    font-family: var(--font-display);
     color: var(--gold);
     margin-bottom: 16px;
 }
@@ -1651,7 +1632,6 @@ a {
 }
 
 .empty-state-page h3 {
-    font-family: var(--font-display);
     font-size: 1.3rem;
     margin-bottom: 10px;
 }
@@ -1870,7 +1850,6 @@ a {
 }
 
 .loader-text {
-    font-family: var(--font-display);
     letter-spacing: 2px;
     font-size: 0.9rem;
     animation: pulse 1.5s ease-in-out infinite;
@@ -2389,7 +2368,6 @@ html {
     border: 1px solid #222;
     border-radius: 10px;
     color: var(--white);
-    font-family: var(--font-body);
     font-size: 0.85rem;
     outline: none;
     transition: border-color 0.2s;
@@ -2458,7 +2436,6 @@ html {
 .blog-detail-body h2,
 .blog-detail-body h3 {
     color: var(--gold);
-    font-family: var(--font-display);
     margin: 30px 0 14px;
 }
 
@@ -2490,7 +2467,6 @@ html {
 }
 
 .sidebar-widget h4 {
-    font-family: var(--font-display);
     color: var(--gold);
     margin-bottom: 16px;
     font-size: 0.95rem;
@@ -2588,7 +2564,6 @@ html {
 }
 
 .countdown-content h3 {
-    font-family: var(--font-display);
     font-size: 1.3rem;
     margin-bottom: 10px;
     color: var(--white);
@@ -2627,7 +2602,6 @@ html {
 
 .countdown-number {
     display: block;
-    font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 700;
     color: var(--gold);
@@ -2650,7 +2624,6 @@ html {
 .countdown-expired {
     text-align: center;
     color: var(--gold);
-    font-family: var(--font-display);
     font-size: 1.1rem;
 }
 
@@ -2817,7 +2790,6 @@ html {
 }
 
 .modal-title {
-    font-family: var(--font-display);
     font-size: 1.2rem;
     color: var(--white);
     margin-bottom: 10px;
@@ -2843,7 +2815,6 @@ html {
     color: var(--gray);
     border-radius: 10px;
     cursor: pointer;
-    font-family: inherit;
     font-size: 0.85rem;
     transition: all 0.2s;
 }
@@ -2860,7 +2831,6 @@ html {
     color: white;
     border-radius: 10px;
     cursor: pointer;
-    font-family: inherit;
     font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s;
@@ -2888,7 +2858,6 @@ html {
     background: transparent;
     border: none;
     color: var(--white);
-    font-family: inherit;
     font-size: 0.9rem;
     outline: none;
 }
@@ -3045,7 +3014,6 @@ html {
 }
 
 .rhythm-detail-card h2 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 12px;
@@ -3085,7 +3053,6 @@ html {
 }
 
 .rhythms-cta h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 8px;
@@ -3157,7 +3124,6 @@ html {
 }
 
 .fg-cta h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 8px;
@@ -3229,7 +3195,6 @@ html {
 }
 
 .mp-cta h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 8px;
@@ -3274,7 +3239,6 @@ html {
 }
 
 .highlight-number {
-    font-family: var(--font-display);
     font-size: 2rem;
     color: var(--gold);
     font-weight: 700;
@@ -3300,7 +3264,6 @@ html {
 }
 
 .retreats-cta h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 8px;
@@ -3330,7 +3293,6 @@ html {
 }
 
 .story-content-full h2 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.4rem;
     margin: 36px 0 14px;
@@ -3477,7 +3439,6 @@ html {
 }
 
 .creatives-cta h3 {
-    font-family: var(--font-display);
     color: var(--gold);
     font-size: 1.2rem;
     margin-bottom: 8px;
@@ -3745,5 +3706,493 @@ html {
     
     .countdown-separator {
         padding-bottom: 16px;
+    }
+}
+
+/* ==================== STORY TAGLINE ==================== */
+.story-tagline {
+    padding: 60px 0;
+    background: var(--dark);
+    text-align: center;
+}
+
+.tagline-text {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* ==================== MINISTRIES HOME ==================== */
+.ministries-home {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.see-all {
+    text-align: center;
+    margin-top: 32px;
+}
+
+/* ==================== RESOURCES HOME ==================== */
+.resources-home {
+    padding: 60px 0;
+    background: var(--dark);
+}
+
+/* ==================== ORGANOGRAM ==================== */
+.leadership-structure {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.organogram {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.org-level {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 8px 0;
+}
+
+.org-level.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.org-box {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray-light);
+    text-align: center;
+    min-width: 160px;
+}
+
+.org-box.gold {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.org-connector {
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin: 4px 0;
+    text-align: center;
+}
+
+/* ==================== PRINCIPLES ==================== */
+.principles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.principle-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.principle-card h3 {
+    color: var(--gold);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.principle-card p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.principle-card:last-child {
+    grid-column: span 2;
+}
+
+/* ==================== VALUES GRID ==================== */
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.value-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: var(--gold);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.value-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+/* ==================== ABOUT DIVIDER ==================== */
+.about-divider {
+    border: none;
+    border-top: 1px solid #1a1a1a;
+    margin: 50px 0;
+}
+
+@media (max-width: 768px) {
+    .principles-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .principle-card:last-child {
+        grid-column: span 1;
+    }
+    
+    .values-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .org-box {
+        min-width: 130px;
+        font-size: 0.78rem;
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== MINISTRIES FULL GRID ==================== */
+.ministries-full-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.ministry-detail-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ministry-detail-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+
+.ministry-detail-icon {
+    font-size: 2.2rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.ministry-detail-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    color: var(--white);
+}
+
+.ministry-detail-card p {
+    color: var(--gray);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.ministry-link {
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ministry-link:hover {
+    text-decoration: underline;
+}
+
+/* ==================== CAMPUS LIST ==================== */
+.campus-list {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.campus-list h3 {
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.campus-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.campus-item {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gray-light);
+    transition: all 0.2s;
+}
+
+.campus-item:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* ==================== SUB MINISTRIES ==================== */
+.sub-ministries {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.sub-ministries h3 {
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.sub-ministry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.sub-ministry-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px 14px;
+    text-align: center;
+    color: var(--gray-light);
+    font-size: 0.82rem;
+    transition: all 0.3s;
+    display: block;
+    text-decoration: none;
+}
+
+.sub-ministry-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.sub-ministry-card i {
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.sub-ministry-card h4 {
+    font-size: 0.82rem;
+    color: var(--white);
+    font-weight: 500;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .ministries-full-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .campus-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .ministries-full-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .campus-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== RESOURCES FULL GRID ==================== */
+.resources-full-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.resource-detail-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 32px 24px;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.resource-detail-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.resource-detail-card i {
+    font-size: 2.2rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.resource-detail-card h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--white);
+}
+
+.resource-detail-card p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.resource-link {
+    color: var(--gold);
+    font-size: 0.82rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.resource-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .resources-full-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .resources-full-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== TESTIMONIES PAGE ==================== */
+.testimonies-page {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.testimonies-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.testimony-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 28px 22px;
+    text-align: center;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.testimony-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+}
+
+.testimony-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+    opacity: 0.6;
+}
+
+.testimony-quote {
+    color: var(--gray-light);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    flex: 1;
+    font-style: italic;
+}
+
+.testimony-name {
+    color: var(--gold);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.testimony-cta {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #1a1a1a;
+}
+
+.testimony-cta h3 {
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.testimony-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .testimonies-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonies-grid {
+        grid-template-columns: 1fr;
     }
 }

@@ -31,6 +31,18 @@
     </fieldset>
 
     <fieldset>
+        <legend><i class="fas fa-fire"></i> Mandate & Motto</legend>
+        <div class="form-group">
+            <label>Mandate</label>
+            <textarea name="mandate" rows="2">{{ settings.get('mandate', '') }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Motto</label>
+            <input type="text" name="motto" value="{{ settings.get('motto', '') }}">
+        </div>
+    </fieldset>
+
+    <fieldset>
         <legend><i class="fas fa-info-circle"></i> About Page</legend>
         <div class="form-group"><label>About Intro</label><textarea name="about_intro" rows="3">{{ settings.get('about_intro', '') }}</textarea></div>
         <div class="form-group"><label>About Description</label><textarea name="about_description" rows="3">{{ settings.get('about_description', '') }}</textarea></div>

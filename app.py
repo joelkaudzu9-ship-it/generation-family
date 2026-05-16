@@ -255,6 +255,22 @@ def blog_post(slug):
     return render_template('blog-detail.html', post=post, recent_posts=recent_posts)
 
 
+# ==================== TESTIMONIALS PAGE ====================
+# PHASE 4: Added /testimonials route
+@app.route('/testimonials')
+def testimonies_page():
+    testimonials = get_testimonials()
+    return render_template('testimonials-page.html', testimonials=testimonials)
+
+
+# ==================== LEADERSHIP PAGE ====================
+# PHASE 4: Added /leadership route
+@app.route('/leadership')
+def leadership_page():
+    leaders = get_leadership()
+    return render_template('leadership-page.html', leaders=leaders)
+
+
 # ==================== CONTACT ====================
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():

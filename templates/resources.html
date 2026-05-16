@@ -1,45 +1,53 @@
 {% extends "base.html" %}
+{% block title %}Resources — The Generation Family{% endblock %}
+
 {% block content %}
 
 <section class="page-header" {% if section_images.get('resources') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('resources') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Resources</h1>
-        <p class="page-subtitle">Explore the creative and media library of the family</p>
+        <p class="page-subtitle">Teachings, sermons, blogs, and creative content from the family</p>
     </div>
 </section>
 
 <section class="resources-section">
     <div class="container">
-        <div class="resources-grid">
-            <a href="/creatives" class="resource-card">
+        <div class="resources-full-grid">
+            <a href="/sermons" class="resource-detail-card">
+                <i class="fas fa-microphone-alt"></i>
+                <h3>Sermons</h3>
+                <p>Life-changing messages from our gatherings, retreats, and prayer meetings. Listen, download, and share.</p>
+                <span class="resource-link">Listen Now <i class="fas fa-arrow-right"></i></span>
+            </a>
+            <a href="/blog" class="resource-detail-card">
+                <i class="fas fa-blog"></i>
+                <h3>Blog</h3>
+                <p>Stories, teachings, devotionals, and reflections from the family. New posts added regularly.</p>
+                <span class="resource-link">Read More <i class="fas fa-arrow-right"></i></span>
+            </a>
+            <a href="/creatives" class="resource-detail-card">
                 <i class="fas fa-palette"></i>
                 <h3>Creatives</h3>
-                <p>Music, drama, poems, spoken word, and visual art from within the family</p>
+                <p>Music, drama, poetry, and visual art — creative expressions of faith from within the family.</p>
+                <span class="resource-link">Explore <i class="fas fa-arrow-right"></i></span>
             </a>
-            <a href="/sermons" class="resource-card">
-                <i class="fas fa-headphones"></i>
-                <h3>Sermons</h3>
-                <p>Listen to messages from our gatherings, retreats, and prayer meetings</p>
-            </a>
-            <a href="/resources/sermons-mp3" class="resource-card">
-                <i class="fas fa-download"></i>
-                <h3>Sermons MP3</h3>
-                <p>Download and listen to messages on the go</p>
-            </a>
-            <a href="/resources/media" class="resource-card">
+            <a href="/resources/media" class="resource-detail-card">
                 <i class="fas fa-photo-video"></i>
                 <h3>Media</h3>
-                <p>Audio, images, and videos from the family</p>
+                <p>Photos, videos, and audio from our gatherings, retreats, and community life.</p>
+                <span class="resource-link">View Media <i class="fas fa-arrow-right"></i></span>
             </a>
-            <a href="/resources/apparel" class="resource-card">
-                <i class="fas fa-tshirt"></i>
-                <h3>Apparel</h3>
-                <p>Generation Family branded clothing and merchandise</p>
+            <a href="/resources/sermons-mp3" class="resource-detail-card">
+                <i class="fas fa-download"></i>
+                <h3>Sermons MP3</h3>
+                <p>Download sermons for offline listening. New messages added after every gathering.</p>
+                <span class="resource-link">Download <i class="fas fa-arrow-right"></i></span>
             </a>
-            <a href="/resources/books" class="resource-card">
-                <i class="fas fa-book"></i>
-                <h3>Books</h3>
-                <p>Faith-building books recommended by the family</p>
+            <a href="/marketplace" class="resource-detail-card">
+                <i class="fas fa-store"></i>
+                <h3>Marketplace</h3>
+                <p>Buy from members. Sell to members. A community economy that keeps resources circulating within the family.</p>
+                <span class="resource-link">Browse <i class="fas fa-arrow-right"></i></span>
             </a>
         </div>
     </div>

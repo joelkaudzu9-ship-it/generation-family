@@ -44,10 +44,15 @@ window.addEventListener('load', () => {
     }
 });
 
-// ==================== SMOOTH PAGE TRANSITIONS ====================
+// ==================== SMOOTH PAGE TRANSITIONS (FIXED) ====================
 document.addEventListener('click', (e) => {
+    // Don't intercept if modifier keys are pressed (ctrl/cmd click = new tab)
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    
     const link = e.target.closest('a');
-    if (link && link.href && link.href.startsWith(window.location.origin) && !link.hasAttribute('download') && link.target !== '_blank' && !link.closest('.mobile-menu') && !link.closest('.admin-nav')) {
+    if (link && link.href && link.href.startsWith(window.location.origin) && 
+        !link.hasAttribute('download') && link.target !== '_blank' && 
+        !link.closest('.mobile-menu') && !link.closest('.admin-nav')) {
         e.preventDefault();
         const main = document.querySelector('main');
         if (main) {
@@ -61,7 +66,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// ==================== MOBILE MENU ====================
+// ==================== MOBILE MENU (FIXED BACK BUTTON) ====================
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileClose = document.getElementById('mobileClose');
@@ -75,6 +80,8 @@ function openMenu() {
     mobileMenu.classList.add('active');
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    // Push state so back button closes menu instead of navigating
+    history.pushState({ menuOpen: true }, '');
 }
 
 function closeMenu() {
@@ -95,6 +102,17 @@ function closeMenu() {
 if (hamburger) hamburger.addEventListener('click', openMenu);
 if (mobileClose) mobileClose.addEventListener('click', closeMenu);
 overlay.addEventListener('click', closeMenu);
+
+// FIXED: Proper back button handling for mobile menu
+window.addEventListener('popstate', function(event) {
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        closeMenu();
+        // Don't use replaceState - just prevent navigation
+        // The menu state was pushed, so popstate fires correctly
+        return;
+    }
+    // Let browser navigate normally when menu is closed
+});
 
 document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -166,16 +184,23 @@ function buildHeroDots() {
 buildHeroDots();
 startSlideshow();
 
-// ==================== PARALLAX HERO ====================
+// ==================== PARALLAX HERO (THROTTLED FIX) ====================
 const hero = document.querySelector('.hero');
 if (hero) {
+    let ticking = false;
     window.addEventListener('scroll', () => {
-        const scroll = window.pageYOffset;
-        hero.querySelectorAll('.hero-slide').forEach(slide => {
-            slide.style.transform = `translateY(${scroll * 0.4}px)`;
-        });
-        const heroContent = hero.querySelector('.hero-content');
-        if (heroContent) heroContent.style.transform = `translateY(${scroll * 0.15}px)`;
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const scroll = window.pageYOffset;
+                hero.querySelectorAll('.hero-slide').forEach(slide => {
+                    slide.style.transform = `translateY(${scroll * 0.4}px)`;
+                });
+                const heroContent = hero.querySelector('.hero-content');
+                if (heroContent) heroContent.style.transform = `translateY(${scroll * 0.15}px)`;
+                ticking = false;
+            });
+            ticking = true;
+        }
     });
 }
 
@@ -264,31 +289,6 @@ if (tSlides.length > 1) {
 
 tDots.forEach((dot, i) => dot.addEventListener('click', () => goToTestimonial(i)));
 
-// ==================== PROFESSIONAL BACK BUTTON HANDLING ====================
-(function() {
-    
-    window.addEventListener('popstate', function(event) {
-        
-        // Close mobile menu AND overlay if open
-        if (mobileMenu && mobileMenu.classList.contains('active')) {
-            closeMenu(); // This already removes overlay + menu + resets body scroll
-            history.replaceState({ menuClosed: true }, '', window.location.href);
-            return;
-        }
-        
-        // Close confirmation modal if open
-        const confirmModal = document.getElementById('confirmModal');
-        if (confirmModal && confirmModal.style.visibility === 'visible') {
-            confirmModal.style.opacity = '0';
-            confirmModal.style.visibility = 'hidden';
-            history.replaceState({ modalClosed: true }, '', window.location.href);
-            return;
-        }
-        
-        // Otherwise let browser navigate normally
-    });
-    
-})();
 // ==================== BACK TO TOP ====================
 const backToTop = document.getElementById('backToTop');
 
@@ -300,9 +300,11 @@ window.addEventListener('scroll', () => {
     }
 });
 
-backToTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+if (backToTop) {
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 // ==================== FROZEN HEADER SCROLL STATE ====================
 const header = document.getElementById('header');
@@ -315,10 +317,8 @@ window.addEventListener('scroll', () => {
     }
 });
 
-
 // ==================== NEWSLETTER FORM ====================
 const newsletterForm = document.getElementById('newsletterForm');
-const newsletterMsg = document.getElementById('newsletterMsg');
 
 if (newsletterForm) {
     newsletterForm.addEventListener('submit', async (e) => {
@@ -378,13 +378,17 @@ if (countdownTimer) {
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             
-            document.getElementById('countDays').textContent = String(days).padStart(2, '0');
-            document.getElementById('countHours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('countMins').textContent = String(mins).padStart(2, '0');
+            const daysEl = document.getElementById('countDays');
+            const hoursEl = document.getElementById('countHours');
+            const minsEl = document.getElementById('countMins');
+            
+            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if (minsEl) minsEl.textContent = String(mins).padStart(2, '0');
         }
         
         updateCountdown();
-        setInterval(updateCountdown, 60000); // Update every minute
+        setInterval(updateCountdown, 60000);
     }
 }
 
@@ -395,6 +399,8 @@ function showConfirm(title, message, onConfirm) {
     const messageEl = document.getElementById('confirmMessage');
     const cancelBtn = document.getElementById('confirmCancel');
     const okBtn = document.getElementById('confirmOk');
+    
+    if (!modal || !titleEl || !messageEl || !cancelBtn || !okBtn) return;
     
     titleEl.textContent = title;
     messageEl.textContent = message;
@@ -407,12 +413,13 @@ function showConfirm(title, message, onConfirm) {
     }
     
     function handleConfirm() {
-    okBtn.classList.add('btn-loading');
-    okBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-    okBtn.disabled = true;
-    close();
-    if (onConfirm) onConfirm();
-}
+        okBtn.classList.add('btn-loading');
+        okBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+        okBtn.disabled = true;
+        close();
+        if (onConfirm) onConfirm();
+    }
+    
     cancelBtn.addEventListener('click', close);
     okBtn.addEventListener('click', handleConfirm);
     
@@ -422,16 +429,19 @@ function showConfirm(title, message, onConfirm) {
     });
 }
 
-// ==================== LIGHTBOX ====================
+// ==================== LIGHTBOX (FIXED NULL CHECKS) ====================
 (function() {
-    var lightbox = document.getElementById('lightbox');
-    var lightboxContent = document.getElementById('lightboxContent');
-    var lightboxClose = document.getElementById('lightboxClose');
-    var lightboxPrev = document.getElementById('lightboxPrev');
-    var lightboxNext = document.getElementById('lightboxNext');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = document.getElementById('lightboxContent');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxPrev = document.getElementById('lightboxPrev');
+    const lightboxNext = document.getElementById('lightboxNext');
     
-    var currentGroup = [];
-    var currentIndex = 0;
+    // Exit if lightbox elements don't exist
+    if (!lightbox || !lightboxContent) return;
+    
+    let currentGroup = [];
+    let currentIndex = 0;
     
     function openLightbox(items, index) {
         currentGroup = items;
@@ -450,22 +460,23 @@ function showConfirm(title, message, onConfirm) {
     }
     
     function showItem() {
-        var item = currentGroup[currentIndex];
+        const item = currentGroup[currentIndex];
+        if (!item) return;
         lightboxContent.innerHTML = '';
         
         if (item.tagName === 'IMG') {
-            var img = document.createElement('img');
+            const img = document.createElement('img');
             img.src = item.src;
             img.alt = item.alt || '';
             lightboxContent.appendChild(img);
         } else if (item.tagName === 'VIDEO') {
-            var video = document.createElement('video');
+            const video = document.createElement('video');
             video.src = item.querySelector('source')?.src || item.src;
             video.controls = true;
             video.autoplay = true;
             lightboxContent.appendChild(video);
         } else if (item.tagName === 'AUDIO' || (item.dataset && item.dataset.audio)) {
-            var audio = document.createElement('audio');
+            const audio = document.createElement('audio');
             audio.src = item.querySelector('source')?.src || item.dataset.audio || item.src;
             audio.controls = true;
             audio.autoplay = true;
@@ -473,23 +484,25 @@ function showConfirm(title, message, onConfirm) {
         }
         
         // Hide prev/next if only one item
-        lightboxPrev.style.display = currentGroup.length <= 1 ? 'none' : '';
-        lightboxNext.style.display = currentGroup.length <= 1 ? 'none' : '';
+        if (lightboxPrev) lightboxPrev.style.display = currentGroup.length <= 1 ? 'none' : '';
+        if (lightboxNext) lightboxNext.style.display = currentGroup.length <= 1 ? 'none' : '';
     }
     
     function nextItem() {
+        if (currentGroup.length === 0) return;
         currentIndex = (currentIndex + 1) % currentGroup.length;
         showItem();
     }
     
     function prevItem() {
+        if (currentGroup.length === 0) return;
         currentIndex = (currentIndex - 1 + currentGroup.length) % currentGroup.length;
         showItem();
     }
     
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightboxNext.addEventListener('click', nextItem);
-    lightboxPrev.addEventListener('click', prevItem);
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxNext) lightboxNext.addEventListener('click', nextItem);
+    if (lightboxPrev) lightboxPrev.addEventListener('click', prevItem);
     
     lightbox.addEventListener('click', function(e) {
         if (e.target === lightbox) closeLightbox();
@@ -505,24 +518,24 @@ function showConfirm(title, message, onConfirm) {
     
     // Make images clickable
     document.addEventListener('click', function(e) {
-        var mediaImage = e.target.closest('.media-image img');
-        var mediaVideo = e.target.closest('.media-card video');
-        var eventImage = e.target.closest('.event-image img');
-        var blogImage = e.target.closest('.blog-image img');
+        const mediaImage = e.target.closest('.media-image img');
+        const mediaVideo = e.target.closest('.media-card video');
+        const eventImage = e.target.closest('.event-image img');
+        const blogImage = e.target.closest('.blog-image img');
         
         if (mediaImage || eventImage || blogImage) {
-            var clicked = mediaImage || eventImage || blogImage;
-            var siblings = [];
+            const clicked = mediaImage || eventImage || blogImage;
+            let siblings = [];
             
             // Find all images in the same gallery
-            var container = clicked.closest('.media-grid, .events-grid, .blog-grid');
+            const container = clicked.closest('.media-grid, .events-grid, .blog-grid');
             if (container) {
                 siblings = Array.from(container.querySelectorAll('img'));
             } else {
                 siblings = [clicked];
             }
             
-            var index = siblings.indexOf(clicked);
+            const index = siblings.indexOf(clicked);
             openLightbox(siblings, index >= 0 ? index : 0);
         }
     });
@@ -534,7 +547,7 @@ document.addEventListener('click', function(e) {
     
     if (deleteBtn) {
         const form = deleteBtn.closest('form');
-        if (form.classList.contains('delete-form') || form.action.includes('/delete')) {
+        if (form && (form.classList.contains('delete-form') || form.action.includes('/delete'))) {
             e.preventDefault();
             const name = form.dataset.name || 'this item';
             showConfirm(

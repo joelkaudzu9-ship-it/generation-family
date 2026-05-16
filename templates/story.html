@@ -1,46 +1,42 @@
 {% extends "base.html" %}
+{% block title %}Our Story — The Generation Family{% endblock %}
+
 {% block content %}
 
 <section class="page-header" {% if section_images.get('story') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('story') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Our Story</h1>
-        <p class="page-subtitle">Two students. One prayer. A movement born.</p>
+        <p class="page-subtitle">5 Students. One Prayer. A Movement is born.</p>
     </div>
 </section>
 
 <section class="story-detail">
     <div class="container">
         <div class="story-content-full">
-            {% if story_sections %}
-                {% for section in story_sections %}
-                <h2>{{ section.title }}</h2>
-                <p>{{ section.content }}</p>
-                {% endfor %}
-            {% else %}
-                <h2>It Started With Two</h2>
-                <p>In 2014, two students at Kamuzu University of Health Sciences started praying together. No building. No budget. No name. No strategy. Just two people and a deep conviction that their generation was destined for more.</p>
-                
-                <h2>From Dorm Room to Movement</h2>
-                <p>What started as two students became a community. That community developed rhythms — regular prayer gatherings, fasting days, shared meals, and retreats.</p>
-                
-                <h2>Today</h2>
-                <p>The Generation Family now spans multiple cities. The founders have graduated. The movement hasn't stopped.</p>
-            {% endif %}
+            <p>Throughout history, revival always comes riding on men with bended knees and hearts burdened for a dying world. The TGF revival is one of the University Campus revival movements that has touched hundreds of young people through the prayers of a few selfless students burdened to save a spiritually dying campus. Their story is a testament to the endless possibilities of multidimensional success in faith, ministry, academics, career, business, and leadership.</p>
             
-            <div class="story-stats">
-                <div class="story-stat">
-                    <span class="stat-number gold-text">{{ settings.get('years_in_existence', '12') }}</span>
-                    <span class="stat-label">Years Growing</span>
-                </div>
-                <div class="story-stat">
-                    <span class="stat-number gold-text">{{ settings.get('cities', '5') }}</span>
-                    <span class="stat-label">Cities Reached</span>
-                </div>
-                <div class="story-stat">
-                    <span class="stat-number gold-text">{{ settings.get('lives_impacted', '2500+') }}</span>
-                    <span class="stat-label">Lives Touched</span>
-                </div>
-            </div>
+            <h2>The Beginning</h2>
+            <p>In 2018, two students completed their Malawi School Certificate of Education (MSCE) examinations unaware that their ordinary MSCE holiday would become the seed for an extraordinary calling. As they waited for the next chapter of their academic journey, the two would separately encounter the God of revival, who would set them up to become the burning and shining lights to their generation, throughout their college days.</p>
+            <p>The two had never met, came from different secondary schools, had different stories, but had four things in common: in 2019, they were selected to pursue medical studies at the Kamuzu University of Health Sciences (KUHeS), embraced a revival calling for KUHeS, were praying for a revival at KUHeS, and had tasted the goodness of God so much so that they could no longer settle for empty religion.</p>
+            <p>Who are these two? They are two ordinary students who met an extraordinary God — <strong>Nivah Mwafulirwa</strong> and <strong>Julius Chinyamu</strong>.</p>
+            
+            <h2>The Prayer Room</h2>
+            <p>When the two finally arrived at KUHeS on 12th August 2019, destiny brought them together in ways unanticipated. Their paths would cross in the KUHeS prayer room, "the spiritual lounge." Day after day, they prayed, Nivah on one side of the lounge, and Julius on the other. They were two strangers, yet united by a single burden: a yearning to see a revival in their premedical cohort, and KUHeS at large.</p>
+            
+            <h2>The Divine Instruction</h2>
+            <p>In 2019, whilst in prayer, God appeared to Nivah, instructing him to found The Generation Family (TGF), a place where premeds would find God through a family spirit. God also instructed him to invite two other burden bearers — <strong>Nthandose Jere</strong> and <strong>Florence Nyirenda</strong>. Heaven also instructed him to invite <strong>Julius Chinyamu</strong> to the team.</p>
+            
+            <h2>Five Become One</h2>
+            <p>A meeting was set. By divine orchestration, <strong>Munashe Nkhoma</strong> followed Florence to the meeting. What was meant to start with one man suddenly became a team of five. Five ordinary students, now united as frontline soldiers of a heavenly mandate that would later transform hundreds of young people in Malawi and beyond.</p>
+            
+            <h2>The Early Days</h2>
+            <p>Driven by a relentless quest for revival, they set a seekers rhythm: meet twice a week for fellowship and prayer on Mondays and Fridays from 7:00–8:00 a.m. Mondays were for intercessory prayers, and Fridays were wholly dedicated to Worship.</p>
+            
+            <h2>COVID Season</h2>
+            <p>Then came the COVID-19 lockdown. In that season, they sought God with unusual intensity. A WhatsApp platform was established where members shared apostolic teachings almost daily at 8:00 p.m. What began as a local initiative soon spread rapidly beyond the KUHeS student community.</p>
+            
+            <h2>Today</h2>
+            <p>The ministry now organizes retreats that draw more than 200 young people. By God's grace, multiple political, spiritual and social leaders have risen from TGF. With the leading of the Holy Spirit, TGF has become more than a hub but a home where members are stewarded, discipled, taught, challenged and trained in the full wisdom of the gospel so they can dominate in every aspect of life and in every location.</p>
         </div>
     </div>
 </section>

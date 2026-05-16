@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Testimonies — The Generation Family{% endblock %}
+
+{% block content %}
+
+<section class="page-header" {% if section_images.get('testimonials') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('testimonials') }}'); background-size: cover; background-position: center;"{% endif %}>
+    <div class="container">
+        <h1 class="page-title">Testimonies</h1>
+        <p class="page-subtitle">What God is doing in the family</p>
+    </div>
+</section>
+
+<section class="testimonies-page">
+    <div class="container">
+        {% if testimonials %}
+        <div class="testimonies-grid">
+            {% for testimony in testimonials %}
+            <div class="testimony-card">
+                <div class="testimony-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <p class="testimony-quote">"{{ testimony.quote }}"</p>
+                <p class="testimony-name">— {{ testimony.name }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <i class="fas fa-comment-dots"></i>
+            <h3>Testimonies Coming Soon</h3>
+            <p>Stories of what God is doing will appear here. Have a testimony? Share it with your family group leader.</p>
+        </div>
+        {% endif %}
+        
+        <div class="testimony-cta">
+            <h3>Has God done something in your life?</h3>
+            <p>We want to celebrate with you. Share your testimony with your family group.</p>
+            <a href="/contact" class="btn-gold">Share Your Story</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

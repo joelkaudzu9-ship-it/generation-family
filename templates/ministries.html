@@ -1,22 +1,29 @@
 {% extends "base.html" %}
+{% block title %}Ministries — The Generation Family{% endblock %}
+
 {% block content %}
 
-<section class="page-header">
+<section class="page-header" {% if section_images.get('ministries') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('ministries') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Ministries</h1>
-        <p class="page-subtitle">Find your place to grow, serve, and connect</p>
+        <p class="page-subtitle">Every member is a minister. Find your place in the family.</p>
     </div>
 </section>
 
 <section class="ministries-section-page">
     <div class="container">
         {% if ministries %}
-        <div class="ministries-grid">
+        <div class="ministries-full-grid">
             {% for ministry in ministries %}
-            <a href="/ministries/{{ ministry.slug }}" class="ministry-card">
-                <div class="ministry-icon"><i class="fas {{ ministry.icon }}"></i></div>
-                <h4>{{ ministry.name }}</h4>
-                {% if ministry.description %}<p>{{ ministry.description }}</p>{% endif %}
+            <a href="/ministries/{{ ministry.slug }}" class="ministry-detail-card">
+                <div class="ministry-detail-icon">
+                    <i class="fas {{ ministry.icon }}"></i>
+                </div>
+                <h3>{{ ministry.name }}</h3>
+                {% if ministry.description %}
+                <p>{{ ministry.description }}</p>
+                {% endif %}
+                <span class="ministry-link">Learn More <i class="fas fa-arrow-right"></i></span>
             </a>
             {% endfor %}
         </div>
@@ -24,6 +31,7 @@
         <div class="empty-state-page">
             <i class="fas fa-church"></i>
             <h3>Ministries Coming Soon</h3>
+            <p>Ministry information is being updated. Check back shortly.</p>
         </div>
         {% endif %}
     </div>

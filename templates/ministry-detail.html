@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% block title %}{{ ministry.name if ministry else 'Ministry' }} — The Generation Family{% endblock %}
+
 {% block content %}
 
 {% set section_key = 'ministries-' + (ministry.slug if ministry else '') %}
@@ -17,6 +19,70 @@
                 <i class="fas {{ ministry.icon }}"></i>
             </div>
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
+            
+            <!-- Campus Ministry: Show campuses -->
+            {% if ministry.slug == 'campus' %}
+            <div class="campus-list">
+                <h3>Our Campuses</h3>
+                <div class="campus-grid">
+                    <div class="campus-item">KUHeS BT</div>
+                    <div class="campus-item">KUHeS LL</div>
+                    <div class="campus-item">KUHeS Kameza</div>
+                    <div class="campus-item">MUST</div>
+                    <div class="campus-item">UNIMA</div>
+                    <div class="campus-item">MUBAS</div>
+                    <div class="campus-item">MZUNI</div>
+                    <div class="campus-item">LUANAR</div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Canvas: Show sub-ministries -->
+            {% if ministry.slug == 'canvas' %}
+            <div class="sub-ministries">
+                <h3>Canvas Expressions</h3>
+                <div class="sub-ministry-grid">
+                    <a href="/resources/tgf-music" class="sub-ministry-card">
+                        <i class="fas fa-music"></i>
+                        <h4>Music Ministry</h4>
+                    </a>
+                    <a href="/resources/tgf-drama" class="sub-ministry-card">
+                        <i class="fas fa-theater-masks"></i>
+                        <h4>Drama Ministry</h4>
+                    </a>
+                    <a href="/resources/tgf-poems" class="sub-ministry-card">
+                        <i class="fas fa-feather-alt"></i>
+                        <h4>Poetry & Spoken Word</h4>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Advance: Show sub-branches -->
+            {% if ministry.slug == 'advance' %}
+            <div class="sub-ministries">
+                <h3>Advance Branches</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-church"></i>
+                        <h4>Advance Ministries</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-briefcase"></i>
+                        <h4>Business Development</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-handshake"></i>
+                        <h4>Social Enterprising</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-users"></i>
+                        <h4>Family Groups</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <a href="/contact" class="btn-gold">Get Involved</a>
         </div>
         {% else %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Leadership — The Generation Family{% endblock %}
+
+{% block content %}
+
+<section class="page-header" {% if section_images.get('leadership') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('leadership') }}'); background-size: cover; background-position: center;"{% endif %}>
+    <div class="container">
+        <h1 class="page-title">Leadership</h1>
+        <p class="page-subtitle">Biblical authority. Accountable leadership. Generational impact.</p>
+    </div>
+</section>
+
+<section class="leadership-structure">
+    <div class="container">
+        <!-- Organogram -->
+        <div class="organogram">
+            <div class="org-level top">
+                <div class="org-box gold">The Bible</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level">
+                <div class="org-box">Independent Oversight Board</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level">
+                <div class="org-box">Senior Leadership Team (SLT)</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level row">
+                <div class="org-box">Senior Leader</div>
+                <div class="org-box">Snr Associate Leader</div>
+                <div class="org-box">Jnr Associate Senior Leader</div>
+                <div class="org-box">Administrator</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level">
+                <div class="org-box">Middle Leadership Team (MLT) — Ministry Heads</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level">
+                <div class="org-box">Technical Leadership Team (TLT)</div>
+            </div>
+            <div class="org-connector">▼</div>
+            <div class="org-level row">
+                <div class="org-box">Foundation School Graduates (FSG)</div>
+                <div class="org-box">Affiliate Members</div>
+            </div>
+        </div>
+        
+        <hr class="about-divider">
+        
+        <h2 class="section-heading">Foundational Principles</h2>
+        <div class="principles-grid">
+            <div class="principle-card">
+                <h3>1. Biblical Authority</h3>
+                <p>All leadership decisions at every level must be grounded in Scripture. God's Word remains the ultimate authority over the movement.</p>
+            </div>
+            <div class="principle-card">
+                <h3>2. Vision Above Individual Interests</h3>
+                <p>The vision of The Generation takes precedence over personal preferences, departmental agendas, or group interests.</p>
+            </div>
+            <div class="principle-card">
+                <h3>3. Independent Advisory Board</h3>
+                <p>The actions, conduct, and performance of the Senior Leadership Team are guided by an Independent Advisory Board. Areas of accountability include theological accuracy, abuse of any kind, and progress toward organizational goals. Board membership and contact information are published on this website.</p>
+            </div>
+            <div class="principle-card">
+                <h3>4. Ministry Heads Above Technical Teams</h3>
+                <p>Ministry Heads serve as pastoral and leadership overseers, offering spiritual direction, mentorship, and governance to their technical teams.</p>
+            </div>
+            <div class="principle-card">
+                <h3>5. Two Membership Categories</h3>
+                <p><strong>Foundation School Graduates (FSG Members)</strong> and <strong>Affiliate Members</strong>. Only FSG Members are eligible for appointments into leadership roles across the organization.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

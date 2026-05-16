@@ -119,6 +119,8 @@ def settings():
             'years_in_existence': request.form.get('years_in_existence'),
             'cities': request.form.get('cities'),
             'meetings_held': request.form.get('meetings_held'),
+            'mandate': request.form.get('mandate'),
+            'motto': request.form.get('motto'),
             'year_theme': request.form.get('year_theme'),
             'hero_tagline': request.form.get('hero_tagline'),
             'church_address': request.form.get('church_address'),
