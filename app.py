@@ -363,9 +363,16 @@ def family_group_detail(group_id):
         return render_template('404.html'), 404
     
     announcements = supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '5'})
-    members = supabase_get('group_members', {'group_id': f'eq.{group_id}', 'is_visible': 'eq.true'})
-    gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
     posts = supabase_get('group_posts', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
+    gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
+    
+    # Get members through the new member_groups + members tables
+    member_links = supabase_get('member_groups', {'group_id': f'eq.{group_id}'})
+    members = []
+    for link in member_links:
+        member_result = supabase_get('members', {'id': f'eq.{link["member_id"]}', 'is_active': 'eq.true'})
+        if member_result:
+            members.append(member_result[0])
     
     return render_template('family-group-detail.html',
                          group=group,
@@ -373,8 +380,6 @@ def family_group_detail(group_id):
                          members=members,
                          gallery=gallery,
                          posts=posts)
-
-from flask import session as member_session
 
 # ==================== MEMBER AUTH ====================
 @app.route('/member/signup', methods=['GET', 'POST'])
