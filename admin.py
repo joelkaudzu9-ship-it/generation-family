@@ -8,7 +8,8 @@ from supabase_client import (
     supabase_insert,
     supabase_update,
     supabase_delete,
-    get_site_settings
+    get_site_settings,
+    get_ministries  
 )
 from cloudinary_client import upload_image, upload_audio
 
@@ -732,6 +733,20 @@ def edit_testimonial(id):
     testimonial = supabase_get_one('testimonials', id)
     testimonials = supabase_get('testimonials', {'order': 'created_at.desc'})
     return render_template('admin/testimonials.html', testimonials=testimonials, edit_testimonial=testimonial)
+
+# ==================== MINISTRY CONTENT EDITOR ====================
+
+
+@app.route('/ministries/<slug>')
+def ministry_detail(slug):
+    ministries = get_ministries()
+    ministry = next((m for m in ministries if m['slug'] == slug), None)
+    
+    # Get ministry content
+    content = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
+    ministry_content = content[0]['content'] if content else None
+    
+    return render_template('ministry-detail.html', ministry=ministry, ministry_content=ministry_content)
 
 # ==================== STORY SECTIONS ====================
 @admin_bp.route('/story-sections', methods=['GET', 'POST'])

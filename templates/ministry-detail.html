@@ -20,8 +20,15 @@
             </div>
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
             
+            <!-- Dynamic Content from Admin Editor -->
+            {% if ministry_content %}
+            <div class="ministry-rich-content">
+                {{ ministry_content|safe }}
+            </div>
+            {% endif %}
+            
             <!-- Campus Ministry: Show campuses -->
-            {% if ministry.slug == 'campus' %}
+            {% if ministry.slug == 'campus-ministry' or ministry.slug == 'campus' %}
             <div class="campus-list">
                 <h3>Our Campuses</h3>
                 <div class="campus-grid">
@@ -58,6 +65,90 @@
             </div>
             {% endif %}
             
+            <!-- Ladies' Ministry: Show specific content -->
+            {% if ministry.slug == 'ladies-ministry' or ministry.slug == 'ladies' %}
+            <div class="sub-ministries">
+                <h3>Ladies' Ministry Programs</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-praying-hands"></i>
+                        <h4>Weekly Fellowship</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-chalkboard-user"></i>
+                        <h4>Discipleship</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-heart"></i>
+                        <h4>Mentorship</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Men's Ministry: Show specific content -->
+            {% if ministry.slug == 'mens-ministry' or ministry.slug == 'men' %}
+            <div class="sub-ministries">
+                <h3>Men's Ministry Programs</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-users"></i>
+                        <h4>Brotherhood Gatherings</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Accountability Groups</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-hiking"></i>
+                        <h4>Men's Retreats</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Worship Ministry: Show specific content -->
+            {% if ministry.slug == 'worship-ministry' or ministry.slug == 'worship' %}
+            <div class="sub-ministries">
+                <h3>Worship Ministry</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-drum"></i>
+                        <h4>Band & Instrumentalists</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-microphone-alt"></i>
+                        <h4>Vocal Team</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-headphones"></i>
+                        <h4>Sound & Tech</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Foundation School: Show specific content -->
+            {% if ministry.slug == 'foundation-school' %}
+            <div class="sub-ministries">
+                <h3>Foundation School Programs</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-book-bible"></i>
+                        <h4>Biblical Training</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-user-graduate"></i>
+                        <h4>Leadership Development</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-certificate"></i>
+                        <h4>Graduation Track</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Advance: Show sub-branches -->
             {% if ministry.slug == 'advance' %}
             <div class="sub-ministries">
@@ -83,7 +174,31 @@
             </div>
             {% endif %}
             
-            <a href="/contact" class="btn-gold">Get Involved</a>
+            <!-- Business Development Ministry -->
+            {% if ministry.slug == 'business-ministry' or ministry.slug == 'business-development-ministry' %}
+            <div class="sub-ministries">
+                <h3>Business Development Initiatives</h3>
+                <div class="sub-ministry-grid">
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Entrepreneurship Training</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-network-wired"></i>
+                        <h4>Business Networking</h4>
+                    </div>
+                    <div class="sub-ministry-card">
+                        <i class="fas fa-seedling"></i>
+                        <h4>Startup Support</h4>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="ministry-cta">
+                <a href="/contact" class="btn-gold">Get Involved</a>
+                <a href="/family-groups" class="btn-outline">Join a Family Group</a>
+            </div>
         </div>
         {% else %}
         <div class="empty-state-page">
@@ -94,5 +209,170 @@
         {% endif %}
     </div>
 </section>
+
+<style>
+    .ministry-rich-content {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255,255,255,0.03);
+        border-radius: 16px;
+        border-left: 3px solid var(--gold);
+    }
+    
+    .ministry-rich-content h2,
+    .ministry-rich-content h3 {
+        color: var(--gold);
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .ministry-rich-content h2:first-child,
+    .ministry-rich-content h3:first-child {
+        margin-top: 0;
+    }
+    
+    .ministry-rich-content p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+    }
+    
+    .ministry-rich-content ul, 
+    .ministry-rich-content ol {
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    .ministry-rich-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .ministry-rich-content img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+    
+    .ministry-cta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .campus-list h3,
+    .sub-ministries h3 {
+        color: var(--gold);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+    
+    .campus-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .campus-item {
+        background: var(--dark);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #222;
+        transition: all 0.3s;
+    }
+    
+    .campus-item:hover {
+        border-color: var(--gold);
+    }
+    
+    .sub-ministry-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .sub-ministry-card {
+        background: var(--dark);
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #222;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: var(--white);
+        display: block;
+    }
+    
+    .sub-ministry-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-3px);
+    }
+    
+    .sub-ministry-card i {
+        font-size: 2rem;
+        color: var(--gold);
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+    
+    .sub-ministry-card h4 {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    .ministry-detail-icon {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .ministry-detail-icon i {
+        font-size: 3rem;
+        color: var(--gold);
+    }
+    
+    .ministry-detail-desc {
+        text-align: center;
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto 2rem auto;
+        color: var(--gray-light);
+    }
+    
+    .empty-state-page {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-state-page i {
+        font-size: 3rem;
+        color: var(--gray);
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    @media (max-width: 768px) {
+        .campus-grid,
+        .sub-ministry-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .ministry-cta {
+            flex-direction: column;
+        }
+        
+        .ministry-cta a {
+            text-align: center;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .campus-grid,
+        .sub-ministry-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
 {% endblock %}

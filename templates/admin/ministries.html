@@ -1,44 +1,100 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Ministries{% endblock %}
 
-{% block nav %}
-<nav class="admin-nav">
-    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
-    <div class="admin-nav-links">
-        <a href="/admin">Dashboard</a>
-        <a href="/admin/ministries" class="active">Ministries</a>
-        <a href="/">View Site</a>
-        <a href="/admin/logout" class="logout-link">Logout</a>
-    </div>
-</nav>
-{% endblock %}
-
 {% block content %}
+
+<!-- Toast Notification Display -->
+{% if toast_message %}
+<div class="dashboard-toast toast-{{ toast_type }}" id="adminToast">
+    <span class="toast-icon">
+        <i class="fas 
+            {% if toast_type == 'success' %}fa-check-circle
+            {% elif toast_type == 'error' %}fa-exclamation-circle
+            {% else %}fa-info-circle
+            {% endif %}
+        "></i>
+    </span>
+    <span class="toast-text">{{ toast_message }}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+</div>
+{% endif %}
+
 <h1>{% if edit_ministry %}Edit Ministry{% else %}Add Ministry{% endif %}</h1>
 
 <form method="POST" enctype="multipart/form-data" class="admin-form" action="/admin/ministries">
-    {% if edit_ministry %}<input type="hidden" name="ministry_id" value="{{ edit_ministry.id }}"><input type="hidden" name="existing_image_url" value="{{ edit_ministry.image_url }}">{% endif %}
+    {% if edit_ministry %}
+        <input type="hidden" name="ministry_id" value="{{ edit_ministry.id }}">
+        <input type="hidden" name="existing_image_url" value="{{ edit_ministry.image_url }}">
+    {% endif %}
+    
     <div class="form-row">
-        <div class="form-group"><label>Name *</label><input type="text" name="name" value="{{ edit_ministry.name if edit_ministry else '' }}" required></div>
-        <div class="form-group"><label>Slug *</label><input type="text" name="slug" value="{{ edit_ministry.slug if edit_ministry else '' }}" required></div>
+        <div class="form-group">
+            <label>Name *</label>
+            <input type="text" name="name" value="{{ edit_ministry.name if edit_ministry else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Slug *</label>
+            <input type="text" name="slug" value="{{ edit_ministry.slug if edit_ministry else '' }}" required>
+            <p class="form-hint">URL: /ministries/{{ edit_ministry.slug if edit_ministry else 'your-slug' }}</p>
+        </div>
     </div>
-    <div class="form-group"><label>Description</label><textarea name="description" rows="3">{{ edit_ministry.description if edit_ministry else '' }}</textarea></div>
+    
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="3">{{ edit_ministry.description if edit_ministry else '' }}</textarea>
+    </div>
+    
     <div class="form-row">
-        <div class="form-group"><label>Icon</label><input type="text" name="icon" value="{{ edit_ministry.icon if edit_ministry else 'fa-church' }}"></div>
-        <div class="form-group"><label>Display Order</label><input type="number" name="display_order" value="{{ edit_ministry.display_order if edit_ministry else '0' }}" min="0"></div>
+        <div class="form-group">
+            <label>Icon (FontAwesome class)</label>
+            <input type="text" name="icon" value="{{ edit_ministry.icon if edit_ministry else 'fa-church' }}">
+            <p class="form-hint">Example: fa-church, fa-female, fa-male, fa-university</p>
+        </div>
+        <div class="form-group">
+            <label>Display Order</label>
+            <input type="number" name="display_order" value="{{ edit_ministry.display_order if edit_ministry else '0' }}" min="0">
+        </div>
     </div>
-    <div class="form-group"><label>Image</label><input type="file" name="image" accept="image/*"></div>
-    <button type="submit" class="btn-save">{% if edit_ministry %}Update{% else %}Add{% endif %} Ministry</button>
-    {% if edit_ministry %}<a href="/admin/ministries" class="btn-cancel">Cancel</a>{% endif %}
+    
+    <div class="form-group">
+        <label>Image (optional)</label>
+        {% if edit_ministry and edit_ministry.image_url %}
+            <div class="current-image">
+                <img src="{{ edit_ministry.image_url }}" class="admin-thumb-sm" style="width:60px;height:60px;">
+                <span>Current image — upload new to replace</span>
+            </div>
+        {% endif %}
+        <input type="file" name="image" accept="image/*">
+        <p class="form-hint">Recommended: 800x600px, max 1MB</p>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn-save">
+            <i class="fas {% if edit_ministry %}fa-save{% else %}fa-plus{% endif %}"></i>
+            {% if edit_ministry %}Update Ministry{% else %}Add Ministry{% endif %}
+        </button>
+        {% if edit_ministry %}
+            <a href="/admin/ministries" class="btn-cancel">Cancel</a>
+        {% endif %}
+    </div>
 </form>
 
 <hr class="admin-divider">
 
 <h2>All Ministries ({{ ministries|length }})</h2>
+
 {% if ministries %}
 <div class="admin-table-wrapper">
     <table class="admin-table">
-        <thead><tr><th>Order</th><th>Icon</th><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Icon</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
         <tbody>
             {% for m in ministries %}
             <tr>
@@ -47,9 +103,22 @@
                 <td><strong>{{ m.name }}</strong></td>
                 <td><code>{{ m.slug }}</code></td>
                 <td class="actions-cell">
-                    <a href="/admin/ministries/{{ m.id }}/edit" class="btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                    <!-- NEW: Content Editor Button -->
+                    <a href="/admin/ministry-content/{{ m.slug }}" class="btn-edit" style="margin-right:4px;">
+                        <i class="fas fa-edit"></i> Content
+                    </a>
+                    <a href="/admin/ministries/{{ m.id }}/edit" class="btn-edit" style="margin-right:4px;">
+                        <i class="fas fa-cog"></i> Edit
+                    </a>
+
+                    <a href="/ministries/{{ m.slug }}" class="btn-view" target="_blank" style="margin-right:4px;">
+                        <i class="fas fa-external-link-alt"></i> View
+                    </a>
+
                     <form method="POST" action="/admin/ministries/{{ m.id }}/delete" class="delete-form" data-name="{{ m.name }}" style="display:inline;">
-                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        <button type="submit" class="btn-delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -58,6 +127,131 @@
     </table>
 </div>
 {% else %}
-<p class="empty-state">No ministries yet.</p>
+<p class="empty-state">
+    <i class="fas fa-church"></i><br>
+    No ministries yet. Create one above.
+</p>
 {% endif %}
+
+<script>
+    // Auto-hide toast after 4 seconds
+    var adminToast = document.getElementById('adminToast');
+    if (adminToast) {
+        setTimeout(function() {
+            adminToast.classList.add('fade-out');
+            setTimeout(function() {
+                if (adminToast.parentElement) adminToast.remove();
+            }, 300);
+        }, 4000);
+    }
+</script>
+
+<style>
+    .actions-cell {
+        white-space: nowrap;
+    }
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        border-radius: 6px;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-edit:hover {
+        background: var(--gold);
+        color: var(--black);
+    }
+    .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        background: transparent;
+        border: 1px solid #e74c3c;
+        color: #e74c3c;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-delete:hover {
+        background: #e74c3c;
+        color: white;
+    }
+    .dashboard-toast {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 10000;
+        background: var(--dark);
+        border-left: 4px solid var(--gold);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    }
+    .dashboard-toast.toast-success { border-left-color: #4caf50; }
+    .dashboard-toast.toast-error { border-left-color: #e74c3c; }
+    .dashboard-toast.toast-info { border-left-color: #3498db; }
+    .dashboard-toast .toast-text { flex: 1; font-size: 0.85rem; color: var(--gray-light); }
+    .dashboard-toast .toast-close {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0;
+        line-height: 1;
+    }
+    .dashboard-toast .toast-close:hover { color: var(--gold); }
+    .dashboard-toast.fade-out { animation: slideOut 0.3s ease forwards; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100px); }
+    }
+    .current-image {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: var(--darker);
+        border-radius: 8px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    @media (max-width: 768px) {
+        .actions-cell {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .btn-edit, .btn-delete {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+        }
+        .dashboard-toast {
+            top: 80px;
+            right: 16px;
+            left: 16px;
+        }
+    }
+</style>
+
 {% endblock %}

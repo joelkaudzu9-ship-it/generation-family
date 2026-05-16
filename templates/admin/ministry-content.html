@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Edit {{ ministry.name }} Content{% endblock %}
+
+{% block content %}
+
+<h1>{{ ministry.name }} — Content Editor</h1>
+<p>Edit the rich content that appears on the public <strong>{{ ministry.name }}</strong> page.</p>
+
+<form method="POST" class="admin-form">
+    <div class="form-group">
+        <label>Page Content (HTML supported)</label>
+        <textarea name="content" rows="20" class="rich-editor">{{ content or '' }}</textarea>
+        <p class="form-hint">
+            You can use HTML tags: &lt;p&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;img&gt;, &lt;div class="..."&gt;, etc.
+            Leave blank to show only the default ministry description.
+        </p>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn-save">
+            <i class="fas fa-save"></i> Save Content
+        </button>
+        <a href="/admin/ministries" class="btn-cancel">Back to Ministries</a>
+        <a href="/ministries/{{ ministry.slug }}" class="btn-cancel" target="_blank">
+            <i class="fas fa-external-link-alt"></i> Preview Page
+        </a>
+    </div>
+</form>
+
+<style>
+    textarea.rich-editor {
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        background: var(--darker);
+        color: var(--gray-light);
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        width: 100%;
+        resize: vertical;
+    }
+    textarea.rich-editor:focus {
+        border-color: var(--gold);
+        outline: none;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+</style>
+
+{% endblock %}

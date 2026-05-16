@@ -4326,3 +4326,35 @@ html {
     color: rgba(255,255,255,0.7);
     margin-top: 0.5rem;
 }
+
+.ministry-content {
+    max-width: 700px;
+    margin: 30px auto 0;
+    color: var(--gray-light);
+    font-size: 0.9rem;
+    line-height: 1.9;
+    text-align: left;
+    padding: 24px;
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+}
+
+.ministry-content h2,
+.ministry-content h3 {
+    color: var(--gold);
+    margin: 20px 0 10px;
+}
+
+.ministry-content p {
+    margin-bottom: 14px;
+}
+
+.ministry-content ul,
+.ministry-content ol {
+    margin: 10px 0 14px 20px;
+}
+
+.ministry-content li {
+    margin-bottom: 6px;
+}

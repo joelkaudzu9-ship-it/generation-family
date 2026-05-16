@@ -137,9 +137,20 @@ def ministries():
 
 @app.route('/ministries/<slug>')
 def ministry_detail(slug):
+    from supabase_client import get_ministries, supabase_get
     ministries = get_ministries()
     ministry = next((m for m in ministries if m['slug'] == slug), None)
-    return render_template('ministry-detail.html', ministry=ministry)
+    
+    if not ministry:
+        return render_template('404.html'), 404
+    
+    # Get ministry content from ministry_content table
+    content_records = supabase_get('ministry_content', {'ministry_slug': f'eq.{slug}'})
+    ministry_content = content_records[0]['content'] if content_records else None
+    
+    return render_template('ministry-detail.html', 
+                         ministry=ministry, 
+                         ministry_content=ministry_content)
 
 
 # ==================== PROGRAMS / EVENTS ====================
