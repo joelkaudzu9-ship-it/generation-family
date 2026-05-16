@@ -769,6 +769,49 @@ def manage_ministry_content(slug):
                          attachments=attachments)
 
 
+@admin_bp.route('/ministry-content/<slug>/add-post', methods=['POST'])
+@role_required('admin', 'ministries')
+def add_ministry_post(slug):
+    title = request.form.get('title')
+    content = request.form.get('content')
+    post_type = request.form.get('post_type', 'content')
+    
+    # Handle file upload
+    file_url = ''
+    file_name = request.form.get('file_display_name', '')
+    file_type = ''
+    
+    attached_file = request.files.get('attached_file')
+    if attached_file and attached_file.filename:
+        try:
+            # Determine file type
+            ext = attached_file.filename.rsplit('.', 1)[-1].lower() if '.' in attached_file.filename else ''
+            
+            if ext in ['mp3', 'wav', 'm4a', 'aac']:
+                result = upload_audio(attached_file, folder=f'generation/ministries/{slug}/posts')
+                file_type = 'audio'
+            else:
+                result = upload_image(attached_file, folder=f'generation/ministries/{slug}/posts')
+                file_type = 'pdf' if ext == 'pdf' else ('image' if ext in ['jpg','jpeg','png','gif','webp'] else 'document')
+            
+            file_url = result['url']
+            if not file_name:
+                file_name = attached_file.filename
+        except Exception as e:
+            return redirect_with_toast('admin.manage_ministry_content', f'File upload failed: {str(e)}', 'error', slug=slug)
+    
+    supabase_insert('ministry_posts', {
+        'ministry_slug': slug,
+        'title': title,
+        'content': content,
+        'post_type': post_type,
+        'file_url': file_url,
+        'file_name': file_name,
+        'file_type': file_type
+    })
+    
+    return redirect_with_toast('admin.manage_ministry_content', f'Post "{title}" added!', 'success', slug=slug)
+
 @admin_bp.route('/ministry-posts/<int:post_id>/delete', methods=['POST'])
 @role_required('admin', 'ministries')
 def delete_ministry_post(post_id):

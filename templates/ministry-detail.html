@@ -20,7 +20,7 @@
             </div>
             <p class="ministry-detail-desc">{{ ministry.description or 'More details coming soon.' }}</p>
 
-            <!-- Posts Section (like sermons cards) -->
+            <!-- Posts Section (like sermons) -->
             {% if posts and posts|length > 0 %}
             <div class="ministry-posts">
                 <h2>Updates & Resources</h2>
@@ -34,6 +34,19 @@
                         {% if post.content %}
                         <div class="post-content" style="white-space: pre-wrap; line-height: 1.6;">
                             {{ post.content }}
+                        </div>
+                        {% endif %}
+                        {% if post.file_url %}
+                        <div class="post-attachment">
+                            <a href="{{ post.file_url }}" class="attachment-link" target="_blank">
+                                <i class="fas {% if post.file_type == 'audio' %}fa-headphones{% elif post.file_type == 'pdf' %}fa-file-pdf{% elif post.file_type == 'image' %}fa-image{% else %}fa-download{% endif %}"></i>
+                                <span>{{ post.file_name or 'Download' }}</span>
+                                {% if post.file_type == 'audio' %}
+                                <audio controls style="margin-left: auto; height: 40px;">
+                                    <source src="{{ post.file_url }}" type="audio/mpeg">
+                                </audio>
+                                {% endif %}
+                            </a>
                         </div>
                         {% endif %}
                     </div>
