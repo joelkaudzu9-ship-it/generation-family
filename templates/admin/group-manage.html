@@ -1,0 +1,150 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Manage {{ group.name }}{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/family-groups">Family Groups</a>
+        <a href="/admin/family-groups/{{ group.id }}/manage" class="active">{{ group.name }}</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<h1>{{ group.name }} — Leader Dashboard</h1>
+
+<!-- Announcements -->
+<div class="dashboard-section">
+    <h2>Post Announcement</h2>
+    <form method="POST" action="/admin/family-groups/{{ group.id }}/announcement" class="admin-form">
+        <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
+        <div class="form-group"><label>Message</label><textarea name="content" rows="2"></textarea></div>
+        <button type="submit" class="btn-save">Post</button>
+    </form>
+    
+    {% if announcements %}
+    <div class="announcements-list" style="margin-top:16px;">
+        {% for a in announcements %}
+        <div class="announcement-item">
+            <strong>{{ a.title }}</strong>
+            <span style="color:#555;font-size:0.7rem;">{{ a.created_at[:10] if a.created_at else '' }}</span>
+            <p style="color:var(--gray);margin:4px 0 0;">{{ a.content }}</p>
+            <form method="POST" action="/admin/family-groups/{{ group.id }}/announcement/{{ a.id }}/delete" style="display:inline;">
+                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Join Requests -->
+<div class="dashboard-section">
+    <h2>Join Requests ({{ join_requests|length }})</h2>
+    {% if join_requests %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead><tr><th>Name</th><th>Contact</th><th>Message</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for req in join_requests %}
+                <tr>
+                    <td><strong>{{ req.name }}</strong></td>
+                    <td>{{ req.phone or req.email or '—' }}</td>
+                    <td>{{ req.message[:50] if req.message else '—' }}</td>
+                    <td>
+                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/contacted">
+                            <button type="submit" class="btn-edit small">Mark Contacted</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color:var(--gray);">No pending join requests.</p>
+    {% endif %}
+</div>
+
+<!-- Members -->
+<div class="dashboard-section">
+    <h2>Add Member</h2>
+    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/member" class="admin-form">
+        <div class="form-row">
+            <div class="form-group"><label>Name</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Photo</label><input type="file" name="photo" accept="image/*"></div>
+        </div>
+        <button type="submit" class="btn-save">Add Member</button>
+    </form>
+    
+    {% if members %}
+    <div class="admin-grid" style="margin-top:16px;">
+        {% for m in members %}
+        <div class="admin-card-small">
+            {% if m.photo_url %}<img src="{{ m.photo_url }}" class="admin-thumb">{% else %}<div class="admin-thumb-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+            <h4>{{ m.name }}</h4>
+            <form method="POST" action="/admin/family-groups/{{ group.id }}/member/{{ m.id }}/delete">
+                <button type="submit" class="btn-delete small">Remove</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Gallery -->
+<div class="dashboard-section">
+    <h2>Upload Photo</h2>
+    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/gallery" class="admin-form">
+        <div class="form-row">
+            <div class="form-group"><label>Photo</label><input type="file" name="photo" accept="image/*" required></div>
+            <div class="form-group"><label>Caption</label><input type="text" name="caption"></div>
+        </div>
+        <button type="submit" class="btn-save">Upload</button>
+    </form>
+    
+    {% if gallery %}
+    <div class="gallery-grid" style="margin-top:16px;">
+        {% for img in gallery %}
+        <div style="position:relative;">
+            <img src="{{ img.image_url }}" style="width:100%;border-radius:10px;">
+            <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete" style="position:absolute;top:6px;right:6px;">
+                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+<style>
+.dashboard-section {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.dashboard-section h2 {
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+.announcement-item {
+    background: rgba(212,175,55,0.05);
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+</style>

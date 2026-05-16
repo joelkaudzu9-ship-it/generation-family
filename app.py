@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash, make_response
 from supabase_client import (
     get_leadership,
     get_ministries,
@@ -324,7 +324,45 @@ def contact():
     success = request.args.get('success') == '1'
     return render_template('contact.html', settings=settings, success=success)
 
+@app.route('/family-groups/<int:group_id>/join', methods=['POST'])
+def submit_join_request(group_id):
+    name = request.form.get('name')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    message = request.form.get('message')
+    
+    if name:
+        supabase_insert('group_join_requests', {
+            'group_id': group_id,
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'message': message
+        })
+        flash('Join request sent! The group leader will contact you.', 'success')
+    return redirect(url_for('family_groups'))
 
+@app.route('/family-groups/<int:group_id>')
+def family_group_detail(group_id):
+    groups = get_family_groups()
+    group = None
+    for g in groups:
+        if g['id'] == group_id:
+            group = g
+            break
+    
+    if not group:
+        return render_template('404.html'), 404
+    
+    announcements = get_group_announcements(group_id)
+    members = get_group_members(group_id)
+    gallery = get_group_gallery(group_id)
+    
+    return render_template('family-group-detail.html',
+                         group=group,
+                         announcements=announcements,
+                         members=members,
+                         gallery=gallery)
 
 
 

@@ -4730,3 +4730,38 @@ html {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==================== GROUP DETAIL ==================== */
+.group-detail { padding: 60px 0; background: var(--black); }
+.group-detail-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+.group-info-card { background: var(--darker); border: 1px solid #222; border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+.group-info-card h3 { color: var(--gold); margin-bottom: 14px; font-size: 1rem; }
+.group-info-card p { color: var(--gray-light); font-size: 0.88rem; line-height: 1.7; }
+.group-info-card p i { margin-right: 8px; }
+
+.sidebar-card { background: var(--darker); border: 1px solid #222; border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+.sidebar-card h3 { color: var(--gold); margin-bottom: 14px; font-size: 0.95rem; }
+.sidebar-card p { color: var(--gray); font-size: 0.82rem; }
+.leader-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--gold); }
+
+.members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; }
+.member-item { text-align: center; }
+.member-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; }
+.member-placeholder { width: 50px; height: 50px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; color: #555; margin: 0 auto 4px; }
+.member-item span { font-size: 0.7rem; color: var(--gray); display: block; }
+
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.gallery-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; }
+
+.announcement-item { padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+.announcement-item:last-child { border-bottom: none; }
+.announcement-item strong { color: var(--white); display: block; }
+.announcement-item p { margin-top: 4px; }
+.announcement-date { color: #555; font-size: 0.7rem; }
+
+@media (max-width: 768px) {
+    .group-detail-grid { grid-template-columns: 1fr; }
+}
+
+.whatsapp-join-btn { transition: all 0.2s; }
+.whatsapp-join-btn:hover { background: #20bd5a; transform: translateY(-1px); }

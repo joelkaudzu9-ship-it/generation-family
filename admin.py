@@ -1044,3 +1044,110 @@ def edit_user(user_id):
         supabase_update('admin_users', user_id, {'password': password})
         return redirect_with_toast('admin.dashboard', 'Password updated.', 'success')
     return redirect_with_toast('admin.dashboard', 'No password provided.', 'error')
+
+# ==================== GROUP LEADER DASHBOARD ====================
+@admin_bp.route('/family-groups/<int:group_id>/manage')
+@role_required('admin')
+def manage_single_group(group_id):
+    group = supabase_get_one('family_groups', group_id)
+    if not group:
+        flash('Group not found.', 'error')
+        return redirect(url_for('admin.manage_family_groups'))
+    
+    announcements = get_group_announcements(group_id)
+    members = get_group_members(group_id)
+    join_requests = supabase_get('group_join_requests', {'group_id': f'eq.{group_id}', 'is_contacted': 'eq.false', 'order': 'created_at.desc'})
+    gallery = get_group_gallery(group_id)
+    
+    return render_template('admin/group-manage.html', 
+                         group=group,
+                         announcements=announcements,
+                         members=members,
+                         join_requests=join_requests,
+                         gallery=gallery)
+
+# ==================== GROUP ANNOUNCEMENTS ====================
+@admin_bp.route('/family-groups/<int:group_id>/announcement', methods=['POST'])
+@role_required('admin')
+def add_group_announcement(group_id):
+    title = request.form.get('title')
+    content = request.form.get('content')
+    if title:
+        supabase_insert('group_announcements', {
+            'group_id': group_id,
+            'title': title,
+            'content': content
+        })
+        flash('Announcement posted!', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+@admin_bp.route('/family-groups/<int:group_id>/announcement/<int:ann_id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_group_announcement(group_id, ann_id):
+    supabase_delete('group_announcements', ann_id)
+    flash('Announcement removed.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+# ==================== GROUP MEMBERS ====================
+@admin_bp.route('/family-groups/<int:group_id>/member', methods=['POST'])
+@role_required('admin')
+def add_group_member(group_id):
+    name = request.form.get('name')
+    photo = request.files.get('photo')
+    photo_url = ''
+    if photo and photo.filename:
+        try:
+            result = upload_image(photo, folder=f'generation/groups/{group_id}/members')
+            photo_url = result['url']
+        except Exception:
+            pass
+    
+    if name:
+        supabase_insert('group_members', {
+            'group_id': group_id,
+            'name': name,
+            'photo_url': photo_url
+        })
+        flash('Member added!', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+@admin_bp.route('/family-groups/<int:group_id>/member/<int:member_id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_group_member(group_id, member_id):
+    supabase_delete('group_members', member_id)
+    flash('Member removed.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+# ==================== JOIN REQUESTS ====================
+@admin_bp.route('/family-groups/<int:group_id>/join-request/<int:req_id>/contacted', methods=['POST'])
+@role_required('admin')
+def mark_join_contacted(group_id, req_id):
+    supabase_update('group_join_requests', req_id, {'is_contacted': True})
+    flash('Marked as contacted.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+# ==================== GROUP GALLERY ====================
+@admin_bp.route('/family-groups/<int:group_id>/gallery', methods=['POST'])
+@role_required('admin')
+def upload_group_gallery(group_id):
+    photo = request.files.get('photo')
+    caption = request.form.get('caption', '')
+    if photo and photo.filename:
+        try:
+            result = upload_image(photo, folder=f'generation/groups/{group_id}/gallery')
+            supabase_insert('group_gallery', {
+                'group_id': group_id,
+                'image_url': result['url'],
+                'caption': caption
+            })
+            flash('Photo uploaded!', 'success')
+        except Exception:
+            flash('Upload failed.', 'error')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+@admin_bp.route('/family-groups/<int:group_id>/gallery/<int:photo_id>/delete', methods=['POST'])
+@role_required('admin')
+def delete_group_gallery(group_id, photo_id):
+    supabase_delete('group_gallery', photo_id)
+    flash('Photo removed.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))

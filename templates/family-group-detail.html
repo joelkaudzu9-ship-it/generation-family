@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} — Family Groups{% endblock %}
+
+{% block content %}
+
+<section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
+    <div class="container">
+        <h1 class="page-title">{{ group.name }}</h1>
+        <p class="page-subtitle">{{ group.city }}{% if group.leader %} — Led by {{ group.leader }}{% endif %}</p>
+    </div>
+</section>
+
+<section class="group-detail">
+    <div class="container">
+        <div class="group-detail-grid">
+            <div class="group-main">
+                <!-- Meeting Info -->
+                <div class="group-info-card">
+                    <h3>Meeting Details</h3>
+                    {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
+                    {% if group.meeting_location %}<p><i class="fas fa-map-marker-alt gold-text"></i> {{ group.meeting_location }}</p>{% endif %}
+                    {% if group.location_map_url %}
+                    <a href="{{ group.location_map_url }}" target="_blank" class="btn-outline" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;">
+                        <i class="fas fa-map"></i> Open in Maps
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- What to Expect -->
+                {% if group.what_to_expect %}
+                <div class="group-info-card">
+                    <h3>What to Expect</h3>
+                    <p>{{ group.what_to_expect }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Description -->
+                {% if group.description %}
+                <div class="group-info-card">
+                    <h3>About This Group</h3>
+                    <p>{{ group.description }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Announcements -->
+                {% if announcements %}
+                <div class="group-info-card">
+                    <h3>Announcements</h3>
+                    {% for a in announcements %}
+                    <div class="announcement-item">
+                        <strong>{{ a.title }}</strong>
+                        <span class="announcement-date">{{ a.created_at[:10] if a.created_at else '' }}</span>
+                        {% if a.content %}<p>{{ a.content }}</p>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="group-sidebar">
+                <!-- Leader Info -->
+                <div class="sidebar-card">
+                    <h3>Group Leader</h3>
+                    {% if group.leader_photo %}
+                    <img src="{{ group.leader_photo }}" alt="{{ group.leader }}" class="leader-photo">
+                    {% endif %}
+                    <h4>{{ group.leader or 'TBA' }}</h4>
+                    {% if group.leader_bio %}<p>{{ group.leader_bio }}</p>{% endif %}
+                </div>
+
+                <!-- Join Group -->
+                <div class="sidebar-card">
+                    <h3>Join This Group</h3>
+                    <form method="POST" action="/family-groups/{{ group.id }}/join">
+                        <input type="text" name="name" placeholder="Your name" required style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <input type="email" name="email" placeholder="Email (optional)" style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <input type="text" name="phone" placeholder="Phone (optional)" style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <textarea name="message" rows="2" placeholder="A brief message..." style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;"></textarea>
+                        <button type="submit" class="btn-gold" style="width:100%;">Request to Join</button>
+                    </form>
+                    {% if group.whatsapp_link %}
+                    <a href="{{ group.whatsapp_link }}" target="_blank" class="whatsapp-join-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:12px;background:#25D366;color:#fff;border-radius:50px;font-weight:600;font-size:0.85rem;">
+                        <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Members -->
+                {% if members %}
+                <div class="sidebar-card">
+                    <h3>Members ({{ members|length }})</h3>
+                    <div class="members-grid">
+                        {% for m in members %}
+                        <div class="member-item">
+                            {% if m.photo_url %}<img src="{{ m.photo_url }}" alt="{{ m.name }}">{% else %}<div class="member-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+                            <span>{{ m.name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Gallery -->
+                {% if gallery %}
+                <div class="sidebar-card">
+                    <h3>Gallery</h3>
+                    <div class="gallery-grid">
+                        {% for img in gallery %}
+                        <img src="{{ img.image_url }}" alt="{{ img.caption or 'Group photo' }}" class="gallery-thumb">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

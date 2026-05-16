@@ -145,3 +145,12 @@ def get_site_settings():
 
 def get_blog_posts():
     return supabase_get('blog_posts', {'published': 'eq.true', 'order': 'created_at.desc'})
+
+def get_group_announcements(group_id):
+    return supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '5'})
+
+def get_group_members(group_id):
+    return supabase_get('group_members', {'group_id': f'eq.{group_id}', 'is_visible': 'eq.true'})
+
+def get_group_gallery(group_id):
+    return supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
