@@ -27,7 +27,9 @@
                 <h2>{{ ministry_title }}</h2>
                 {% endif %}
                 {% if ministry_content %}
-                <div class="content-text">{{ ministry_content|linebreaks|safe }}</div>
+                <div class="content-text" style="white-space: pre-wrap; line-height: 1.6;">
+                    {{ ministry_content }}
+                </div>
                 {% endif %}
             </div>
             {% endif %}

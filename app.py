@@ -35,6 +35,20 @@ def inject_settings():
         'section_images': get_section_images()
     }
 
+@app.template_filter('linebreaks')
+def linebreaks_filter(value):
+    """Convert newlines to <br> tags, preserve paragraphs"""
+    if not value:
+        return ''
+    # Split into paragraphs by double newlines
+    paragraphs = value.split('\n\n')
+    result = []
+    for para in paragraphs:
+        if para.strip():
+            # Replace single newlines with <br> inside paragraph
+            para = para.replace('\n', '<br>')
+            result.append(f'<p>{para}</p>')
+    return ''.join(result)
 
 @app.route('/')
 def home():
