@@ -40,6 +40,20 @@
         {% endfor %}
     </div>
     {% endif %}
+
+        <!-- Posts -->
+    <div class="dashboard-section">
+        <h2>Write a Post</h2>
+        <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="admin-form">
+            <div class="form-row">
+                <div class="form-group"><label>Title *</label><input type="text" name="title" required></div>
+                <div class="form-group"><label>Author Name</label><input type="text" name="author_name" value="{{ group.leader or '' }}"></div>
+            </div>
+            <div class="form-group"><label>Content</label><textarea name="content" rows="5" placeholder="Share a teaching, update, prayer point, or encouragement..."></textarea></div>
+            <div class="form-group"><label>Image (optional)</label><input type="file" name="image" accept="image/*"></div>
+            <button type="submit" class="btn-save"><i class="fas fa-paper-plane"></i> Publish Post</button>
+        </form>
+    </div>
 </div>
 
 <!-- Join Requests -->

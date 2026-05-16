@@ -354,16 +354,17 @@ def family_group_detail(group_id):
     if not group:
         return render_template('404.html'), 404
     
-    announcements = get_group_announcements(group_id)
-    members = get_group_members(group_id)
-    gallery = get_group_gallery(group_id)
+    announcements = supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '5'})
+    members = supabase_get('group_members', {'group_id': f'eq.{group_id}', 'is_visible': 'eq.true'})
+    gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
+    posts = supabase_get('group_posts', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
     
     return render_template('family-group-detail.html',
                          group=group,
                          announcements=announcements,
                          members=members,
-                         gallery=gallery)
-
+                         gallery=gallery,
+                         posts=posts)
 
 
 @app.route('/subscribe', methods=['POST'])

@@ -4765,3 +4765,45 @@ html {
 
 .whatsapp-join-btn { transition: all 0.2s; }
 .whatsapp-join-btn:hover { background: #20bd5a; transform: translateY(-1px); }
+
+/* ==================== GROUP POSTS ==================== */
+.group-posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.group-post-item {
+    background: rgba(212, 175, 55, 0.03);
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.group-post-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.group-post-item h4 {
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+.group-post-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.group-post-item p {
+    color: var(--gray-light);
+    font-size: 0.88rem;
+    line-height: 1.7;
+}

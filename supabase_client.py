@@ -154,3 +154,6 @@ def get_group_members(group_id):
 
 def get_group_gallery(group_id):
     return supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
+
+def get_group_posts(group_id):
+    return supabase_get('group_posts', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})

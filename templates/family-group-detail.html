@@ -41,7 +41,30 @@
                     <p>{{ group.description }}</p>
                 </div>
                 {% endif %}
-
+                
+                <!-- Group Posts -->
+                {% if posts %}
+                <div class="group-info-card">
+                    <h3>Posts & Updates</h3>
+                    <div class="group-posts-list">
+                        {% for post in posts %}
+                        <div class="group-post-item">
+                            {% if post.image_url %}
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}" class="group-post-image">
+                            {% endif %}
+                            <h4>{{ post.title }}</h4>
+                            <div class="group-post-meta">
+                                <span>{{ post.author_name }}</span>
+                                <span>{{ post.created_at[:10] if post.created_at else '' }}</span>
+                            </div>
+                            {% if post.content %}
+                            <p>{{ post.content }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
                 <!-- Announcements -->
                 {% if announcements %}
                 <div class="group-info-card">

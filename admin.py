@@ -1087,6 +1087,42 @@ def manage_single_group(group_id):
                          members=members,
                          join_requests=join_requests,
                          gallery=gallery)
+    
+    
+# ==================== GROUP POSTS ====================
+@admin_bp.route('/family-groups/<int:group_id>/post', methods=['POST'])
+@login_required
+def add_group_post(group_id):
+    title = request.form.get('title')
+    content = request.form.get('content')
+    author_name = request.form.get('author_name', 'Group Leader')
+    image_url = ''
+    
+    image_file = request.files.get('image')
+    if image_file and image_file.filename:
+        try:
+            result = upload_image(image_file, folder=f'generation/groups/{group_id}/posts')
+            image_url = result['url']
+        except Exception:
+            pass
+    
+    if title:
+        supabase_insert('group_posts', {
+            'group_id': group_id,
+            'title': title,
+            'content': content,
+            'image_url': image_url,
+            'author_name': author_name
+        })
+        flash('Post published!', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+@admin_bp.route('/family-groups/<int:group_id>/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_group_post(group_id, post_id):
+    supabase_delete('group_posts', post_id)
+    flash('Post removed.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
 # ==================== GROUP ANNOUNCEMENTS ====================
 @admin_bp.route('/family-groups/<int:group_id>/announcement', methods=['POST'])
