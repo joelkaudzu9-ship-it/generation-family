@@ -1184,6 +1184,29 @@ def mark_join_contacted(group_id, req_id):
     flash('Marked as contacted.', 'success')
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
+@admin_bp.route('/family-groups/<int:group_id>/join-request/<int:req_id>/approve', methods=['POST'])
+@login_required
+def approve_join_request(group_id, req_id):
+    join_req = supabase_get_one('group_join_requests', req_id)
+    if join_req:
+        # Add to member_groups
+        supabase_insert('member_groups', {
+            'member_id': join_req.get('member_id', 0),
+            'group_id': group_id
+        })
+        # Mark as contacted
+        supabase_update('group_join_requests', req_id, {'is_contacted': True})
+        
+        # Send approval email
+        try:
+            from brevo_client import send_group_approval_email
+            send_group_approval_email(join_req.get('email'), join_req.get('name'), supabase_get_one('family_groups', group_id)['name'])
+        except Exception:
+            pass
+        
+        flash('Member approved!', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
 # ==================== GROUP GALLERY ====================
 @admin_bp.route('/family-groups/<int:group_id>/gallery', methods=['POST'])
 @role_required('admin')

@@ -194,6 +194,32 @@ def send_newsletter_to_all(subject, content):
     print(f"Newsletter sent to {success_count}/{len(contacts)} contacts.")
     return success_count > 0
 
+def send_group_approval_email(email, name, group_name):
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
+    data = {
+        "sender": {"name": BREVO_FROM_NAME, "email": BREVO_FROM_EMAIL},
+        "to": [{"email": email, "name": name}],
+        "subject": f"Welcome to {group_name}!",
+        "htmlContent": f"""
+        <div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto; background:#0a0a0a; color:#fff; padding:40px 30px; border-radius:12px;">
+            <h1 style="color:#D4AF37; text-align:center;">Welcome to {group_name}!</h1>
+            <p style="text-align:center; font-size:16px; color:#ccc;">Hi {name},</p>
+            <p style="text-align:center; font-size:16px; color:#ccc;">Your request to join <strong style="color:#D4AF37;">{group_name}</strong> has been approved. You are now part of the family!</p>
+            <div style="text-align:center; margin:30px 0;">
+                <a href="https://generation-family.onrender.com/family-groups" style="background:#D4AF37; color:#000; padding:12px 30px; text-decoration:none; border-radius:50px; font-weight:bold;">View Your Groups</a>
+            </div>
+            <p style="color:#666; font-size:12px; text-align:center;">The Generation Family — Revival in me. Awakening through us.</p>
+        </div>
+        """
+    }
+    response = requests.post(url, headers=headers, json=data, verify=False)
+    return response.status_code in [200, 201]
+
 def send_new_sermon_notification(sermon_title, speaker, audio_url, description=''):
     """Send email to all subscribers when a new sermon is uploaded."""
     url = "https://api.brevo.com/v3/smtp/email"

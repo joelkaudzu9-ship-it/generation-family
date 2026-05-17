@@ -21,8 +21,14 @@
 <div class="dashboard-section">
     <h2>Post Announcement</h2>
     <form method="POST" action="/admin/family-groups/{{ group.id }}/announcement" class="admin-form">
-        <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
-        <div class="form-group"><label>Message</label><textarea name="content" rows="2"></textarea></div>
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" required>
+        </div>
+        <div class="form-group">
+            <label>Message</label>
+            <textarea name="content" rows="2"></textarea>
+        </div>
         <button type="submit" class="btn-save">Post</button>
     </form>
     
@@ -40,20 +46,32 @@
         {% endfor %}
     </div>
     {% endif %}
+</div>
 
-        <!-- Posts -->
-    <div class="dashboard-section">
-        <h2>Write a Post</h2>
-        <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="admin-form">
-            <div class="form-row">
-                <div class="form-group"><label>Title *</label><input type="text" name="title" required></div>
-                <div class="form-group"><label>Author Name</label><input type="text" name="author_name" value="{{ group.leader or '' }}"></div>
+<!-- Posts -->
+<div class="dashboard-section">
+    <h2>Write a Post</h2>
+    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="admin-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" name="title" required>
             </div>
-            <div class="form-group"><label>Content</label><textarea name="content" rows="5" placeholder="Share a teaching, update, prayer point, or encouragement..."></textarea></div>
-            <div class="form-group"><label>Image (optional)</label><input type="file" name="image" accept="image/*"></div>
-            <button type="submit" class="btn-save"><i class="fas fa-paper-plane"></i> Publish Post</button>
-        </form>
-    </div>
+            <div class="form-group">
+                <label>Author Name</label>
+                <input type="text" name="author_name" value="{{ group.leader or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Content</label>
+            <textarea name="content" rows="5" placeholder="Share a teaching, update, prayer point, or encouragement..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Image (optional)</label>
+            <input type="file" name="image" accept="image/*">
+        </div>
+        <button type="submit" class="btn-save"><i class="fas fa-paper-plane"></i> Publish Post</button>
+    </form>
 </div>
 
 <!-- Join Requests -->
@@ -62,16 +80,32 @@
     {% if join_requests %}
     <div class="admin-table-wrapper">
         <table class="admin-table">
-            <thead><tr><th>Name</th><th>Contact</th><th>Message</th><th>Actions</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
             <tbody>
                 {% for req in join_requests %}
                 <tr>
                     <td><strong>{{ req.name }}</strong></td>
                     <td>{{ req.phone or req.email or '—' }}</td>
                     <td>{{ req.message[:50] if req.message else '—' }}</td>
-                    <td>
-                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/contacted">
-                            <button type="submit" class="btn-edit small">Mark Contacted</button>
+                    <td class="actions-cell">
+                        <!-- Approve Button -->
+                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/approve" style="display:inline;">
+                            <button type="submit" class="btn-edit small" style="background:#4caf50; border-color:#4caf50; color:#fff;">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+                        <!-- Dismiss Button -->
+                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/contacted" style="display:inline;">
+                            <button type="submit" class="btn-delete small">
+                                <i class="fas fa-times"></i> Dismiss
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -89,8 +123,14 @@
     <h2>Add Member</h2>
     <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/member" class="admin-form">
         <div class="form-row">
-            <div class="form-group"><label>Name</label><input type="text" name="name" required></div>
-            <div class="form-group"><label>Photo</label><input type="file" name="photo" accept="image/*"></div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Photo</label>
+                <input type="file" name="photo" accept="image/*">
+            </div>
         </div>
         <button type="submit" class="btn-save">Add Member</button>
     </form>
@@ -99,7 +139,11 @@
     <div class="admin-grid" style="margin-top:16px;">
         {% for m in members %}
         <div class="admin-card-small">
-            {% if m.photo_url %}<img src="{{ m.photo_url }}" class="admin-thumb">{% else %}<div class="admin-thumb-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+            {% if m.photo_url %}
+                <img src="{{ m.photo_url }}" class="admin-thumb">
+            {% else %}
+                <div class="admin-thumb-placeholder"><i class="fas fa-user"></i></div>
+            {% endif %}
             <h4>{{ m.name }}</h4>
             <form method="POST" action="/admin/family-groups/{{ group.id }}/member/{{ m.id }}/delete">
                 <button type="submit" class="btn-delete small">Remove</button>
@@ -115,8 +159,14 @@
     <h2>Upload Photo</h2>
     <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/gallery" class="admin-form">
         <div class="form-row">
-            <div class="form-group"><label>Photo</label><input type="file" name="photo" accept="image/*" required></div>
-            <div class="form-group"><label>Caption</label><input type="text" name="caption"></div>
+            <div class="form-group">
+                <label>Photo</label>
+                <input type="file" name="photo" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label>Caption</label>
+                <input type="text" name="caption">
+            </div>
         </div>
         <button type="submit" class="btn-save">Upload</button>
     </form>
@@ -125,8 +175,8 @@
     <div class="gallery-grid" style="margin-top:16px;">
         {% for img in gallery %}
         <div style="position:relative;">
-            <img src="{{ img.image_url }}" style="width:100%;border-radius:10px;">
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete" style="position:absolute;top:6px;right:6px;">
+            <img src="{{ img.image_url }}" style="width:100%; border-radius:10px;">
+            <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete" style="position:absolute; top:6px; right:6px;">
                 <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
             </form>
         </div>
@@ -134,7 +184,6 @@
     </div>
     {% endif %}
 </div>
-{% endblock %}
 
 <style>
 .dashboard-section {
@@ -161,4 +210,17 @@
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 10px;
 }
+.actions-cell {
+    white-space: nowrap;
+}
+.btn-edit.small {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+}
+.btn-delete.small {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+}
 </style>
+
+{% endblock %}

@@ -1,175 +1,159 @@
 {% extends "base.html" %}
-{% block title %}{{ group.name }} — Family Group{% endblock %}
+{% block title %}{{ group.name }} — Family Groups{% endblock %}
 
 {% block content %}
 
 <section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">{{ group.name }}</h1>
-        <p class="page-subtitle">{{ group.city }}</p>
+        <p class="page-subtitle">{{ group.city }}{% if group.leader %} — Led by {{ group.leader }}{% endif %}</p>
     </div>
 </section>
 
-<section class="family-group-detail">
+<section class="group-detail">
     <div class="container">
         <div class="group-detail-grid">
-            <!-- Main Content -->
             <div class="group-main">
-                <div class="group-card">
-                    <div class="group-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <p class="group-description">{{ group.description }}</p>
-                    
-                    <div class="group-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-map-marker-alt gold-text"></i>
-                            <span>{{ group.city }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-calendar-alt gold-text"></i>
-                            <span>{{ group.meeting_time or 'Meeting time TBC' }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-user gold-text"></i>
-                            <span>Led by {{ group.leader or 'Group Leader' }}</span>
-                        </div>
-                        {% if group.contact_email %}
-                        <div class="meta-item">
-                            <i class="fas fa-envelope gold-text"></i>
-                            <span>{{ group.contact_email }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="group-sidebar">
-                <!-- Member Status (if logged in) -->
-                {% if session.get('member_id') %}
-                    {% set is_member = false %}
-                    {% for m in members %}
-                        {% if m.id == session.get('member_id') %}
-                            {% set is_member = true %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if is_member %}
-                    <div class="sidebar-card" style="background:rgba(76,175,80,0.1); border-color:rgba(76,175,80,0.3);">
-                        <p style="color:#4caf50; text-align:center; margin:0;">
-                            <i class="fas fa-check-circle"></i> You are a member of this group
-                        </p>
-                    </div>
-                    {% endif %}
-                {% endif %}
-
-                <!-- Join This Group Section -->
-                <div class="sidebar-card">
-                    <h3>Join This Group</h3>
-                    
-                    {% if session.get('member_id') %}
-                        <!-- Already logged in — show join button -->
-                        <form method="POST" action="/family-groups/{{ group.id }}/join">
-                            <button type="submit" class="btn-gold" style="width:100%;">Join This Group</button>
-                        </form>
-                    {% else %}
-                        <!-- Not logged in — prompt to login or signup -->
-                        <p style="color:var(--gray); font-size:0.85rem; margin-bottom:12px;">
-                            Create an account or login to join this group.
-                        </p>
-                        <a href="/member/signup?group_id={{ group.id }}" class="btn-gold" style="width:100%; display:block; text-align:center; margin-bottom:8px;">
-                            Create Account & Join
-                        </a>
-                        <a href="/member/login?redirect=/family-groups/{{ group.id }}" style="color:var(--gold); font-size:0.85rem; text-align:center; display:block;">
-                            Already have an account? Login
-                        </a>
-                    {% endif %}
-                    
-                    {% if group.whatsapp_link %}
-                    <a href="{{ group.whatsapp_link }}" target="_blank" class="whatsapp-join-btn" style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; padding:12px; background:#25D366; color:#fff; border-radius:50px; font-weight:600; font-size:0.85rem; text-decoration:none;">
-                        <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+                <!-- Public: Always visible -->
+                <div class="group-info-card">
+                    <h3>Meeting Details</h3>
+                    {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
+                    {% if group.meeting_location %}<p><i class="fas fa-map-marker-alt gold-text"></i> {{ group.meeting_location }}</p>{% endif %}
+                    {% if group.location_map_url %}
+                    <a href="{{ group.location_map_url }}" target="_blank" class="btn-outline" style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;">
+                        <i class="fas fa-map"></i> Open in Maps
                     </a>
                     {% endif %}
                 </div>
+
+                {% if group.what_to_expect %}
+                <div class="group-info-card">
+                    <h3>What to Expect</h3>
+                    <p>{{ group.what_to_expect }}</p>
+                </div>
+                {% endif %}
+
+                {% if group.description %}
+                <div class="group-info-card">
+                    <h3>About This Group</h3>
+                    <p>{{ group.description }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Private: Only visible to members -->
+                {% if is_member %}
+                {% if announcements %}
+                <div class="group-info-card">
+                    <h3>Announcements</h3>
+                    {% for a in announcements %}
+                    <div class="announcement-item">
+                        <strong>{{ a.title }}</strong>
+                        <span class="announcement-date">{{ a.created_at[:10] if a.created_at else '' }}</span>
+                        {% if a.content %}<p>{{ a.content }}</p>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if posts %}
+                <div class="group-info-card">
+                    <h3>Posts & Updates</h3>
+                    <div class="group-posts-list">
+                        {% for post in posts %}
+                        <div class="group-post-item">
+                            {% if post.image_url %}
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}" class="group-post-image">
+                            {% endif %}
+                            <h4>{{ post.title }}</h4>
+                            <div class="group-post-meta">
+                                <span>{{ post.author_name }}</span>
+                                <span>{{ post.created_at[:10] if post.created_at else '' }}</span>
+                            </div>
+                            {% if post.content %}<p>{{ post.content }}</p>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="group-sidebar">
+                <!-- Leader Info: Always visible -->
+                <div class="sidebar-card">
+                    <h3>Group Leader</h3>
+                    {% if group.leader_photo %}
+                    <img src="{{ group.leader_photo }}" alt="{{ group.leader }}" class="leader-photo">
+                    {% endif %}
+                    <h4>{{ group.leader or 'TBA' }}</h4>
+                    {% if group.leader_bio %}<p>{{ group.leader_bio }}</p>{% endif %}
+                </div>
+
+                <!-- Member Status -->
+                {% if not session.get('member_id') %}
+                <!-- Not logged in at all -->
+                <div class="sidebar-card">
+                    <h3>Login to Continue</h3>
+                    <p style="color:var(--gray);font-size:0.85rem;margin-bottom:12px;">Login or create an account to join this group.</p>
+                    <a href="/member/login?redirect=/family-groups/{{ group.id }}" class="btn-gold" style="width:100%;display:block;text-align:center;margin-bottom:8px;">Login</a>
+                    <a href="/member/signup" style="color:var(--gold);font-size:0.85rem;text-align:center;display:block;">Create Account</a>
+                </div>
+                
+                {% elif is_member %}
+                <!-- Logged in and IS a member -->
+                <div class="sidebar-card" style="background:rgba(76,175,80,0.1);border-color:rgba(76,175,80,0.3);">
+                    <p style="color:#4caf50;text-align:center;font-size:0.9rem;"><i class="fas fa-check-circle"></i> You are a member</p>
+                </div>
+                
+                {% else %}
+                <!-- Logged in but NOT a member — show join form -->
+                <div class="sidebar-card">
+                    <h3>Request to Join</h3>
+                    <form method="POST" action="/family-groups/{{ group.id }}/join">
+                        <input type="text" name="name" value="{{ session.get('member_name', '') }}" placeholder="Your name" required style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <input type="email" name="email" placeholder="Your email" required style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <input type="text" name="phone" placeholder="Phone (optional)" style="width:100%;padding:10px;margin-bottom:8px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;">
+                        <button type="submit" class="btn-gold" style="width:100%;">Request to Join</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- WhatsApp: Always visible -->
+                {% if group.whatsapp_link %}
+                <a href="{{ group.whatsapp_link }}" target="_blank" class="whatsapp-join-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:#25D366;color:#fff;border-radius:50px;font-weight:600;font-size:0.85rem;text-decoration:none;">
+                    <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+                </a>
+                {% endif %}
+
+                <!-- Members: Only visible to members -->
+                {% if is_member and members %}
+                <div class="sidebar-card">
+                    <h3>Members ({{ members|length }})</h3>
+                    <div class="members-grid">
+                        {% for m in members %}
+                        <div class="member-item">
+                            {% if m.photo_url %}<img src="{{ m.photo_url }}" alt="{{ m.full_name }}">{% else %}<div class="member-placeholder"><i class="fas fa-user"></i></div>{% endif %}
+                            <span>{{ m.full_name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Gallery: Only visible to members -->
+                {% if is_member and gallery %}
+                <div class="sidebar-card">
+                    <h3>Gallery</h3>
+                    <div class="gallery-grid">
+                        {% for img in gallery %}
+                        <img src="{{ img.image_url }}" alt="{{ img.caption or 'Group photo' }}" class="gallery-thumb">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
-
-<style>
-    .family-group-detail {
-        padding: 60px 0;
-        background: var(--black);
-    }
-    
-    .group-detail-grid {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 40px;
-    }
-    
-    .group-card {
-        background: var(--dark);
-        border: 1px solid #222;
-        border-radius: 20px;
-        padding: 36px;
-    }
-    
-    .group-icon {
-        font-size: 3rem;
-        color: var(--gold);
-        text-align: center;
-        margin-bottom: 24px;
-    }
-    
-    .group-description {
-        color: var(--gray-light);
-        font-size: 1rem;
-        line-height: 1.8;
-        margin-bottom: 28px;
-        text-align: center;
-    }
-    
-    .group-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding-top: 20px;
-        border-top: 1px solid #222;
-    }
-    
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 0.85rem;
-        color: var(--gray);
-    }
-    
-    .meta-item i {
-        width: 20px;
-    }
-    
-    .sidebar-card {
-        background: var(--dark);
-        border: 1px solid #222;
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 20px;
-    }
-    
-    .sidebar-card h3 {
-        color: var(--gold);
-        font-size: 1rem;
-        margin-bottom: 16px;
-    }
-    
-    @media (max-width: 768px) {
-        .group-detail-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
 
 {% endblock %}
