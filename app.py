@@ -28,7 +28,7 @@ from functools import wraps
 
 from admin import admin_bp
 import os
-port = int(os.environ.get('PORT', 8080))
+port = int(os.environ.get('PORT', 8000))
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'generation-family-secret-key-2026')
