@@ -453,20 +453,6 @@ def member_dashboard():
     
     member_id = session['member_id']
     
-    # Get member with their group
-    members = supabase_get('members', {'id': f'eq.{member_id}', 'is_active': 'eq.true'})
-    member = members[0] if members else None
-    
-    group = None
-    posts = []
-    
-   @app.route('/member/dashboard')
-def member_dashboard():
-    if not session.get('member_id'):
-        return redirect(url_for('member_login'))
-    
-    member_id = session['member_id']
-    
     members = supabase_get('members', {'id': f'eq.{member_id}', 'is_active': 'eq.true'})
     member = members[0] if members else None
     
