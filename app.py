@@ -460,17 +460,35 @@ def member_dashboard():
     group = None
     posts = []
     
+   @app.route('/member/dashboard')
+def member_dashboard():
+    if not session.get('member_id'):
+        return redirect(url_for('member_login'))
+    
+    member_id = session['member_id']
+    
+    members = supabase_get('members', {'id': f'eq.{member_id}', 'is_active': 'eq.true'})
+    member = members[0] if members else None
+    
+    group = None
+    announcements = []
+    posts = []
+    gallery = []
+    
     if member and member.get('group_id'):
         groups = supabase_get('family_groups', {'id': f'eq.{member["group_id"]}'})
         group = groups[0] if groups else None
         
         if group:
-            posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '10'})
+            announcements = supabase_get('group_announcements', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '10'})
+            posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '20'})
+            gallery = supabase_get('group_gallery', {'group_id': f'eq.{group["id"]}', 'order': 'uploaded_at.desc', 'limit': '12'})
     
     return render_template('member-dashboard.html', 
                          group=group,
+                         announcements=announcements,
                          posts=posts,
-                         current_member=member)
+                         gallery=gallery)
     
 @app.route('/subscribe', methods=['POST'])
 def subscribe():

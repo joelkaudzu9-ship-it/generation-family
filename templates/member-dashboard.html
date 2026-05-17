@@ -1,93 +1,133 @@
 {% extends "base.html" %}
-{% block title %}My Dashboard — The Generation Family{% endblock %}
+{% block title %}My Group — The Generation Family{% endblock %}
 
 {% block content %}
 
+{% if not group %}
 <section class="page-header">
     <div class="container">
-        <h1 class="page-title">My Dashboard</h1>
-        <p class="page-subtitle">Welcome back, {{ session.get('member_name', 'Member') }}!</p>
+        <h1 class="page-title">No Group Yet</h1>
+        <p class="page-subtitle">You haven't joined a family group.</p>
+        <a href="/family-groups" class="btn-gold">Browse Family Groups</a>
+    </div>
+</section>
+{% else %}
+
+<section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
+    <div class="container">
+        <h1 class="page-title">{{ group.name }}</h1>
+        <p class="page-subtitle">{{ group.city }} • {{ group.meeting_time or 'Meeting time TBC' }} • Led by {{ group.leader or 'Group Leader' }}</p>
     </div>
 </section>
 
-<section class="dashboard-section">
+<section class="group-content">
     <div class="container">
-        <!-- My Group -->
-        <div class="dashboard-group">
-            <h2>My Family Group</h2>
-            
-            {% if group %}
-            <div class="group-card">
-                <div class="group-header">
-                    <i class="fas fa-home"></i>
-                    <h3>{{ group.name }}</h3>
-                </div>
-                <div class="group-details">
-                    <p><i class="fas fa-map-marker-alt gold-text"></i> {{ group.city }}</p>
-                    <p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time or 'TBC' }}</p>
-                    <p><i class="fas fa-user gold-text"></i> Led by {{ group.leader or 'Group Leader' }}</p>
-                    <p><i class="fas fa-calendar-alt gold-text"></i> Member since {{ current_member.joined_at[:10] if current_member and current_member.joined_at else 'Recently' }}</p>
-                </div>
-                
-                <!-- Recent Posts from this group -->
-                {% if posts %}
-                <div class="group-posts">
-                    <h4>Recent Posts</h4>
-                    {% for post in posts %}
-                    <div class="post-item">
-                        <div class="post-header">
-                            <strong>{{ post.title }}</strong>
-                            <span class="post-date">{{ post.created_at[:10] if post.created_at else '' }}</span>
+        <div class="content-grid">
+            <!-- Main Content - Posts & Announcements -->
+            <div class="main-content">
+                <!-- Announcements -->
+                {% if announcements %}
+                <div class="content-section announcements">
+                    <h2><i class="fas fa-bullhorn gold-text"></i> Announcements</h2>
+                    {% for announcement in announcements %}
+                    <div class="content-card announcement-card">
+                        <div class="card-header">
+                            <h3>{{ announcement.title }}</h3>
+                            <span class="date">{{ announcement.created_at[:10] if announcement.created_at else '' }}</span>
                         </div>
-                        <p>{{ post.content[:150] }}{% if post.content and post.content|length > 150 %}...{% endif %}</p>
-                        {% if post.image_url %}
-                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="post-image">
-                        {% endif %}
+                        <div class="card-body">
+                            <p>{{ announcement.content }}</p>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
                 {% endif %}
-                
-                <a href="/family-groups/{{ group.id }}" class="btn-gold" style="margin-top:20px; display:inline-block;">
-                    Go to Group <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-users"></i>
-                <p>You haven't joined a family group yet.</p>
-                <a href="/family-groups" class="btn-gold">Browse Family Groups</a>
-            </div>
-            {% endif %}
-        </div>
 
-        <!-- Profile Settings -->
-        <div class="dashboard-profile">
-            <h2>Account Settings</h2>
-            <div class="profile-links">
-                <a href="/member/profile" class="profile-link">
-                    <i class="fas fa-user-edit"></i> Edit Profile
-                </a>
-                <a href="/member/change-group" class="profile-link">
-                    <i class="fas fa-exchange-alt"></i> Change Group
-                </a>
-                <a href="/member/logout" class="profile-link logout-link">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <!-- Posts / Articles -->
+                {% if posts %}
+                <div class="content-section posts">
+                    <h2><i class="fas fa-newspaper gold-text"></i> Posts & Articles</h2>
+                    {% for post in posts %}
+                    <div class="content-card post-card">
+                        <div class="card-header">
+                            <h3>{{ post.title }}</h3>
+                            <span class="date">{{ post.created_at[:10] if post.created_at else '' }}</span>
+                        </div>
+                        {% if post.image_url %}
+                        <div class="card-image">
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="content-text">{{ post.content|linebreaks|safe }}</div>
+                            {% if post.author_name %}
+                            <p class="author">— {{ post.author_name }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if not announcements and not posts %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No posts or announcements yet. Check back soon!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar - Gallery -->
+            <div class="sidebar">
+                {% if gallery %}
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-images gold-text"></i> Gallery</h3>
+                    <div class="gallery-grid">
+                        {% for img in gallery %}
+                        <a href="{{ img.image_url }}" class="gallery-item" target="_blank">
+                            <img src="{{ img.image_url }}" alt="{{ img.caption or 'Group photo' }}">
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-info-circle gold-text"></i> About This Group</h3>
+                    <p>{{ group.description or 'A family group of The Generation Family, meeting regularly for prayer, fellowship, and growth.' }}</p>
+                </div>
+
+                {% if group.whatsapp_link %}
+                <div class="sidebar-section">
+                    <a href="{{ group.whatsapp_link }}" class="whatsapp-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
 
+{% endif %}
+
 <style>
-.dashboard-section {
+.group-content {
     padding: 60px 0;
     background: var(--black);
-    min-height: 70vh;
 }
 
-.dashboard-group h2,
-.dashboard-profile h2 {
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 40px;
+}
+
+.content-section {
+    margin-bottom: 48px;
+}
+
+.content-section h2 {
     color: var(--gold);
     font-size: 1.3rem;
     margin-bottom: 24px;
@@ -95,160 +135,145 @@
     border-bottom: 1px solid #222;
 }
 
-.group-card {
+.content-card {
     background: var(--dark);
     border: 1px solid #222;
-    border-radius: 20px;
-    padding: 32px;
-    margin-bottom: 48px;
-}
-
-.group-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #222;
-}
-
-.group-header i {
-    font-size: 2rem;
-    color: var(--gold);
-}
-
-.group-header h3 {
-    font-size: 1.3rem;
-    margin: 0;
-}
-
-.group-details {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    border-radius: 16px;
     margin-bottom: 24px;
+    overflow: hidden;
 }
 
-.group-details p {
-    color: var(--gray);
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.group-details i {
-    width: 20px;
-}
-
-.group-posts {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #222;
-}
-
-.group-posts h4 {
-    font-size: 1rem;
-    color: var(--gold);
-    margin-bottom: 16px;
-}
-
-.post-item {
-    background: var(--darker);
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-}
-
-.post-header {
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
     flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 24px 0 24px;
 }
 
-.post-header strong {
-    font-size: 0.9rem;
+.card-header h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--white);
 }
 
-.post-date {
-    font-size: 0.7rem;
+.date {
+    font-size: 0.75rem;
     color: #555;
 }
 
-.post-item p {
+.card-image {
+    margin-top: 16px;
+}
+
+.card-image img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px 24px 24px 24px;
+}
+
+.card-body p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.author {
+    margin-top: 16px;
+    color: var(--gold);
     font-size: 0.85rem;
+    text-align: right;
+}
+
+/* Sidebar */
+.sidebar-section {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.sidebar-section h3 {
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.sidebar-section p {
     color: var(--gray);
+    font-size: 0.85rem;
     line-height: 1.6;
 }
 
-.post-image {
-    max-width: 100%;
-    border-radius: 10px;
-    margin-top: 12px;
-}
-
-.profile-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.profile-link {
-    display: inline-flex;
-    align-items: center;
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    padding: 12px 20px;
-    background: var(--dark);
-    border: 1px solid #222;
+}
+
+.gallery-item {
+    display: block;
+    overflow: hidden;
+    border-radius: 8px;
+    aspect-ratio: 1/1;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #25D366;
+    color: white;
+    padding: 12px;
     border-radius: 40px;
-    color: var(--gray-light);
-    font-size: 0.85rem;
     text-decoration: none;
-    transition: all 0.3s;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
-.profile-link:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
-.logout-link:hover {
-    border-color: #e74c3c;
-    color: #e74c3c;
+.whatsapp-btn:hover {
+    background: #128C7E;
 }
 
 .empty-state {
     text-align: center;
     padding: 60px 20px;
     background: var(--dark);
-    border-radius: 20px;
+    border-radius: 16px;
 }
 
 .empty-state i {
     font-size: 3rem;
-    color: var(--gold);
+    color: #555;
     margin-bottom: 16px;
-    opacity: 0.5;
-}
-
-.empty-state p {
-    color: var(--gray);
-    margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
-    .group-details {
+    .content-grid {
         grid-template-columns: 1fr;
     }
     
-    .profile-links {
+    .card-header {
         flex-direction: column;
-    }
-    
-    .profile-link {
-        justify-content: center;
+        align-items: flex-start;
     }
 }
 </style>

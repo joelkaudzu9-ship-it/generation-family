@@ -1,14 +1,11 @@
-{% if session.get('member_id') %}
-<div class="already-member-warning">
-    <i class="fas fa-info-circle"></i>
-    <p>You're already a member of a family group. <a href="/member/dashboard">Go to your dashboard →</a></p>
-</div>
-{% endif %}
-
 {% extends "base.html" %}
 {% block title %}Family Groups — The Generation Family{% endblock %}
 
 {% block content %}
+
+{% if session.get('member_id') %}
+    <script>window.location.href = "/member/dashboard";</script>
+{% endif %}
 
 <section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
@@ -88,7 +85,6 @@
     padding: 32px 24px;
     text-align: center;
     transition: all 0.3s ease;
-    cursor: pointer;
     text-decoration: none;
     display: block;
 }
@@ -126,11 +122,6 @@
     gap: 6px;
 }
 
-.fg-details i {
-    width: 16px;
-    font-size: 0.75rem;
-}
-
 .join-link-text {
     display: inline-block;
     color: var(--gold);
@@ -162,47 +153,15 @@
     font-size: 0.85rem;
 }
 
-.fg-buttons {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-/* Responsive */
 @media (max-width: 1024px) {
     .fg-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .fg-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
-    
-    .fg-card {
-        padding: 24px 16px;
-    }
-    
-    .fg-card-icon {
-        font-size: 2rem;
-    }
-    
-    .fg-card h3 {
-        font-size: 0.9rem;
     }
 }
 
 @media (max-width: 480px) {
     .fg-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .fg-card {
-        padding: 28px 20px;
     }
 }
 </style>
