@@ -44,34 +44,21 @@ window.addEventListener('load', () => {
     }
 });
 
-// ==================== SMOOTH PAGE TRANSITIONS ====================
-document.addEventListener('click', (e) => {
-    // Don't intercept if modifier keys are pressed (ctrl/cmd click = new tab)
-    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
-    
-    const link = e.target.closest('a');
-    if (link && link.href && link.href.startsWith(window.location.origin) && 
-        !link.hasAttribute('download') && link.target !== '_blank' && 
-        !link.closest('.mobile-menu') && !link.closest('.admin-nav')) {
-        e.preventDefault();
-        const main = document.querySelector('main');
-        if (main) {
-            main.style.opacity = '0';
-            main.style.transform = 'translateY(10px)';
-            main.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        }
-        setTimeout(() => {
-            window.location.href = link.href;
-        }, 250);
-    }
-});
+// ==================== HISTORY STATE MANAGEMENT ====================
+// Initialize history state for proper back button behavior
+if (!window.history.state || !window.history.state.pageLoaded) {
+    window.history.replaceState({ 
+        pageLoaded: true, 
+        url: window.location.href,
+        timestamp: Date.now()
+    }, document.title, window.location.href);
+}
 
-// ==================== MOBILE MENU (PROFESSIONAL & STABLE) ====================
+// ==================== MOBILE MENU ====================
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileClose = document.getElementById('mobileClose');
 
-// Create overlay if it doesn't exist
 let overlay = document.querySelector('.mobile-menu-overlay');
 if (!overlay) {
     overlay = document.createElement('div');
@@ -84,7 +71,16 @@ function openMenu() {
     hamburger.classList.add('active');
     mobileMenu.classList.add('active');
     overlay.classList.add('active');
+    
+    // Store current scroll position
+    const scrollY = window.scrollY;
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    // Store the scroll position for later restoration
+    mobileMenu.dataset.scrollY = scrollY;
 }
 
 function closeMenu() {
@@ -92,9 +88,16 @@ function closeMenu() {
     hamburger.classList.remove('active');
     mobileMenu.classList.remove('active');
     overlay.classList.remove('active');
-    document.body.style.overflow = '';
     
-    // Reset all accordions
+    // Restore scroll position when closing menu
+    const scrollY = parseInt(mobileMenu.dataset.scrollY || '0');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, scrollY);
+    
+    // Reset accordion state
     document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -103,11 +106,25 @@ function closeMenu() {
     });
 }
 
+// Force close menu function - closes instantly without scroll restoration
+function forceCloseMenu() {
+    if (!hamburger || !mobileMenu || !overlay) return;
+    hamburger.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    overlay.classList.remove('active');
+    
+    // Just reset body styles without scroll restoration
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+}
+
 if (hamburger) hamburger.addEventListener('click', openMenu);
 if (mobileClose) mobileClose.addEventListener('click', closeMenu);
 if (overlay) overlay.addEventListener('click', closeMenu);
 
-// Accordion functionality
+// Mobile accordion
 document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const content = btn.nextElementSibling;
@@ -121,29 +138,199 @@ document.querySelectorAll('.mobile-accordion-btn').forEach(btn => {
     });
 });
 
-// ==================== ENSURE MENU IS CLOSED ON PAGE LOAD ====================
-// Fixes "back button with open menu" problem
-(function ensureMenuClosedOnLoad() {
-    // Close menu immediately if open
+// ==================== PROPER BACK BUTTON HANDLING ====================
+// Track if menu was open to handle back button properly
+let menuWasOpenBeforeNavigation = false;
+
+// CRITICAL: Close menu IMMEDIATELY before any navigation
+function prepareForNavigation() {
     if (mobileMenu && mobileMenu.classList.contains('active')) {
-        closeMenu();
+        menuWasOpenBeforeNavigation = true;
+        forceCloseMenu();
+    }
+}
+
+// ==================== SMOOTH PAGE TRANSITIONS ====================
+document.addEventListener('click', (e) => {
+    // Don't intercept if modifier keys are pressed (ctrl/cmd click = new tab)
+    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    
+    const link = e.target.closest('a');
+    if (link && link.href && link.href.startsWith(window.location.origin) && 
+        !link.hasAttribute('download') && link.target !== '_blank' && 
+        !link.closest('.mobile-menu') && !link.closest('.admin-nav')) {
+        
+        // Skip if it's a hash link on the same page
+        if (link.href.split('#')[0] === window.location.href.split('#')[0] && link.hash) {
+            return;
+        }
+        
+        e.preventDefault();
+        
+        // CLOSE MENU IMMEDIATELY before any navigation animation
+        if (mobileMenu && mobileMenu.classList.contains('active')) {
+            forceCloseMenu();
+            // Small delay to ensure DOM updates before transition
+            setTimeout(() => {
+                performNavigation(link.href);
+            }, 50);
+        } else {
+            performNavigation(link.href);
+        }
+    }
+});
+
+function performNavigation(href) {
+    // Push state before navigation
+    window.history.pushState({ 
+        pageLoaded: true,
+        url: href,
+        timestamp: Date.now()
+    }, '', href);
+    
+    const main = document.querySelector('main');
+    if (main) {
+        main.style.opacity = '0';
+        main.style.transform = 'translateY(10px)';
+        main.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     }
     
-    // Handle pageshow event (fires when page comes from back/forward cache)
-    window.addEventListener('pageshow', function() {
-        if (mobileMenu && mobileMenu.classList.contains('active')) {
-            closeMenu();
-        }
-        document.body.style.overflow = '';
-    });
-    
-    // Safety timeout for any edge cases
     setTimeout(() => {
-        if (mobileMenu && mobileMenu.classList.contains('active')) {
-            closeMenu();
+        window.location.href = href;
+    }, 250);
+}
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+    // If menu is open, FIRST close it, THEN navigate back
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        // Close menu immediately
+        forceCloseMenu();
+        
+        // Prevent the default back navigation
+        event.preventDefault();
+        
+        // Navigate back after a tiny delay to ensure menu closes first
+        setTimeout(() => {
+            window.history.back();
+        }, 50);
+        
+        return;
+    }
+    
+    // If menu wasn't open, just let the navigation happen
+    // We'll handle scroll position in pageshow
+});
+
+// CRITICAL: Close menu before page unloads (catches all navigation types)
+window.addEventListener('beforeunload', () => {
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        forceCloseMenu();
+    }
+});
+
+// Handle page visibility change (tab switching, etc.)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && mobileMenu && mobileMenu.classList.contains('active')) {
+        forceCloseMenu();
+    }
+});
+
+// Handle bfcache (back-forward cache) - pageshow fires when page is shown
+window.addEventListener('pageshow', (event) => {
+    // ALWAYS ensure menu is closed when page is shown
+    if (mobileMenu && mobileMenu.classList.contains('active')) {
+        forceCloseMenu();
+    }
+    
+    // Reset body styles that might persist from bfcache
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    
+    // ALWAYS scroll to top when arriving at a page
+    window.scrollTo(0, 0);
+    
+    // Fade in content if coming from history navigation
+    if (event.persisted) {
+        const main = document.querySelector('main');
+        if (main) {
+            main.style.opacity = '0';
+            main.style.transform = 'translateY(10px)';
+            requestAnimationFrame(() => {
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+            });
         }
-    }, 10);
-})();
+    }
+});
+
+// Handle hash changes (for in-page navigation)
+window.addEventListener('hashchange', () => {
+    if (window.location.hash) {
+        setTimeout(() => {
+            const target = document.querySelector(window.location.hash);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+});
+
+// Initialize on load - ensure we always start at top
+window.addEventListener('load', () => {
+    // Force scroll to top on initial load
+    window.scrollTo(0, 0);
+    
+    // Handle initial hash if present
+    if (window.location.hash) {
+        setTimeout(() => {
+            const target = document.querySelector(window.location.hash);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+});
+
+// ==================== FORM STATE PRESERVATION ====================
+// Save form data before navigating away
+window.addEventListener('beforeunload', () => {
+    document.querySelectorAll('form').forEach(form => {
+        if (form.id) {
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            sessionStorage.setItem(`form_${form.id}`, JSON.stringify(data));
+        }
+    });
+});
+
+// Restore form data on back navigation
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('form').forEach(form => {
+        if (form.id) {
+            const savedData = sessionStorage.getItem(`form_${form.id}`);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    Object.keys(data).forEach(key => {
+                        const input = form.elements[key];
+                        if (input && input.type !== 'submit' && input.type !== 'button') {
+                            input.value = data[key];
+                        }
+                    });
+                    sessionStorage.removeItem(`form_${form.id}`);
+                } catch (e) {
+                    // Invalid JSON, ignore
+                }
+            }
+        }
+    });
+});
 
 // ==================== HERO SLIDESHOW ====================
 const slides = document.querySelectorAll('.hero-slide');
@@ -456,13 +643,12 @@ function showConfirm(title, message, onConfirm) {
     cancelBtn.addEventListener('click', close);
     okBtn.addEventListener('click', handleConfirm);
     
-    // Close on overlay click
     modal.addEventListener('click', function(e) {
         if (e.target === modal) close();
     });
 }
 
-// ==================== LIGHTBOX (STABLE WITH NULL CHECKS) ====================
+// ==================== LIGHTBOX ====================
 (function() {
     const lightbox = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightboxContent');
@@ -470,7 +656,6 @@ function showConfirm(title, message, onConfirm) {
     const lightboxPrev = document.getElementById('lightboxPrev');
     const lightboxNext = document.getElementById('lightboxNext');
     
-    // Exit if lightbox elements don't exist
     if (!lightbox || !lightboxContent) return;
     
     let currentGroup = [];
@@ -516,7 +701,6 @@ function showConfirm(title, message, onConfirm) {
             lightboxContent.appendChild(audio);
         }
         
-        // Hide prev/next if only one item
         if (lightboxPrev) lightboxPrev.style.display = currentGroup.length <= 1 ? 'none' : '';
         if (lightboxNext) lightboxNext.style.display = currentGroup.length <= 1 ? 'none' : '';
     }
@@ -541,7 +725,6 @@ function showConfirm(title, message, onConfirm) {
         if (e.target === lightbox) closeLightbox();
     });
     
-    // Keyboard navigation
     document.addEventListener('keydown', function(e) {
         if (!lightbox.classList.contains('active')) return;
         if (e.key === 'Escape') closeLightbox();
@@ -549,10 +732,8 @@ function showConfirm(title, message, onConfirm) {
         if (e.key === 'ArrowLeft') prevItem();
     });
     
-    // Make images clickable
     document.addEventListener('click', function(e) {
         const mediaImage = e.target.closest('.media-image img');
-        const mediaVideo = e.target.closest('.media-card video');
         const eventImage = e.target.closest('.event-image img');
         const blogImage = e.target.closest('.blog-image img');
         
@@ -560,7 +741,6 @@ function showConfirm(title, message, onConfirm) {
             const clicked = mediaImage || eventImage || blogImage;
             let siblings = [];
             
-            // Find all images in the same gallery
             const container = clicked.closest('.media-grid, .events-grid, .blog-grid');
             if (container) {
                 siblings = Array.from(container.querySelectorAll('img'));
@@ -593,3 +773,16 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+// ==================== MOBILE SEARCH ====================
+const mobileSearchInput = document.getElementById('mobileSearchInput');
+if (mobileSearchInput) {
+    mobileSearchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const query = this.value.trim();
+            if (query) {
+                window.location.href = '/search?q=' + encodeURIComponent(query);
+            }
+        }
+    });
+}

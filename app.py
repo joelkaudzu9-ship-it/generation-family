@@ -28,7 +28,7 @@ from functools import wraps
 
 from admin import admin_bp
 import os
-port = int(os.environ.get('PORT', 8000))
+port = int(os.environ.get('PORT', 5000))
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'generation-family-secret-key-2026')
@@ -221,16 +221,40 @@ def prayer_rhythms():
 def family_groups():
     groups = get_family_groups()
     
-    # If logged in, get pending requests
+    # Get current member if logged in
+    current_member = None
     pending_requests = {}
+    
     if session.get('member_id'):
-        member = supabase_get('members', {'id': f'eq.{session["member_id"]}'})
-        if member:
-            requests = supabase_get('group_join_requests', {'email': f'eq.{member[0]["email"]}', 'is_contacted': 'eq.false'})
+        members = supabase_get('members', {'id': f'eq.{session["member_id"]}'})
+        current_member = members[0] if members else None
+        
+        if current_member:
+            requests = supabase_get('group_join_requests', {'email': f'eq.{current_member["email"]}', 'is_contacted': 'eq.false'})
             for req in requests:
                 pending_requests[req['group_id']] = True
     
-    return render_template('family-groups.html', groups=groups, pending_requests=pending_requests)
+    return render_template('family-groups.html', 
+                         groups=groups, 
+                         current_member=current_member,
+                         pending_requests=pending_requests)
+
+@app.route('/debug-requests')
+@login_required
+def debug_requests():
+    member_id = session['member_id']
+    members = supabase_get('members', {'id': f'eq.{member_id}'})
+    member = members[0] if members else None
+    
+    if not member:
+        return jsonify({'error': 'Member not found'})
+    
+    requests = supabase_get('group_join_requests', {'email': f'eq.{member["email"]}'})
+    
+    return jsonify({
+        'member': member,
+        'requests': requests
+    })
 
 # ==================== MARKETPLACE ====================
 @app.route('/marketplace')
@@ -400,9 +424,13 @@ def request_join_group(group_id):
         'group_id': f'eq.{group_id}'
     })
     
-    if existing:
+    if existing and len(existing) > 0:
         flash('You already have a pending request for this group.', 'info')
         return redirect(url_for('family_groups'))
+    
+    # Get group info for the flash message
+    group = supabase_get_one('family_groups', group_id)
+    group_name = group['name'] if group else 'the group'
     
     # Create join request
     supabase_insert('group_join_requests', {
@@ -411,11 +439,11 @@ def request_join_group(group_id):
         'email': member['email'],
         'phone': member.get('phone', ''),
         'member_id': member_id,
-        'message': f'Member {member["full_name"]} requested to join the group.',
+        'message': f'Member {member["full_name"]} requested to join {group_name}.',
         'is_contacted': False
     })
     
-    flash('Join request sent! The group leader will review your request.', 'success')
+    flash(f'Join request sent to {group_name}! The group leader will review your request.', 'success')
     return redirect(url_for('family_groups'))
 
 @app.route('/family-groups/<int:group_id>')
@@ -452,7 +480,7 @@ def member_signup():
         email = request.form.get('email', '')
         phone = request.form.get('phone', '')
         password = request.form.get('password')
-        group_id = request.form.get('group_id')  # Can be empty
+        group_id = request.form.get('group_id')
         
         if email:
             existing = supabase_get('members', {'email': f'eq.{email}'})
@@ -460,27 +488,39 @@ def member_signup():
                 groups = get_family_groups()
                 return render_template('member-signup.html', groups=groups, error='Email already registered.')
         
-        # Insert member (group_id can be None)
+        # DON'T add member to members table yet
+        # Instead, create a join request first
+        
+        # Create join request
+        join_result = supabase_insert('group_join_requests', {
+            'group_id': int(group_id) if group_id else None,
+            'name': full_name,
+            'email': email,
+            'phone': phone,
+            'message': f'New member {full_name} requested to join the group.',
+            'is_contacted': False
+        })
+        
+        if group_id:
+            flash('Join request sent! The group leader will review and approve your membership.', 'info')
+        else:
+            flash('Welcome to the family! Browse groups to join one.', 'success')
+        
+        # Log them in but with no group (pending approval)
+        # We'll create a member record but keep them inactive until approved
         result = supabase_insert('members', {
             'full_name': full_name,
             'email': email,
             'phone': phone,
             'password': password,
-            'group_id': int(group_id) if group_id else None,
-            'status': 'pending' if group_id else 'active',  # Active if no group selected
-            'is_active': True
+            'group_id': None,  # No group until approved
+            'status': 'pending',
+            'is_active': False
         })
         
         member_id = result[0]['id']
-        
-        # Log them in immediately
         session['member_id'] = member_id
         session['member_name'] = full_name
-        
-        if group_id:
-            flash('Account created! The group leader will approve your membership.', 'info')
-        else:
-            flash('Welcome to the family! Browse groups to join one.', 'success')
         
         return redirect(url_for('member_dashboard'))
     
@@ -523,6 +563,17 @@ def member_dashboard():
     
     members = supabase_get('members', {'id': f'eq.{member_id}'})
     member = members[0] if members else None
+    
+    # Check if member has a pending join request
+    if member:
+        pending_requests = supabase_get('group_join_requests', {
+            'email': f'eq.{member["email"]}',
+            'is_contacted': 'eq.false'
+        })
+        
+        if pending_requests and member.get('status') == 'pending':
+            flash('Your membership request is pending approval by the group leader.', 'warning')
+            return render_template('member-pending.html', member=member, pending_request=pending_requests[0])
     
     # Check if member is approved
     if member and member.get('status') != 'active':

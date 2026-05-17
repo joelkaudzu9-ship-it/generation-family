@@ -4887,13 +4887,66 @@ html {
     text-decoration: underline;
 }
 
-.pending-badge {
+.member-badge-link {
     display: inline-block;
-    background: rgba(255, 152, 0, 0.15);
-    color: #ff9800;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid #4caf50;
+    color: #4caf50;
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 0.8rem;
     font-weight: 500;
     width: 100%;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.member-badge-link:hover {
+    background: #4caf50;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pending-badge, .other-group-badge {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    cursor: default;
+}
+
+.pending-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+}
+
+.other-group-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+}
+
+.join-btn {
+    background: var(--gold);
+    color: var(--black);
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+}
+
+.join-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
 }

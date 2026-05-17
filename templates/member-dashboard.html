@@ -4,36 +4,51 @@
 {% block content %}
 
 {% if not group %}
+
 <section class="page-header">
     <div class="container">
-        <h1 class="page-title">No Group Yet</h1>
-        <p class="page-subtitle">You haven't joined a family group.</p>
+        <h1 class="page-title">Welcome, {{ session.get('member_name', 'Member') }}!</h1>
+        <p class="page-subtitle">You haven't joined a family group yet.</p>
         <a href="/family-groups" class="btn-gold">Browse Family Groups</a>
     </div>
 </section>
+
 {% else %}
 
-<section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
+<!-- Hero Section with Group Photo -->
+<section class="group-hero" {% if group.photo_url %}style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('{{ group.photo_url }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
-        <h1 class="page-title">{{ group.name }}</h1>
-        <p class="page-subtitle">{{ group.city }} • {{ group.meeting_time or 'Meeting time TBC' }} • Led by {{ group.leader or 'Group Leader' }}</p>
+        <div class="group-hero-content">
+            {% if not group.photo_url %}
+            <div class="group-hero-icon"><i class="fas fa-home fa-3x gold-text"></i></div>
+            {% endif %}
+            <h1>{{ group.name }}</h1>
+            <div class="group-hero-meta">
+                <span><i class="fas fa-map-marker-alt"></i> {{ group.city }}</span>
+                <span><i class="fas fa-clock"></i> {{ group.meeting_time or 'Meeting time TBC' }}</span>
+                <span><i class="fas fa-user"></i> Led by {{ group.leader or 'Group Leader' }}</span>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="group-content">
+<section class="dashboard-main">
     <div class="container">
-        <div class="content-grid">
-            <!-- Main Content - Posts & Announcements -->
-            <div class="main-content">
+        <div class="dashboard-grid">
+            <!-- Main Feed -->
+            <div class="dashboard-feed">
                 <!-- Announcements -->
                 {% if announcements %}
-                <div class="content-section announcements">
+                <div class="feed-section">
                     <h2><i class="fas fa-bullhorn gold-text"></i> Announcements</h2>
                     {% for announcement in announcements %}
-                    <div class="content-card announcement-card">
+                    <div class="feed-card announcement-card">
                         <div class="card-header">
-                            <h3>{{ announcement.title }}</h3>
-                            <span class="date">{{ announcement.created_at[:10] if announcement.created_at else '' }}</span>
+                            <div class="card-icon"><i class="fas fa-bullhorn"></i></div>
+                            <div class="card-title">
+                                <h3>{{ announcement.title }}</h3>
+                                <span class="card-date">{{ announcement.created_at[:16] if announcement.created_at else '' }}</span>
+                            </div>
                         </div>
                         <div class="card-body">
                             <p>{{ announcement.content }}</p>
@@ -43,15 +58,18 @@
                 </div>
                 {% endif %}
 
-                <!-- Posts / Articles -->
+                <!-- Posts -->
                 {% if posts %}
-                <div class="content-section posts">
+                <div class="feed-section">
                     <h2><i class="fas fa-newspaper gold-text"></i> Posts & Articles</h2>
                     {% for post in posts %}
-                    <div class="content-card post-card">
+                    <div class="feed-card post-card">
                         <div class="card-header">
-                            <h3>{{ post.title }}</h3>
-                            <span class="date">{{ post.created_at[:10] if post.created_at else '' }}</span>
+                            <div class="card-icon"><i class="fas fa-pen-fancy"></i></div>
+                            <div class="card-title">
+                                <h3>{{ post.title }}</h3>
+                                <span class="card-date">{{ post.created_at[:16] if post.created_at else '' }}</span>
+                            </div>
                         </div>
                         {% if post.image_url %}
                         <div class="card-image">
@@ -59,9 +77,9 @@
                         </div>
                         {% endif %}
                         <div class="card-body">
-                            <div class="content-text">{{ post.content|linebreaks|safe }}</div>
+                            <div class="post-content">{{ post.content|linebreaks|safe }}</div>
                             {% if post.author_name %}
-                            <p class="author">— {{ post.author_name }}</p>
+                            <p class="post-author">— {{ post.author_name }}</p>
                             {% endif %}
                         </div>
                     </div>
@@ -70,17 +88,36 @@
                 {% endif %}
 
                 {% if not announcements and not posts %}
-                <div class="empty-state">
+                <div class="empty-feed">
                     <i class="fas fa-inbox"></i>
                     <p>No posts or announcements yet. Check back soon!</p>
                 </div>
                 {% endif %}
             </div>
 
-            <!-- Sidebar - Gallery -->
-            <div class="sidebar">
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <!-- Group Info Card -->
+                <div class="sidebar-card group-info-card">
+                    <h3><i class="fas fa-info-circle gold-text"></i> About This Group</h3>
+                    <p>{{ group.description or 'A family group of The Generation Family, meeting regularly for prayer, fellowship, and growth.' }}</p>
+                    {% if group.meeting_location %}
+                    <div class="info-row">
+                        <i class="fas fa-location-dot gold-text"></i>
+                        <span>{{ group.meeting_location }}</span>
+                    </div>
+                    {% endif %}
+                    {% if group.leader_bio %}
+                    <div class="leader-bio">
+                        <strong>About {{ group.leader }}:</strong>
+                        <p>{{ group.leader_bio }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Card -->
                 {% if gallery %}
-                <div class="sidebar-section">
+                <div class="sidebar-card gallery-card">
                     <h3><i class="fas fa-images gold-text"></i> Gallery</h3>
                     <div class="gallery-grid">
                         {% for img in gallery %}
@@ -92,18 +129,12 @@
                 </div>
                 {% endif %}
 
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-info-circle gold-text"></i> About This Group</h3>
-                    <p>{{ group.description or 'A family group of The Generation Family, meeting regularly for prayer, fellowship, and growth.' }}</p>
-                </div>
-
-                {% if group.whatsapp_link %}
-                <div class="sidebar-section">
-                    <a href="{{ group.whatsapp_link }}" class="whatsapp-btn" target="_blank">
-                        <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+                <!-- Logout Card -->
+                <div class="sidebar-card logout-card">
+                    <a href="/member/logout" class="logout-btn-full">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
                     </a>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -112,78 +143,135 @@
 {% endif %}
 
 <style>
-.group-content {
+/* Group Hero */
+.group-hero {
+    padding: 80px 0;
+    background: var(--dark);
+    text-align: center;
+    border-bottom: 1px solid #222;
+}
+
+.group-hero-content h1 {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.group-hero-icon {
+    margin-bottom: 20px;
+}
+
+.group-hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.group-hero-meta i {
+    color: var(--gold);
+    margin-right: 6px;
+}
+
+/* Dashboard Layout */
+.dashboard-main {
     padding: 60px 0;
     background: var(--black);
 }
 
-.content-grid {
+.dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 320px;
     gap: 40px;
 }
 
-.content-section {
+/* Feed Section */
+.feed-section {
     margin-bottom: 48px;
 }
 
-.content-section h2 {
-    color: var(--gold);
+.feed-section h2 {
     font-size: 1.3rem;
+    color: var(--gold);
     margin-bottom: 24px;
     padding-bottom: 12px;
     border-bottom: 1px solid #222;
 }
 
-.content-card {
+.feed-card {
     background: var(--dark);
     border: 1px solid #222;
     border-radius: 16px;
     margin-bottom: 24px;
     overflow: hidden;
+    transition: all 0.3s;
+}
+
+.feed-card:hover {
+    border-color: var(--gold);
 }
 
 .card-header {
     display: flex;
-    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--darker);
+    border-bottom: 1px solid #222;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 20px 24px 0 24px;
-}
-
-.card-header h3 {
+    justify-content: center;
+    color: var(--gold);
     font-size: 1.1rem;
-    margin: 0;
-    color: var(--white);
 }
 
-.date {
-    font-size: 0.75rem;
+.card-title {
+    flex: 1;
+}
+
+.card-title h3 {
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+}
+
+.card-date {
+    font-size: 0.7rem;
     color: #555;
 }
 
 .card-image {
-    margin-top: 16px;
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
 }
 
 .card-image img {
     width: 100%;
-    max-height: 400px;
+    height: 100%;
     object-fit: cover;
 }
 
 .card-body {
-    padding: 20px 24px 24px 24px;
+    padding: 20px 24px;
 }
 
 .card-body p {
     color: var(--gray-light);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.7;
+    margin: 0;
 }
 
-.author {
+.post-author {
     margin-top: 16px;
     color: var(--gold);
     font-size: 0.85rem;
@@ -191,36 +279,71 @@
 }
 
 /* Sidebar */
-.sidebar-section {
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-card {
     background: var(--dark);
     border: 1px solid #222;
     border-radius: 16px;
     padding: 24px;
-    margin-bottom: 24px;
 }
 
-.sidebar-section h3 {
+.sidebar-card h3 {
     color: var(--gold);
     font-size: 1rem;
     margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #222;
 }
 
-.sidebar-section p {
+.sidebar-card p {
     color: var(--gray);
     font-size: 0.85rem;
     line-height: 1.6;
+    margin-bottom: 16px;
 }
 
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: var(--gray-light);
+}
+
+.leader-bio {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #222;
+}
+
+.leader-bio strong {
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.leader-bio p {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+/* Gallery */
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 10px;
 }
 
 .gallery-item {
     display: block;
-    overflow: hidden;
     border-radius: 8px;
+    overflow: hidden;
     aspect-ratio: 1/1;
 }
 
@@ -235,45 +358,70 @@
     transform: scale(1.05);
 }
 
-.whatsapp-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: #25D366;
-    color: white;
+/* Logout Button */
+.logout-btn-full {
+    display: block;
+    text-align: center;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
     padding: 12px;
-    border-radius: 40px;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
-.whatsapp-btn:hover {
-    background: #128C7E;
+.logout-btn-full:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
 }
 
-.empty-state {
+/* Empty Feed */
+.empty-feed {
     text-align: center;
     padding: 60px 20px;
     background: var(--dark);
     border-radius: 16px;
 }
 
-.empty-state i {
+.empty-feed i {
     font-size: 3rem;
     color: #555;
     margin-bottom: 16px;
 }
 
+.empty-feed p {
+    color: var(--gray);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .content-grid {
+    .dashboard-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .group-hero-meta {
+        flex-direction: column;
+        gap: 8px;
     }
     
     .card-header {
         flex-direction: column;
-        align-items: flex-start;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .group-hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 </style>

@@ -20,8 +20,18 @@
         <div class="fg-grid">
             {% for group in groups %}
             <div class="fg-card">
+                {% if group.photo_url %}
+                <div class="fg-card-image">
+                    <img src="{{ group.photo_url }}" alt="{{ group.name }}">
+                    <div class="fg-card-overlay">
+                        <h3>{{ group.name }}</h3>
+                    </div>
+                </div>
+                {% else %}
                 <div class="fg-card-icon"><i class="fas fa-home"></i></div>
                 <h3>{{ group.name }}</h3>
+                {% endif %}
+                
                 <div class="fg-details">
                     {% if group.city %}<p><i class="fas fa-map-marker-alt gold-text"></i> {{ group.city }}</p>{% endif %}
                     {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
@@ -32,22 +42,27 @@
                 {% if session.get('member_id') %}
                     {% set current_member = current_member if current_member else None %}
                     
-                    {# Check if user has pending join request for this group #}
                     {% set has_pending = false %}
                     {% if pending_requests and group.id in pending_requests %}
                         {% set has_pending = true %}
                     {% endif %}
                     
                     {% if current_member and current_member.group_id == group.id %}
-                        <span class="member-badge"><i class="fas fa-check-circle"></i> Your Group</span>
+                        <a href="/member/dashboard" class="member-badge-link">
+                            <i class="fas fa-check-circle"></i> Your Group → Go to Dashboard
+                        </a>
                     {% elif has_pending %}
-                        <span class="pending-badge"><i class="fas fa-clock"></i> Pending Approval</span>
+                        <div class="pending-badge">
+                            <i class="fas fa-clock"></i> Request Sent - Pending Approval
+                        </div>
                     {% elif current_member and current_member.group_id %}
-                        <span class="other-group-badge">Already in another group</span>
+                        <div class="other-group-badge">
+                            Already in another group
+                        </div>
                     {% else %}
-                        <form method="POST" action="/family-groups/{{ group.id }}/request-join">
-                                            <button type="submit" class="join-btn">Request to Join</button>
-                                        </form>
+                        <form method="POST" action="/family-groups/{{ group.id }}/request-join" style="width:100%;">
+                            <button type="submit" class="join-btn">Request to Join</button>
+                        </form>
                     {% endif %}
                 {% else %}
                     <a href="/member/signup?group_id={{ group.id }}" class="join-btn">Join This Group</a>
@@ -102,12 +117,12 @@
     background: var(--dark);
     border: 1px solid #222;
     border-radius: 20px;
-    padding: 32px 24px;
-    text-align: center;
+    overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
 .fg-card:hover {
@@ -116,9 +131,50 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
 
+.fg-card-image {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.fg-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.fg-card:hover .fg-card-image img {
+    transform: scale(1.05);
+}
+
+.fg-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 16px;
+    text-align: center;
+}
+
+.fg-card-overlay .fg-card-icon {
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+
+.fg-card-overlay h3 {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--white);
+}
+
 .fg-card-icon {
     font-size: 2.5rem;
     color: var(--gold);
+    margin-top: 32px;
     margin-bottom: 16px;
 }
 
@@ -127,11 +183,13 @@
     margin-bottom: 16px;
     color: var(--white);
     font-weight: 600;
+    padding: 0 20px;
 }
 
 .fg-details {
     margin-bottom: 20px;
     width: 100%;
+    padding: 0 20px;
 }
 
 .fg-details p {
@@ -144,52 +202,68 @@
     gap: 6px;
 }
 
-.fg-details i {
-    width: 16px;
-    font-size: 0.75rem;
+.member-badge-link, .pending-badge, .other-group-badge, .join-btn {
+    margin: 0 20px 20px 20px;
+    width: calc(100% - 40px);
 }
 
-.join-btn {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--black);
-    padding: 10px 20px;
-    border-radius: 40px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100%;
-    text-align: center;
-}
-
-.join-btn:hover {
-    background: var(--gold-light);
-    transform: translateY(-2px);
-}
-
-.member-badge {
+.member-badge-link {
     display: inline-block;
     background: rgba(76, 175, 80, 0.15);
+    border: 1px solid #4caf50;
     color: #4caf50;
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 0.8rem;
     font-weight: 500;
-    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
 }
 
-.other-group-badge {
-    display: inline-block;
+.member-badge-link:hover {
+    background: #4caf50;
+    color: white;
+}
+
+.pending-badge {
     background: rgba(255, 152, 0, 0.15);
     color: #ff9800;
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 0.8rem;
     font-weight: 500;
-    width: 100%;
+    text-align: center;
+}
+
+.other-group-badge {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.join-btn {
+    background: var(--gold);
+    color: var(--black);
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+}
+
+.join-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
 }
 
 .fg-cta {
@@ -218,7 +292,6 @@
     flex-wrap: wrap;
 }
 
-/* Responsive */
 @media (max-width: 1024px) {
     .fg-grid {
         grid-template-columns: repeat(2, 1fr);

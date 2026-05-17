@@ -192,6 +192,15 @@ def delete_prayer_rhythm(id):
 def manage_family_groups():
     message = None
     if request.method == 'POST':
+        photo_url = ''
+        photo_file = request.files.get('photo')
+        if photo_file and photo_file.filename:
+            try:
+                result = upload_image(photo_file, folder='generation/family-groups')
+                photo_url = result['url']
+            except Exception as e:
+                flash(f'Photo upload failed: {str(e)}', 'error')
+        
         supabase_insert('family_groups', {
             'name': request.form.get('name'),
             'city': request.form.get('city'),
@@ -199,13 +208,13 @@ def manage_family_groups():
             'meeting_time': request.form.get('meeting_time'),
             'description': request.form.get('description'),
             'contact_email': request.form.get('contact_email'),
-            'whatsapp_link': request.form.get('whatsapp_link'),
             'meeting_location': request.form.get('meeting_location'),
             'location_map_url': request.form.get('location_map_url'),
             'what_to_expect': request.form.get('what_to_expect'),
             'leader_bio': request.form.get('leader_bio'),
             'leader_phone': request.form.get('leader_phone'),
-            'leader_user_id': request.form.get('leader_user_id') or None
+            'leader_user_id': request.form.get('leader_user_id') or None,
+            'photo_url': photo_url
         })
         flash('Family group added!', 'success')
         return redirect(url_for('admin.manage_family_groups'))
@@ -256,6 +265,32 @@ def manage_marketplace():
     
     items = supabase_get('marketplace_items', {'order': 'created_at.desc'})
     return render_template('admin/marketplace-manage.html', items=items)
+
+# ==================== GROUP PHOTO ====================
+
+# ==================== GROUP PHOTO ====================
+
+@admin_bp.route('/family-groups/<int:group_id>/upload-photo', methods=['POST'])
+@login_required
+def upload_group_photo(group_id):
+    photo = request.files.get('photo')
+    if photo and photo.filename:
+        try:
+            result = upload_image(photo, folder=f'generation/groups/{group_id}')
+            supabase_update('family_groups', group_id, {'photo_url': result['url']})
+            flash('Group photo uploaded!', 'success')
+        except Exception as e:
+            flash(f'Upload failed: {str(e)}', 'error')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+
+@admin_bp.route('/family-groups/<int:group_id>/remove-photo', methods=['POST'])
+@login_required
+def remove_group_photo(group_id):
+    supabase_update('family_groups', group_id, {'photo_url': None})
+    flash('Group photo removed.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
 
 @admin_bp.route('/marketplace/<int:id>/edit')
 @login_required
@@ -1078,15 +1113,25 @@ def manage_single_group(group_id):
     
     announcements = supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
     members = supabase_get('members', {'group_id': f'eq.{group_id}', 'is_active': 'eq.true'})
+    
+    # FIX: Get join requests - make sure we're getting all pending requests
     join_requests = supabase_get('group_join_requests', {'group_id': f'eq.{group_id}', 'is_contacted': 'eq.false', 'order': 'created_at.desc'})
+    
+    # Debug: Print to console
+    print(f"Group {group_id} - Join requests found: {len(join_requests)}")
+    for req in join_requests:
+        print(f"  Request: {req.get('name')} - {req.get('email')}")
+    
     gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
+    posts = supabase_get('group_posts', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '20'})
     
     return render_template('admin/group-manage.html', 
                          group=group,
                          announcements=announcements,
                          members=members,
                          join_requests=join_requests,
-                         gallery=gallery)
+                         gallery=gallery,
+                         posts=posts)
     
     
 # ==================== GROUP POSTS ====================
@@ -1163,12 +1208,12 @@ def approve_join_request(group_id, req_id):
     join_req = supabase_get_one('group_join_requests', req_id)
     
     if join_req:
-        # Check if member already exists
+        # Check if member already exists by email
         existing = supabase_get('members', {'email': f'eq.{join_req.get("email")}'})
         
         if existing:
             member_id = existing[0]['id']
-            # Update to active
+            # Update existing member - add to group and activate
             supabase_update('members', member_id, {
                 'status': 'active',
                 'is_active': True,
@@ -1176,7 +1221,7 @@ def approve_join_request(group_id, req_id):
                 'group_id': group_id
             })
         else:
-            # Create new member
+            # Create new member from join request
             result = supabase_insert('members', {
                 'full_name': join_req.get('name'),
                 'email': join_req.get('email'),
@@ -1192,7 +1237,7 @@ def approve_join_request(group_id, req_id):
         # Mark request as contacted/approved
         supabase_update('group_join_requests', req_id, {'is_contacted': True})
         
-        flash('Member approved! They can now log in.', 'success')
+        flash(f'{join_req.get("name")} has been approved and added to the group!', 'success')
     
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 

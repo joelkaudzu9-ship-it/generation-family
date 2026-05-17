@@ -1,237 +1,93 @@
 {% extends "admin/base_admin.html" %}
-{% block title %}Manage {{ group.name }}{% endblock %}
+{% block title %}Family Groups — TGF Admin{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
+    <div class="admin-nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/family-groups" class="active">Family Groups</a>
+        <a href="/">View Site</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+    </div>
+</nav>
+{% endblock %}
 
 {% block content %}
+<h1>Add Family Group</h1>
 
-<h1>{{ group.name }} — Group Management</h1>
-
-<!-- Join Requests Section -->
-<div class="dashboard-section">
-    <h2><i class="fas fa-user-plus"></i> Join Requests ({{ join_requests|length }})</h2>
-    {% if join_requests %}
-    <div class="admin-table-wrapper">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Message</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for req in join_requests %}
-                <tr>
-                    <td><strong>{{ req.name }}</strong></td>
-                    <td>{{ req.email }}</td>
-                    <td>{{ req.phone or '—' }}</td>
-                    <td>{{ req.message[:50] if req.message else '—' }}</td>
-                    <td class="actions-cell">
-                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/approve" style="display:inline;">
-                            <button type="submit" class="btn-edit" style="background:#4caf50; border-color:#4caf50; color:white;">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                        </form>
-                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/reject" style="display:inline;">
-                            <button type="submit" class="btn-delete">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<form method="POST" class="admin-form">
+    <div class="form-row">
+        <div class="form-group"><label>Group Name *</label><input type="text" name="name" required></div>
+        <div class="form-group"><label>City</label><input type="text" name="city"></div>
     </div>
-    {% else %}
-    <p class="empty-state">No pending join requests.</p>
-    {% endif %}
-</div>
-
-<!-- Members Section -->
-<div class="dashboard-section">
-    <h2><i class="fas fa-users"></i> Members ({{ members|length }})</h2>
-    {% if members %}
-    <div class="admin-grid">
-        {% for m in members %}
-        <div class="admin-card-small">
-            {% if m.photo_url %}
-                <img src="{{ m.photo_url }}" class="admin-thumb">
-            {% else %}
-                <div class="admin-thumb-placeholder"><i class="fas fa-user"></i></div>
-            {% endif %}
-            <h4>{{ m.full_name }}</h4>
-            <p style="font-size:0.7rem; color:#555;">{{ m.email }}</p>
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/member/{{ m.id }}/remove" style="margin-top:10px;">
-                <button type="submit" class="btn-delete small">Remove</button>
-            </form>
-        </div>
-        {% endfor %}
+    <div class="form-row">
+        <div class="form-group"><label>Leader Name</label><input type="text" name="leader"></div>
+        <div class="form-group"><label>Meeting Time</label><input type="text" name="meeting_time" placeholder="e.g. Tuesdays 6PM"></div>
     </div>
-    {% else %}
-    <p class="empty-state">No members yet.</p>
-    {% endif %}
-</div>
-
-<!-- Posts Section -->
-<div class="dashboard-section">
-    <h2><i class="fas fa-newspaper"></i> Posts</h2>
-    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="admin-form">
-        <div class="form-group">
-            <label>Title</label>
-            <input type="text" name="title" required>
-        </div>
-        <div class="form-group">
-            <label>Content</label>
-            <textarea name="content" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-            <label>Image (optional)</label>
-            <input type="file" name="image" accept="image/*">
-        </div>
-        <button type="submit" class="btn-save">Publish Post</button>
-    </form>
-    
-    {% if posts %}
-    <div style="margin-top:20px;">
-        {% for post in posts %}
-        <div class="post-item">
-            <strong>{{ post.title }}</strong>
-            <span style="color:#555; font-size:0.7rem;">{{ post.created_at[:10] if post.created_at else '' }}</span>
-            <p>{{ post.content[:100] }}{% if post.content and post.content|length > 100 %}...{% endif %}</p>
-            {% if post.image_url %}
-            <img src="{{ post.image_url }}" style="max-width:100px; border-radius:8px;">
-            {% endif %}
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/post/{{ post.id }}/delete" style="margin-top:8px;">
-                <button type="submit" class="btn-delete small">Delete</button>
-            </form>
-        </div>
-        {% endfor %}
+    <div class="form-group"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+    <div class="form-row">
+        <div class="form-group"><label>Meeting Location</label><input type="text" name="meeting_location"></div>
+        <div class="form-group"><label>Map URL (optional)</label><input type="url" name="location_map_url" placeholder="Google Maps link"></div>
     </div>
-    {% endif %}
-</div>
-
-<!-- Gallery Section -->
-<div class="dashboard-section">
-    <h2><i class="fas fa-images"></i> Gallery</h2>
-    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/gallery" class="admin-form">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Photo</label>
-                <input type="file" name="photo" accept="image/*" required>
-            </div>
-            <div class="form-group">
-                <label>Caption</label>
-                <input type="text" name="caption">
-            </div>
-        </div>
-        <button type="submit" class="btn-save">Upload Photo</button>
-    </form>
-    
-    {% if gallery %}
-    <div class="gallery-grid" style="margin-top:20px;">
-        {% for img in gallery %}
-        <div class="gallery-item">
-            <img src="{{ img.image_url }}" alt="{{ img.caption or 'Group photo' }}">
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete">
-                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
-            </form>
-        </div>
-        {% endfor %}
+    <div class="form-group"><label>What to Expect</label><textarea name="what_to_expect" rows="2"></textarea></div>
+    <div class="form-row">
+        <div class="form-group"><label>Leader Phone</label><input type="text" name="leader_phone"></div>
     </div>
-    {% endif %}
+    <div class="form-group"><label>Leader Bio</label><textarea name="leader_bio" rows="2"></textarea></div>
+    <div class="form-group">
+        <label>Assign to Admin User (for dashboard access)</label>
+        <select name="leader_user_id">
+            <option value="">— None —</option>
+            {% for u in users %}
+            <option value="{{ u.id }}">{{ u.display_name }} ({{ u.username }})</option>
+            {% endfor %}
+        </select>
+        <span class="form-hint">This user will be able to manage this group from their dashboard.</span>
+    </div>
+    <div class="form-group">
+        <label>Group Photo</label>
+        <input type="file" name="photo" accept="image/*">
+        <span class="form-hint">Recommended: 400x400px square image</span>
+    </div>
+    <div class="form-group"><label>Contact Email</label><input type="email" name="contact_email"></div>
+    <button type="submit" class="btn-save">Add Group</button>
+</form>
+
+<hr class="admin-divider">
+
+<h2>Current Groups</h2>
+{% if groups %}
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>Leader</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in groups %}
+            <tr>
+                <td><strong>{{ g.name }}</strong></td>
+                <td>{{ g.city or '—' }}</td>
+                <td>{{ g.leader or '—' }}</td>
+                <td>{% if g.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
+                <td class="actions-cell">
+                    <a href="/admin/family-groups/{{ g.id }}/manage" class="btn-edit"><i class="fas fa-cog"></i> Manage</a>
+                    <form method="POST" action="/admin/family-groups/{{ g.id }}/delete" class="delete-form" data-name="{{ g.name }}" style="display:inline;">
+                        <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
-<style>
-.dashboard-section {
-    background: var(--darker);
-    border: 1px solid #222;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.dashboard-section h2 {
-    color: var(--gold);
-    font-size: 1rem;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #222;
-}
-
-.admin-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
-}
-
-.admin-card-small {
-    background: var(--dark);
-    border: 1px solid #222;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-}
-
-.admin-thumb {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.admin-thumb-placeholder {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 10px;
-    font-size: 2rem;
-    color: #555;
-}
-
-.post-item {
-    background: var(--dark);
-    border: 1px solid #222;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-}
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-}
-
-.gallery-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    aspect-ratio: 1/1;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.gallery-item form {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-}
-
-.btn-delete.small {
-    padding: 4px 8px;
-    font-size: 0.7rem;
-}
-</style>
-
+{% else %}
+<p class="empty-state">No family groups yet.</p>
+{% endif %}
 {% endblock %}

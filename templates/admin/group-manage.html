@@ -21,6 +21,43 @@
     <p class="group-stats">{{ members|length }} members · {{ join_requests|length }} pending requests</p>
 </div>
 
+<!-- ==================== GROUP PHOTO SECTION ==================== -->
+<section class="admin-card-section">
+    <div class="section-header">
+        <h2><i class="fas fa-image gold-text"></i> Group Photo</h2>
+    </div>
+    
+    <div class="group-photo-section">
+        {% if group.photo_url %}
+        <div class="current-photo">
+            <img src="{{ group.photo_url }}" alt="{{ group.name }}" class="group-photo-preview">
+            <form method="POST" action="/admin/family-groups/{{ group.id }}/remove-photo" style="display:inline;">
+                <button type="submit" class="btn-delete small" onclick="return confirm('Remove this group photo?')">
+                    <i class="fas fa-trash"></i> Remove Photo
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="no-photo">
+            <i class="fas fa-camera"></i>
+            <p>No group photo yet. Upload a square image (400x400px recommended).</p>
+        </div>
+        {% endif %}
+        
+        <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/upload-photo" class="inline-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="file" name="photo" accept="image/*" required>
+                    <span class="form-hint">JPG, PNG, GIF - Max 2MB</span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-save"><i class="fas fa-upload"></i> Upload Photo</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
 <!-- ==================== JOIN REQUESTS SECTION ==================== -->
 <section class="admin-card-section">
     <div class="section-header">
@@ -289,6 +326,42 @@
 .btn-toggle-form:hover {
     background: var(--gold);
     color: var(--black);
+}
+
+/* Group Photo Section */
+.group-photo-section {
+    text-align: center;
+}
+
+.current-photo {
+    margin-bottom: 20px;
+}
+
+.group-photo-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin-bottom: 10px;
+}
+
+.no-photo {
+    padding: 30px;
+    background: var(--darker);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.no-photo i {
+    font-size: 2.5rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.btn-delete.small {
+    padding: 4px 12px;
+    font-size: 0.7rem;
 }
 
 /* Requests List */
@@ -591,6 +664,13 @@
     color: var(--white);
 }
 
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
 .form-actions {
     display: flex;
     gap: 12px;
@@ -642,6 +722,10 @@
     
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }
 
