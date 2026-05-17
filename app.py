@@ -17,6 +17,9 @@ from supabase_client import (
     get_group_announcements,
     get_group_members,
     get_group_gallery,
+    get_story_sections,
+    get_giving_info,
+    get_faqs,
     supabase_insert,
     supabase_get
 )
