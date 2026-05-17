@@ -1159,30 +1159,41 @@ def mark_join_contacted(group_id, req_id):
 @admin_bp.route('/family-groups/<int:group_id>/join-request/<int:req_id>/approve', methods=['POST'])
 @login_required
 def approve_join_request(group_id, req_id):
+    # Get the join request
     join_req = supabase_get_one('group_join_requests', req_id)
+    
     if join_req:
-        # Instead of member_groups, update the members table directly
-        # Find the member by email or create one
-        existing_members = supabase_get('members', {'email': f'eq.{join_req.get("email")}'})
+        # Check if member already exists
+        existing = supabase_get('members', {'email': f'eq.{join_req.get("email")}'})
         
-        if existing_members:
-            # Update existing member's group
-            supabase_update('members', existing_members[0]['id'], {'group_id': group_id})
+        if existing:
+            member_id = existing[0]['id']
+            # Update to active
+            supabase_update('members', member_id, {
+                'status': 'active',
+                'is_active': True,
+                'approved_at': 'now()',
+                'group_id': group_id
+            })
         else:
-            # Create new member from join request
-            supabase_insert('members', {
+            # Create new member
+            result = supabase_insert('members', {
                 'full_name': join_req.get('name'),
                 'email': join_req.get('email'),
                 'phone': join_req.get('phone', ''),
-                'password': '',  # They need to set password separately
+                'password': '',  # They'll need to set password via reset
                 'group_id': group_id,
-                'is_active': True
+                'status': 'active',
+                'is_active': True,
+                'approved_at': 'now()'
             })
+            member_id = result[0]['id']
         
-        # Mark request as contacted
+        # Mark request as contacted/approved
         supabase_update('group_join_requests', req_id, {'is_contacted': True})
         
-        flash('Member approved and added to group!', 'success')
+        flash('Member approved! They can now log in.', 'success')
+    
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
 # ==================== GROUP GALLERY ====================

@@ -395,21 +395,22 @@ def member_signup():
                 groups = get_family_groups()
                 return render_template('member-signup.html', groups=groups, error='Email already registered.')
         
-        # Insert member with group_id
+        # Insert member with PENDING status (NOT active yet)
         result = supabase_insert('members', {
             'full_name': full_name,
             'email': email,
             'phone': phone,
             'password': password,
-            'group_id': int(group_id) if group_id else None
+            'group_id': int(group_id) if group_id else None,
+            'status': 'pending',  # ← PENDING, not active
+            'is_active': False     # ← Not active until approved
         })
         
         member_id = result[0]['id']
         
-        session['member_id'] = member_id
-        session['member_name'] = full_name
-        flash('Welcome to the family!', 'success')
-        return redirect(url_for('member_dashboard'))
+        # Don't log them in yet - they need approval
+        flash('Account created! The group leader will review and approve your membership.', 'info')
+        return redirect(url_for('member_login'))
     
     groups = get_family_groups()
     return render_template('member-signup.html', groups=groups)
@@ -448,8 +449,13 @@ def member_dashboard():
     
     member_id = session['member_id']
     
-    members = supabase_get('members', {'id': f'eq.{member_id}', 'is_active': 'eq.true'})
+    members = supabase_get('members', {'id': f'eq.{member_id}'})
     member = members[0] if members else None
+    
+    # Check if member is approved
+    if member and member.get('status') != 'active':
+        flash('Your membership is pending approval by the group leader.', 'warning')
+        return render_template('member-pending.html', member=member)
     
     group = None
     announcements = []

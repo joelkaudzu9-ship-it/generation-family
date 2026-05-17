@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Membership Pending — The Generation Family{% endblock %}
+
+{% block content %}
+
+<section class="pending-section">
+    <div class="container">
+        <div class="pending-card">
+            <i class="fas fa-clock"></i>
+            <h1>Membership Pending Approval</h1>
+            <p>Thank you for joining <strong>{{ member.full_name }}</strong>!</p>
+            <p>The group leader has been notified and will review your membership request.</p>
+            <p>You'll receive an email once your membership is approved.</p>
+            <div class="pending-details">
+                <p><i class="fas fa-envelope"></i> {{ member.email }}</p>
+                <p><i class="fas fa-users"></i> Group ID: {{ member.group_id }}</p>
+            </div>
+            <a href="/member/logout" class="btn-gold">Logout</a>
+        </div>
+    </div>
+</section>
+
+<style>
+.pending-section {
+    padding: 100px 0;
+    background: var(--black);
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.pending-card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 48px 32px;
+    text-align: center;
+}
+
+.pending-card i {
+    font-size: 3rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+}
+
+.pending-card h1 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--white);
+}
+
+.pending-card p {
+    color: var(--gray);
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.pending-details {
+    background: var(--darker);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.pending-details p {
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.pending-details i {
+    font-size: 0.85rem;
+    margin-right: 8px;
+    margin-bottom: 0;
+}
+</style>
+
+{% endblock %}
