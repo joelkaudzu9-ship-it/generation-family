@@ -1,37 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Member Login{% endblock %}
+{% block title %}Login — The Generation Family{% endblock %}
 
 {% block content %}
 
 <section class="page-header">
     <div class="container">
-        <h1 class="page-title">Welcome Back</h1>
-        <p class="page-subtitle">Login to see your groups and updates</p>
+        <h1 class="page-title">Login</h1>
+        <p class="page-subtitle">Welcome back to The Generation Family</p>
     </div>
 </section>
 
-<section style="padding:60px 0;background:var(--black);">
-    <div class="container" style="max-width:400px;">
-        {% if error %}
-        <div style="background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:14px;border-radius:10px;margin-bottom:20px;">{{ error }}</div>
-        {% endif %}
-        
-        <form method="POST" style="background:var(--darker);border:1px solid #222;border-radius:16px;padding:32px;">
-            <div style="margin-bottom:16px;">
-                <label style="color:#ccc;font-size:0.85rem;">Email</label>
-                <input type="email" name="email" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-box">
+            {% if error %}
+            <div class="auth-error" style="background:rgba(231,76,60,0.1); border:1px solid rgba(231,76,60,0.3); color:#e74c3c; padding:12px; border-radius:10px; margin-bottom:20px; font-size:0.85rem;">
+                {{ error }}
             </div>
-            <div style="margin-bottom:24px;">
-                <label style="color:#ccc;font-size:0.85rem;">Password</label>
-                <input type="password" name="password" required style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#fff;border-radius:10px;margin-top:4px;">
-            </div>
-            <button type="submit" class="btn-gold" style="width:100%;">Login</button>
-        </form>
-        
-        <p style="text-align:center;margin-top:20px;color:var(--gray);">
-            Don't have an account? <a href="/member/signup" style="color:var(--gold);">Sign Up</a>
-        </p>
+            {% endif %}
+            
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-gold" style="width:100%;">Login</button>
+            </form>
+            
+            <p class="auth-redirect">
+                Don't have an account? <a href="/member/signup{% if request.args.get('redirect') %}?redirect={{ request.args.get('redirect') }}{% endif %}">Create one here</a>
+            </p>
+        </div>
     </div>
 </section>
+
+<style>
+    .auth-section {
+        padding: 60px 0;
+        background: var(--black);
+    }
+    
+    .auth-box {
+        max-width: 500px;
+        margin: 0 auto;
+        background: var(--dark);
+        border: 1px solid #222;
+        border-radius: 20px;
+        padding: 40px;
+    }
+    
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .auth-redirect {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--gray);
+        font-size: 0.85rem;
+    }
+    
+    .auth-redirect a {
+        color: var(--gold);
+        text-decoration: none;
+    }
+</style>
 
 {% endblock %}

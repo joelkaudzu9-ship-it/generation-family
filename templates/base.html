@@ -100,19 +100,7 @@
                 <a href="/testimonials">Testimonies</a>
                 <a href="/giving">Give</a>
                 <a href="/contact">Contact</a>
-            </nav>
-            
-            <!-- DESKTOP AUTH SECTION (Login/Register) -->
-            <div class="desktop-auth">
-                {% if not session.get('user_logged_in') %}
-                <a href="/member/login" class="auth-link">Log in</a>
-                <a href="/member/signup" class="auth-join">Join</a>
-                {% else %}
-                <span class="auth-user"><i class="fas fa-user-circle"></i> {{ session.get('user_name', 'Member') }}</span>
-                <a href="/member/logout" class="auth-logout">Logout</a>
-                {% endif %}
-            </div>
-            
+            </nav>           
             <!-- HAMBURGER (Mobile Only) -->
             <div class="header-actions">
                 <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -157,26 +145,6 @@
             <a href="/giving">Give</a>
             <a href="/contact">Contact</a>
             
-            <!-- Mobile Auth Section -->
-            {% if not session.get('user_logged_in') %}
-            <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
-                <a href="/member/login" style="display: block; padding: 12px 0; color: var(--gray-light);">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-                <a href="/member/signup" style="display: block; padding: 12px 0; color: var(--gold);">
-                    <i class="fas fa-user-plus"></i> Register
-                </a>
-            </div>
-            {% else %}
-            <div class="mobile-auth-section" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #222;">
-                <div style="padding: 12px 0; color: var(--gold);">
-                    <i class="fas fa-user-circle"></i> {{ session.get('user_name', 'Member') }}
-                </div>
-                <a href="/member/logout" style="display: block; padding: 12px 0; color: #e74c3c;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-            </div>
-            {% endif %}
         </div>
     </div>
 
