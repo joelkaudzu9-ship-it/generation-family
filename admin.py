@@ -1077,7 +1077,7 @@ def manage_single_group(group_id):
         return redirect(url_for('admin.dashboard'))
     
     announcements = supabase_get('group_announcements', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
-    members = supabase_get('group_members', {'group_id': f'eq.{group_id}', 'is_visible': 'eq.true'})
+    members = supabase_get('members', {'group_id': f'eq.{group_id}', 'is_active': 'eq.true'})
     join_requests = supabase_get('group_join_requests', {'group_id': f'eq.{group_id}', 'is_contacted': 'eq.false', 'order': 'created_at.desc'})
     gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
     
@@ -1146,35 +1146,7 @@ def delete_group_announcement(group_id, ann_id):
     flash('Announcement removed.', 'success')
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
-# ==================== GROUP MEMBERS ====================
-@admin_bp.route('/family-groups/<int:group_id>/member', methods=['POST'])
-@role_required('admin')
-def add_group_member(group_id):
-    name = request.form.get('name')
-    photo = request.files.get('photo')
-    photo_url = ''
-    if photo and photo.filename:
-        try:
-            result = upload_image(photo, folder=f'generation/groups/{group_id}/members')
-            photo_url = result['url']
-        except Exception:
-            pass
-    
-    if name:
-        supabase_insert('group_members', {
-            'group_id': group_id,
-            'name': name,
-            'photo_url': photo_url
-        })
-        flash('Member added!', 'success')
-    return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
-@admin_bp.route('/family-groups/<int:group_id>/member/<int:member_id>/delete', methods=['POST'])
-@role_required('admin')
-def delete_group_member(group_id, member_id):
-    supabase_delete('group_members', member_id)
-    flash('Member removed.', 'success')
-    return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
 # ==================== JOIN REQUESTS ====================
 @admin_bp.route('/family-groups/<int:group_id>/join-request/<int:req_id>/contacted', methods=['POST'])
@@ -1189,22 +1161,28 @@ def mark_join_contacted(group_id, req_id):
 def approve_join_request(group_id, req_id):
     join_req = supabase_get_one('group_join_requests', req_id)
     if join_req:
-        # Add to member_groups
-        supabase_insert('member_groups', {
-            'member_id': join_req.get('member_id', 0),
-            'group_id': group_id
-        })
-        # Mark as contacted
+        # Instead of member_groups, update the members table directly
+        # Find the member by email or create one
+        existing_members = supabase_get('members', {'email': f'eq.{join_req.get("email")}'})
+        
+        if existing_members:
+            # Update existing member's group
+            supabase_update('members', existing_members[0]['id'], {'group_id': group_id})
+        else:
+            # Create new member from join request
+            supabase_insert('members', {
+                'full_name': join_req.get('name'),
+                'email': join_req.get('email'),
+                'phone': join_req.get('phone', ''),
+                'password': '',  # They need to set password separately
+                'group_id': group_id,
+                'is_active': True
+            })
+        
+        # Mark request as contacted
         supabase_update('group_join_requests', req_id, {'is_contacted': True})
         
-        # Send approval email
-        try:
-            from brevo_client import send_group_approval_email
-            send_group_approval_email(join_req.get('email'), join_req.get('name'), supabase_get_one('family_groups', group_id)['name'])
-        except Exception:
-            pass
-        
-        flash('Member approved!', 'success')
+        flash('Member approved and added to group!', 'success')
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
 # ==================== GROUP GALLERY ====================

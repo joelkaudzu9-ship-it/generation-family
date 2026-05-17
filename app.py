@@ -369,13 +369,8 @@ def family_group_detail(group_id):
     posts = supabase_get('group_posts', {'group_id': f'eq.{group_id}', 'order': 'created_at.desc', 'limit': '10'})
     gallery = supabase_get('group_gallery', {'group_id': f'eq.{group_id}', 'order': 'uploaded_at.desc', 'limit': '12'})
     
-    # Get members through the new member_groups + members tables
-    member_links = supabase_get('member_groups', {'group_id': f'eq.{group_id}'})
-    members = []
-    for link in member_links:
-        member_result = supabase_get('members', {'id': f'eq.{link["member_id"]}', 'is_active': 'eq.true'})
-        if member_result:
-            members.append(member_result[0])
+    # Get members directly from members table (one-to-one)
+    members = supabase_get('members', {'group_id': f'eq.{group_id}', 'is_active': 'eq.true'})
     
     return render_template('family-group-detail.html',
                          group=group,
