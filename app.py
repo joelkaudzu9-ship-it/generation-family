@@ -353,6 +353,48 @@ def submit_join_request(group_id):
         flash('Join request sent! The group leader will contact you.', 'success')
     return redirect(url_for('family_groups'))
 
+@app.route('/family-groups/<int:group_id>/request-join', methods=['POST'])
+@login_required
+def request_join_group(group_id):
+    member_id = session['member_id']
+    
+    # Get member details
+    members = supabase_get('members', {'id': f'eq.{member_id}'})
+    member = members[0] if members else None
+    
+    if not member:
+        flash('Member not found.', 'error')
+        return redirect(url_for('family_groups'))
+    
+    # Check if already has a group
+    if member.get('group_id'):
+        flash('You are already a member of a family group.', 'error')
+        return redirect(url_for('family_groups'))
+    
+    # Check if already requested this group
+    existing = supabase_get('group_join_requests', {
+        'email': f'eq.{member["email"]}',
+        'group_id': f'eq.{group_id}',
+        'is_contacted': 'eq.false'
+    })
+    
+    if existing:
+        flash('You already have a pending request for this group.', 'info')
+        return redirect(url_for('family_groups'))
+    
+    # Create join request
+    supabase_insert('group_join_requests', {
+        'group_id': group_id,
+        'name': member['full_name'],
+        'email': member['email'],
+        'phone': member.get('phone', ''),
+        'member_id': member_id,
+        'message': f'Member {member["full_name"]} requested to join the group.'
+    })
+    
+    flash('Join request sent! The group leader will review your request.', 'success')
+    return redirect(url_for('family_groups'))
+
 @app.route('/family-groups/<int:group_id>')
 def family_group_detail(group_id):
     groups = get_family_groups()
@@ -387,7 +429,7 @@ def member_signup():
         email = request.form.get('email', '')
         phone = request.form.get('phone', '')
         password = request.form.get('password')
-        group_id = request.form.get('group_id')
+        group_id = request.form.get('group_id')  # Can be empty
         
         if email:
             existing = supabase_get('members', {'email': f'eq.{email}'})
@@ -395,22 +437,29 @@ def member_signup():
                 groups = get_family_groups()
                 return render_template('member-signup.html', groups=groups, error='Email already registered.')
         
-        # Insert member with PENDING status (NOT active yet)
+        # Insert member (group_id can be None)
         result = supabase_insert('members', {
             'full_name': full_name,
             'email': email,
             'phone': phone,
             'password': password,
             'group_id': int(group_id) if group_id else None,
-            'status': 'pending',  # ← PENDING, not active
-            'is_active': False     # ← Not active until approved
+            'status': 'pending' if group_id else 'active',  # Active if no group selected
+            'is_active': True
         })
         
         member_id = result[0]['id']
         
-        # Don't log them in yet - they need approval
-        flash('Account created! The group leader will review and approve your membership.', 'info')
-        return redirect(url_for('member_login'))
+        # Log them in immediately
+        session['member_id'] = member_id
+        session['member_name'] = full_name
+        
+        if group_id:
+            flash('Account created! The group leader will approve your membership.', 'info')
+        else:
+            flash('Welcome to the family! Browse groups to join one.', 'success')
+        
+        return redirect(url_for('member_dashboard'))
     
     groups = get_family_groups()
     return render_template('member-signup.html', groups=groups)

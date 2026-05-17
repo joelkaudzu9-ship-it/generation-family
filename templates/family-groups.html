@@ -3,10 +3,6 @@
 
 {% block content %}
 
-{% if session.get('member_id') %}
-    <script>window.location.href = "/member/dashboard";</script>
-{% endif %}
-
 <section class="page-header" {% if section_images.get('family-groups') %}style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{{ section_images.get('family-groups') }}'); background-size: cover; background-position: center;"{% endif %}>
     <div class="container">
         <h1 class="page-title">Family Groups</h1>
@@ -17,13 +13,13 @@
 <section class="family-groups-detail">
     <div class="container">
         <div class="fg-intro">
-            <p>Family groups are the heartbeat of TGF. These are small gatherings across cities where we pray, study the Word, share life, and carry revival together. Find one near you, and take the first step by creating an account.</p>
+            <p>Family groups are the heartbeat of TGF. These are small gatherings across cities where we pray, study the Word, share life, and carry revival together. Find one near you.</p>
         </div>
 
         {% if groups %}
         <div class="fg-grid">
             {% for group in groups %}
-            <a href="/member/signup?group_id={{ group.id }}" class="fg-card">
+            <div class="fg-card">
                 <div class="fg-card-icon"><i class="fas fa-home"></i></div>
                 <h3>{{ group.name }}</h3>
                 <div class="fg-details">
@@ -31,8 +27,25 @@
                     {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
                     {% if group.leader %}<p><i class="fas fa-user gold-text"></i> Led by {{ group.leader }}</p>{% endif %}
                 </div>
-                <span class="join-link-text">Join This Group →</span>
-            </a>
+                
+                <!-- Different buttons based on user state -->
+                {% if session.get('member_id') %}
+                    {# User is logged in #}
+                    {% set current_member = current_member if current_member else None %}
+                    {% if current_member and current_member.group_id == group.id %}
+                        <span class="member-badge"><i class="fas fa-check-circle"></i> Your Group</span>
+                    {% elif current_member and current_member.group_id %}
+                        <span class="other-group-badge">Already in another group</span>
+                    {% else %}
+                        <form method="POST" action="/family-groups/{{ group.id }}/request-join" style="width:100%;">
+                            <button type="submit" class="join-btn">Request to Join</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    {# User is not logged in #}
+                    <a href="/member/signup?group_id={{ group.id }}" class="join-btn">Join This Group</a>
+                {% endif %}
+            </div>
             {% endfor %}
         </div>
         {% else %}
@@ -85,8 +98,9 @@
     padding: 32px 24px;
     text-align: center;
     transition: all 0.3s ease;
-    text-decoration: none;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .fg-card:hover {
@@ -110,6 +124,7 @@
 
 .fg-details {
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .fg-details p {
@@ -122,16 +137,52 @@
     gap: 6px;
 }
 
-.join-link-text {
-    display: inline-block;
-    color: var(--gold);
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.2s;
+.fg-details i {
+    width: 16px;
+    font-size: 0.75rem;
 }
 
-.fg-card:hover .join-link-text {
-    transform: translateX(4px);
+.join-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: center;
+}
+
+.join-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+}
+
+.member-badge {
+    display: inline-block;
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: 100%;
+}
+
+.other-group-badge {
+    display: inline-block;
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: 100%;
 }
 
 .fg-cta {
@@ -153,6 +204,14 @@
     font-size: 0.85rem;
 }
 
+.fg-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
     .fg-grid {
         grid-template-columns: repeat(2, 1fr);
