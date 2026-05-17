@@ -23,6 +23,9 @@ from supabase_client import (
     supabase_insert,
     supabase_get
 )
+
+from functools import wraps
+
 from admin import admin_bp
 import os
 port = int(os.environ.get('PORT', 5000))
@@ -45,6 +48,16 @@ def inject_member():
         members = supabase_get('members', {'id': f'eq.{session["member_id"]}'})
         member = members[0] if members else None
     return {'current_member': member}
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('member_id'):
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('member_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.template_filter('linebreaks')
 def linebreaks_filter(value):
