@@ -4886,3 +4886,14 @@ html {
     color: var(--gold);
     text-decoration: underline;
 }
+
+.pending-badge {
+    display: inline-block;
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: 100%;
+}

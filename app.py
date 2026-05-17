@@ -220,7 +220,17 @@ def prayer_rhythms():
 @app.route('/family-groups')
 def family_groups():
     groups = get_family_groups()
-    return render_template('family-groups.html', groups=groups)
+    
+    # If logged in, get pending requests
+    pending_requests = {}
+    if session.get('member_id'):
+        member = supabase_get('members', {'id': f'eq.{session["member_id"]}'})
+        if member:
+            requests = supabase_get('group_join_requests', {'email': f'eq.{member[0]["email"]}', 'is_contacted': 'eq.false'})
+            for req in requests:
+                pending_requests[req['group_id']] = True
+    
+    return render_template('family-groups.html', groups=groups, pending_requests=pending_requests)
 
 # ==================== MARKETPLACE ====================
 @app.route('/marketplace')
@@ -387,8 +397,7 @@ def request_join_group(group_id):
     # Check if already requested this group
     existing = supabase_get('group_join_requests', {
         'email': f'eq.{member["email"]}',
-        'group_id': f'eq.{group_id}',
-        'is_contacted': 'eq.false'
+        'group_id': f'eq.{group_id}'
     })
     
     if existing:
@@ -402,7 +411,8 @@ def request_join_group(group_id):
         'email': member['email'],
         'phone': member.get('phone', ''),
         'member_id': member_id,
-        'message': f'Member {member["full_name"]} requested to join the group.'
+        'message': f'Member {member["full_name"]} requested to join the group.',
+        'is_contacted': False
     })
     
     flash('Join request sent! The group leader will review your request.', 'success')

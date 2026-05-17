@@ -1196,6 +1196,20 @@ def approve_join_request(group_id, req_id):
     
     return redirect(url_for('admin.manage_single_group', group_id=group_id))
 
+@admin_bp.route('/family-groups/<int:group_id>/join-request/<int:req_id>/reject', methods=['POST'])
+@login_required
+def reject_join_request(group_id, req_id):
+    supabase_delete('group_join_requests', req_id)
+    flash('Join request rejected.', 'info')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
+@admin_bp.route('/family-groups/<int:group_id>/member/<int:member_id>/remove', methods=['POST'])
+@login_required
+def remove_group_member(group_id, member_id):
+    supabase_update('members', member_id, {'group_id': None})
+    flash('Member removed from group.', 'success')
+    return redirect(url_for('admin.manage_single_group', group_id=group_id))
+
 # ==================== GROUP GALLERY ====================
 @admin_bp.route('/family-groups/<int:group_id>/gallery', methods=['POST'])
 @role_required('admin')

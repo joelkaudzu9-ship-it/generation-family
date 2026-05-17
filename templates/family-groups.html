@@ -30,19 +30,26 @@
                 
                 <!-- Different buttons based on user state -->
                 {% if session.get('member_id') %}
-                    {# User is logged in #}
                     {% set current_member = current_member if current_member else None %}
+                    
+                    {# Check if user has pending join request for this group #}
+                    {% set has_pending = false %}
+                    {% if pending_requests and group.id in pending_requests %}
+                        {% set has_pending = true %}
+                    {% endif %}
+                    
                     {% if current_member and current_member.group_id == group.id %}
                         <span class="member-badge"><i class="fas fa-check-circle"></i> Your Group</span>
+                    {% elif has_pending %}
+                        <span class="pending-badge"><i class="fas fa-clock"></i> Pending Approval</span>
                     {% elif current_member and current_member.group_id %}
                         <span class="other-group-badge">Already in another group</span>
                     {% else %}
-                        <form method="POST" action="/family-groups/{{ group.id }}/request-join" style="width:100%;">
-                            <button type="submit" class="join-btn">Request to Join</button>
-                        </form>
+                        <form method="POST" action="/family-groups/{{ group.id }}/request-join">
+                                            <button type="submit" class="join-btn">Request to Join</button>
+                                        </form>
                     {% endif %}
                 {% else %}
-                    {# User is not logged in #}
                     <a href="/member/signup?group_id={{ group.id }}" class="join-btn">Join This Group</a>
                 {% endif %}
             </div>

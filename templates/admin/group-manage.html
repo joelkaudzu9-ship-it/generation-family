@@ -6,8 +6,8 @@
     <h2><a href="/admin"><i class="fas fa-crown gold-text"></i> TGF Admin</a></h2>
     <div class="admin-nav-links">
         <a href="/admin">Dashboard</a>
-        <a href="/admin/family-groups">Family Groups</a>
-        <a href="/admin/family-groups/{{ group.id }}/manage" class="active">{{ group.name }}</a>
+        <a href="/admin/family-groups" class="active">Family Groups</a>
+        <a href="/admin/family-groups/{{ group.id }}/manage">Manage {{ group.name }}</a>
         <a href="/">View Site</a>
         <a href="/admin/logout" class="logout-link">Logout</a>
     </div>
@@ -15,212 +15,657 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ group.name }} — Leader Dashboard</h1>
 
-<!-- Announcements -->
-<div class="dashboard-section">
-    <h2>Post Announcement</h2>
-    <form method="POST" action="/admin/family-groups/{{ group.id }}/announcement" class="admin-form">
-        <div class="form-group">
-            <label>Title</label>
-            <input type="text" name="title" required>
-        </div>
-        <div class="form-group">
-            <label>Message</label>
-            <textarea name="content" rows="2"></textarea>
-        </div>
-        <button type="submit" class="btn-save">Post</button>
-    </form>
+<div class="group-management-header">
+    <h1>{{ group.name }} <span class="badge">{{ group.city }}</span></h1>
+    <p class="group-stats">{{ members|length }} members · {{ join_requests|length }} pending requests</p>
+</div>
+
+<!-- ==================== JOIN REQUESTS SECTION ==================== -->
+<section class="admin-card-section">
+    <div class="section-header">
+        <h2><i class="fas fa-user-plus gold-text"></i> Join Requests</h2>
+        <span class="badge badge-pending">{{ join_requests|length }} Pending</span>
+    </div>
     
-    {% if announcements %}
-    <div class="announcements-list" style="margin-top:16px;">
-        {% for a in announcements %}
-        <div class="announcement-item">
-            <strong>{{ a.title }}</strong>
-            <span style="color:#555;font-size:0.7rem;">{{ a.created_at[:10] if a.created_at else '' }}</span>
-            <p style="color:var(--gray);margin:4px 0 0;">{{ a.content }}</p>
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/announcement/{{ a.id }}/delete" style="display:inline;">
-                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
-            </form>
+    {% if join_requests %}
+    <div class="requests-list">
+        {% for req in join_requests %}
+        <div class="request-card">
+            <div class="request-info">
+                <div class="request-name">{{ req.name }}</div>
+                <div class="request-contact">
+                    <span><i class="fas fa-envelope"></i> {{ req.email }}</span>
+                    {% if req.phone %}
+                    <span><i class="fas fa-phone"></i> {{ req.phone }}</span>
+                    {% endif %}
+                </div>
+                {% if req.message %}
+                <div class="request-message">{{ req.message[:100] }}{% if req.message|length > 100 %}...{% endif %}</div>
+                {% endif %}
+                <div class="request-date"><i class="fas fa-calendar-alt"></i> {{ req.created_at[:10] if req.created_at else '' }}</div>
+            </div>
+            <div class="request-actions">
+                <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/approve">
+                    <button type="submit" class="btn-approve"><i class="fas fa-check"></i> Approve</button>
+                </form>
+                <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/reject">
+                    <button type="submit" class="btn-reject"><i class="fas fa-times"></i> Reject</button>
+                </form>
+            </div>
         </div>
         {% endfor %}
-    </div>
-    {% endif %}
-</div>
-
-<!-- Posts -->
-<div class="dashboard-section">
-    <h2>Write a Post</h2>
-    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="admin-form">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Title *</label>
-                <input type="text" name="title" required>
-            </div>
-            <div class="form-group">
-                <label>Author Name</label>
-                <input type="text" name="author_name" value="{{ group.leader or '' }}">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Content</label>
-            <textarea name="content" rows="5" placeholder="Share a teaching, update, prayer point, or encouragement..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>Image (optional)</label>
-            <input type="file" name="image" accept="image/*">
-        </div>
-        <button type="submit" class="btn-save"><i class="fas fa-paper-plane"></i> Publish Post</button>
-    </form>
-</div>
-
-<!-- Join Requests -->
-<div class="dashboard-section">
-    <h2>Join Requests ({{ join_requests|length }})</h2>
-    {% if join_requests %}
-    <div class="admin-table-wrapper">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Message</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for req in join_requests %}
-                <tr>
-                    <td><strong>{{ req.name }}</strong></td>
-                    <td>{{ req.phone or req.email or '—' }}</td>
-                    <td>{{ req.message[:50] if req.message else '—' }}</td>
-                    <td class="actions-cell">
-                        <!-- Approve Button -->
-                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/approve" style="display:inline;">
-                            <button type="submit" class="btn-edit small" style="background:#4caf50; border-color:#4caf50; color:#fff;">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                        </form>
-                        <!-- Dismiss Button -->
-                        <form method="POST" action="/admin/family-groups/{{ group.id }}/join-request/{{ req.id }}/contacted" style="display:inline;">
-                            <button type="submit" class="btn-delete small">
-                                <i class="fas fa-times"></i> Dismiss
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
     {% else %}
-    <p style="color:var(--gray);">No pending join requests.</p>
+    <div class="empty-state-small">
+        <i class="fas fa-check-circle"></i> No pending join requests.
+    </div>
     {% endif %}
-</div>
+</section>
 
-<!-- Members -->
-<div class="dashboard-section">
-    <h2>Add Member</h2>
-    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/member" class="admin-form">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" name="name" required>
-            </div>
-            <div class="form-group">
-                <label>Photo</label>
-                <input type="file" name="photo" accept="image/*">
-            </div>
-        </div>
-        <button type="submit" class="btn-save">Add Member</button>
-    </form>
+<!-- ==================== MEMBERS SECTION ==================== -->
+<section class="admin-card-section">
+    <div class="section-header">
+        <h2><i class="fas fa-users gold-text"></i> Members</h2>
+        <span class="badge badge-members">{{ members|length }} Total</span>
+    </div>
     
     {% if members %}
-    <div class="admin-grid" style="margin-top:16px;">
+    <div class="members-grid">
         {% for m in members %}
-        <div class="admin-card-small">
-            {% if m.photo_url %}
-                <img src="{{ m.photo_url }}" class="admin-thumb">
-            {% else %}
-                <div class="admin-thumb-placeholder"><i class="fas fa-user"></i></div>
-            {% endif %}
-            <h4>{{ m.name }}</h4>
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/member/{{ m.id }}/delete">
-                <button type="submit" class="btn-delete small">Remove</button>
-            </form>
+        <div class="member-card">
+            <div class="member-avatar">
+                {% if m.photo_url %}
+                    <img src="{{ m.photo_url }}" alt="{{ m.full_name }}">
+                {% else %}
+                    <div class="avatar-placeholder">{{ m.full_name[0]|upper if m.full_name else 'M' }}</div>
+                {% endif %}
+            </div>
+            <div class="member-info">
+                <h4>{{ m.full_name }}</h4>
+                <p class="member-email">{{ m.email }}</p>
+                <p class="member-since">Joined {{ m.joined_at[:10] if m.joined_at else 'Recently' }}</p>
+            </div>
+            <div class="member-actions">
+                <form method="POST" action="/admin/family-groups/{{ group.id }}/member/{{ m.id }}/remove">
+                    <button type="submit" class="btn-remove" onclick="return confirm('Remove {{ m.full_name }} from this group?')">
+                        <i class="fas fa-user-minus"></i> Remove
+                    </button>
+                </form>
+            </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="empty-state-small">
+        <i class="fas fa-users-slash"></i> No members yet.
+    </div>
     {% endif %}
-</div>
+</section>
 
-<!-- Gallery -->
-<div class="dashboard-section">
-    <h2>Upload Photo</h2>
-    <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/gallery" class="admin-form">
-        <div class="form-row">
+<!-- ==================== POSTS SECTION ==================== -->
+<section class="admin-card-section">
+    <div class="section-header">
+        <h2><i class="fas fa-newspaper gold-text"></i> Posts</h2>
+        <button class="btn-toggle-form" onclick="toggleForm('postForm')"><i class="fas fa-plus"></i> Add Post</button>
+    </div>
+    
+    <div id="postForm" style="display: none;">
+        <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/post" class="inline-form">
             <div class="form-group">
-                <label>Photo</label>
-                <input type="file" name="photo" accept="image/*" required>
+                <input type="text" name="title" placeholder="Post Title" required>
             </div>
             <div class="form-group">
-                <label>Caption</label>
-                <input type="text" name="caption">
+                <textarea name="content" rows="3" placeholder="Post content..."></textarea>
+            </div>
+            <div class="form-group">
+                <input type="file" name="image" accept="image/*">
+                <span class="form-hint">Optional image</span>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Publish Post</button>
+                <button type="button" class="btn-cancel" onclick="toggleForm('postForm')">Cancel</button>
+            </div>
+        </form>
+    </div>
+    
+    {% if posts %}
+    <div class="posts-list">
+        {% for post in posts %}
+        <div class="post-item">
+            <div class="post-header">
+                <h4>{{ post.title }}</h4>
+                <span class="post-date">{{ post.created_at[:10] if post.created_at else '' }}</span>
+            </div>
+            <div class="post-content-preview">{{ post.content[:150] }}{% if post.content and post.content|length > 150 %}...{% endif %}</div>
+            {% if post.image_url %}
+            <div class="post-image-preview">
+                <img src="{{ post.image_url }}" alt="{{ post.title }}">
+            </div>
+            {% endif %}
+            <div class="post-actions">
+                <form method="POST" action="/admin/family-groups/{{ group.id }}/post/{{ post.id }}/delete">
+                    <button type="submit" class="btn-delete-small"><i class="fas fa-trash"></i> Delete</button>
+                </form>
             </div>
         </div>
-        <button type="submit" class="btn-save">Upload</button>
-    </form>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state-small">
+        <i class="fas fa-edit"></i> No posts yet. Click "Add Post" to create one.
+    </div>
+    {% endif %}
+</section>
+
+<!-- ==================== GALLERY SECTION ==================== -->
+<section class="admin-card-section">
+    <div class="section-header">
+        <h2><i class="fas fa-images gold-text"></i> Gallery</h2>
+        <button class="btn-toggle-form" onclick="toggleForm('galleryForm')"><i class="fas fa-plus"></i> Add Photo</button>
+    </div>
+    
+    <div id="galleryForm" style="display: none;">
+        <form method="POST" enctype="multipart/form-data" action="/admin/family-groups/{{ group.id }}/gallery" class="inline-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="file" name="photo" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="caption" placeholder="Caption (optional)">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Upload Photo</button>
+                <button type="button" class="btn-cancel" onclick="toggleForm('galleryForm')">Cancel</button>
+            </div>
+        </form>
+    </div>
     
     {% if gallery %}
-    <div class="gallery-grid" style="margin-top:16px;">
+    <div class="gallery-grid">
         {% for img in gallery %}
-        <div style="position:relative;">
-            <img src="{{ img.image_url }}" style="width:100%; border-radius:10px;">
-            <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete" style="position:absolute; top:6px; right:6px;">
-                <button type="submit" class="btn-delete small"><i class="fas fa-trash"></i></button>
-            </form>
+        <div class="gallery-item">
+            <img src="{{ img.image_url }}" alt="{{ img.caption or 'Group photo' }}">
+            <div class="gallery-overlay">
+                <p>{{ img.caption or '' }}</p>
+                <form method="POST" action="/admin/family-groups/{{ group.id }}/gallery/{{ img.id }}/delete">
+                    <button type="submit" class="btn-delete-icon"><i class="fas fa-trash"></i></button>
+                </form>
+            </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="empty-state-small">
+        <i class="fas fa-camera"></i> No photos yet. Click "Add Photo" to upload.
+    </div>
     {% endif %}
-</div>
+</section>
 
 <style>
-.dashboard-section {
+/* Admin Group Management Styles */
+.group-management-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #222;
+}
+
+.group-management-header h1 {
+    color: var(--gold);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.group-management-header .badge {
     background: var(--darker);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: var(--gray);
+}
+
+.group-stats {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+.admin-card-section {
+    background: var(--dark);
     border: 1px solid #222;
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
 }
-.dashboard-section h2 {
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #222;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-header h2 {
+    font-size: 1.1rem;
+    color: var(--white);
+    margin: 0;
+}
+
+.badge-pending {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-members {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.btn-toggle-form {
+    background: transparent;
+    border: 1px solid var(--gold);
     color: var(--gold);
-    font-size: 1rem;
-    margin-bottom: 16px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
 }
-.announcement-item {
-    background: rgba(212,175,55,0.05);
+
+.btn-toggle-form:hover {
+    background: var(--gold);
+    color: var(--black);
+}
+
+/* Requests List */
+.requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.request-card {
+    background: var(--darker);
     border: 1px solid #222;
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
 }
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+
+.request-info {
+    flex: 1;
+}
+
+.request-name {
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+}
+
+.request-contact {
+    display: flex;
+    gap: 16px;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 6px;
+}
+
+.request-contact i {
+    width: 14px;
+}
+
+.request-message {
+    font-size: 0.8rem;
+    color: var(--gray-light);
+    margin-bottom: 6px;
+}
+
+.request-date {
+    font-size: 0.7rem;
+    color: #555;
+}
+
+.request-actions {
+    display: flex;
     gap: 10px;
 }
-.actions-cell {
-    white-space: nowrap;
+
+.btn-approve {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
 }
-.btn-edit.small {
-    padding: 4px 10px;
+
+.btn-approve:hover {
+    background: #45a049;
+}
+
+.btn-reject {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.btn-reject:hover {
+    background: #c0392b;
+}
+
+/* Members Grid */
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.member-card {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.member-avatar {
+    flex-shrink: 0;
+}
+
+.member-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-info h4 {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.member-email {
+    font-size: 0.7rem;
+    color: var(--gray);
+}
+
+.member-since {
+    font-size: 0.65rem;
+    color: #555;
+    margin-top: 4px;
+}
+
+.btn-remove {
+    background: transparent;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.btn-remove:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Posts List */
+.posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.post-item {
+    background: var(--darker);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.post-header h4 {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.post-date {
+    font-size: 0.7rem;
+    color: #555;
+}
+
+.post-content-preview {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-bottom: 10px;
+}
+
+.post-image-preview img {
+    max-width: 100px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.btn-delete-small {
+    background: transparent;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.btn-delete-small:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Gallery Grid */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1/1;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay p {
+    font-size: 0.7rem;
+    margin: 0 0 8px 0;
+    color: var(--white);
+    word-break: break-word;
+}
+
+.btn-delete-icon {
+    background: rgba(231, 76, 60, 0.9);
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
     font-size: 0.7rem;
 }
-.btn-delete.small {
-    padding: 4px 10px;
-    font-size: 0.7rem;
+
+/* Forms */
+.inline-form {
+    background: var(--darker);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.inline-form .form-group {
+    margin-bottom: 12px;
+}
+
+.inline-form input, 
+.inline-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--dark);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: var(--white);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid #555;
+    color: var(--gray);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.empty-state-small {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+}
+
+.empty-state-small i {
+    font-size: 2rem;
+    opacity: 0.3;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .request-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .request-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .member-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .members-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-card-section {
+        padding: 16px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 </style>
+
+<script>
+function toggleForm(formId) {
+    var form = document.getElementById(formId);
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
 
 {% endblock %}
