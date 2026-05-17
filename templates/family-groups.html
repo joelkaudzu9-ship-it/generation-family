@@ -1,3 +1,10 @@
+{% if session.get('member_id') %}
+<div class="already-member-warning">
+    <i class="fas fa-info-circle"></i>
+    <p>You're already a member of a family group. <a href="/member/dashboard">Go to your dashboard →</a></p>
+</div>
+{% endif %}
+
 {% extends "base.html" %}
 {% block title %}Family Groups — The Generation Family{% endblock %}
 
@@ -13,13 +20,13 @@
 <section class="family-groups-detail">
     <div class="container">
         <div class="fg-intro">
-            <p>Family groups are the heartbeat of TGF. These are small gatherings across cities where we pray, study the Word, share life, and carry revival together. Find one near you, and take the first step by logging in.</p>
+            <p>Family groups are the heartbeat of TGF. These are small gatherings across cities where we pray, study the Word, share life, and carry revival together. Find one near you, and take the first step by creating an account.</p>
         </div>
 
         {% if groups %}
         <div class="fg-grid">
             {% for group in groups %}
-            <a href="/member/login?redirect=/family-groups/{{ group.id }}" class="fg-card" style="display:block; text-decoration:none;">
+            <a href="/member/signup?group_id={{ group.id }}" class="fg-card">
                 <div class="fg-card-icon"><i class="fas fa-home"></i></div>
                 <h3>{{ group.name }}</h3>
                 <div class="fg-details">
@@ -27,7 +34,7 @@
                     {% if group.meeting_time %}<p><i class="fas fa-clock gold-text"></i> {{ group.meeting_time }}</p>{% endif %}
                     {% if group.leader %}<p><i class="fas fa-user gold-text"></i> Led by {{ group.leader }}</p>{% endif %}
                 </div>
-                <span style="color:var(--gold); font-size:0.8rem; font-weight:500; display:inline-block; margin-top:12px;">Login to View →</span>
+                <span class="join-link-text">Join This Group →</span>
             </a>
             {% endfor %}
         </div>
@@ -44,119 +51,160 @@
             <p>We're planting new groups regularly. Contact us to start one in your area.</p>
             <div class="fg-buttons">
                 <a href="/contact" class="btn-outline">Contact Us</a>
-                <a href="/member/login?redirect=/family-groups/new" class="btn-gold">Login to Start a Group</a>
             </div>
         </div>
     </div>
 </section>
 
 <style>
-    .family-groups-detail {
-        padding: 60px 0;
-        background: var(--black);
-    }
-    
-    .fg-intro {
-        max-width: 650px;
-        margin: 0 auto 40px;
-        text-align: center;
-    }
-    
-    .fg-intro p {
-        color: var(--gray-light);
-        font-size: 0.95rem;
-        line-height: 1.8;
-    }
-    
+.family-groups-detail {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.fg-intro {
+    max-width: 650px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.fg-intro p {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.fg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.fg-card {
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+
+.fg-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.fg-card-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+}
+
+.fg-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.fg-details {
+    margin-bottom: 20px;
+}
+
+.fg-details p {
+    color: var(--gray);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.fg-details i {
+    width: 16px;
+    font-size: 0.75rem;
+}
+
+.join-link-text {
+    display: inline-block;
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.fg-card:hover .join-link-text {
+    transform: translateX(4px);
+}
+
+.fg-cta {
+    text-align: center;
+    padding: 40px 0 20px;
+    border-top: 1px solid #1a1a1a;
+    margin-top: 20px;
+}
+
+.fg-cta h3 {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.fg-cta p {
+    color: var(--gray);
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+}
+
+.fg-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
     .fg-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
-        margin-bottom: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .fg-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
     
     .fg-card {
-        background: var(--dark);
-        border: 1px solid #222;
-        border-radius: 16px;
-        padding: 28px 20px;
-        text-align: center;
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-    
-    .fg-card:hover {
-        border-color: var(--gold);
-        transform: translateY(-4px);
+        padding: 24px 16px;
     }
     
     .fg-card-icon {
         font-size: 2rem;
-        color: var(--gold);
-        margin-bottom: 12px;
     }
     
     .fg-card h3 {
-        font-size: 1rem;
-        margin-bottom: 12px;
-        color: var(--white);
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .fg-grid {
+        grid-template-columns: 1fr;
     }
     
-    .fg-details {
-        margin-top: 12px;
+    .fg-card {
+        padding: 28px 20px;
     }
-    
-    .fg-details p {
-        color: var(--gray);
-        font-size: 0.75rem;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    
-    .fg-details i {
-        width: 14px;
-    }
-    
-    .fg-cta {
-        text-align: center;
-        padding: 40px 0 20px;
-        border-top: 1px solid #1a1a1a;
-        margin-top: 20px;
-    }
-    
-    .fg-cta h3 {
-        color: var(--gold);
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-    }
-    
-    .fg-cta p {
-        color: var(--gray);
-        margin-bottom: 20px;
-        font-size: 0.85rem;
-    }
-    
-    .fg-buttons {
-        display: flex;
-        gap: 14px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    @media (max-width: 768px) {
-        .fg-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .fg-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+}
 </style>
 
 {% endblock %}

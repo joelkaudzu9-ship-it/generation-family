@@ -4867,3 +4867,22 @@ html {
         font-size: 0.7rem !important;
     }
 }
+
+.already-member-warning {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.already-member-warning i {
+    color: var(--gold);
+    margin-right: 8px;
+}
+
+.already-member-warning a {
+    color: var(--gold);
+    text-decoration: underline;
+}

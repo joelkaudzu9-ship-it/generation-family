@@ -400,20 +400,16 @@ def member_signup():
                 groups = get_family_groups()
                 return render_template('member-signup.html', groups=groups, error='Email already registered.')
         
+        # Insert member with group_id
         result = supabase_insert('members', {
             'full_name': full_name,
             'email': email,
             'phone': phone,
-            'password': password
+            'password': password,
+            'group_id': int(group_id) if group_id else None
         })
         
         member_id = result[0]['id']
-        
-        if group_id:
-            supabase_insert('member_groups', {
-                'member_id': member_id,
-                'group_id': int(group_id)
-            })
         
         session['member_id'] = member_id
         session['member_name'] = full_name
@@ -422,7 +418,6 @@ def member_signup():
     
     groups = get_family_groups()
     return render_template('member-signup.html', groups=groups)
-
 
 @app.route('/member/login', methods=['GET', 'POST'])
 def member_login():
@@ -451,25 +446,32 @@ def member_logout():
     flash('You have been logged out.', 'info')
     return redirect('/')
 
-
 @app.route('/member/dashboard')
 def member_dashboard():
     if not session.get('member_id'):
         return redirect(url_for('member_login'))
     
     member_id = session['member_id']
-    my_groups = supabase_get('member_groups', {'member_id': f'eq.{member_id}'})
     
-    groups_data = []
-    for mg in my_groups:
-        group_result = supabase_get('family_groups', {'id': f'eq.{mg["group_id"]}'})
-        group = group_result[0] if group_result else None
+    # Get member with their group
+    members = supabase_get('members', {'id': f'eq.{member_id}', 'is_active': 'eq.true'})
+    member = members[0] if members else None
+    
+    group = None
+    posts = []
+    
+    if member and member.get('group_id'):
+        groups = supabase_get('family_groups', {'id': f'eq.{member["group_id"]}'})
+        group = groups[0] if groups else None
+        
         if group:
-            posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '3'})
-            groups_data.append({'group': group, 'posts': posts})
+            posts = supabase_get('group_posts', {'group_id': f'eq.{group["id"]}', 'order': 'created_at.desc', 'limit': '10'})
     
-    return render_template('member-dashboard.html', groups_data=groups_data)
-
+    return render_template('member-dashboard.html', 
+                         group=group,
+                         posts=posts,
+                         current_member=member)
+    
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
     email = request.form.get('email')

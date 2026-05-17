@@ -13,6 +13,12 @@
 <section class="auth-section">
     <div class="container">
         <div class="auth-box">
+            {% if error %}
+            <div class="auth-error" style="background:rgba(231,76,60,0.1); border:1px solid rgba(231,76,60,0.3); color:#e74c3c; padding:12px; border-radius:10px; margin-bottom:20px; font-size:0.85rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+            
             <form method="POST" class="auth-form">
                 <div class="form-group">
                     <label>Full Name *</label>
@@ -35,59 +41,59 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Select a Family Group (optional)</label>
-                    <select name="group_id" style="width:100%; padding:12px; background:#111; border:1px solid #333; color:#fff; border-radius:10px; margin-top:4px;">
-                        <option value="">— Choose a group —</option>
+                    <label>Select Your Family Group *</label>
+                    <select name="group_id" class="form-control" required style="width:100%; padding:12px; background:#111; border:1px solid #333; color:#fff; border-radius:10px;">
+                        <option value="">— Select a Family Group —</option>
                         {% for group in groups %}
-                        <option value="{{ group.id }}" {% if request.args.get('group_id') == group.id|string %}selected{% endif %}>
+                        <option value="{{ group.id }}" {% if request.args.get('group_id')|int == group.id %}selected{% endif %}>
                             {{ group.name }} — {{ group.city }}
                         </option>
                         {% endfor %}
                     </select>
                 </div>
                 
-                <button type="submit" class="btn-gold" style="width:100%;">Create Account</button>
+                <button type="submit" class="btn-gold" style="width:100%;">Create Account & Join Group</button>
             </form>
             
             <p class="auth-redirect">
-                Already have an account? <a href="/member/login{% if request.args.get('redirect') %}?redirect={{ request.args.get('redirect') }}{% endif %}">Login here</a>
+                Already have an account? <a href="/member/login">Login here</a>
             </p>
         </div>
     </div>
 </section>
 
 <style>
-    .auth-section {
-        padding: 60px 0;
-        background: var(--black);
-    }
-    
-    .auth-box {
-        max-width: 500px;
-        margin: 0 auto;
-        background: var(--dark);
-        border: 1px solid #222;
-        border-radius: 20px;
-        padding: 40px;
-    }
-    
-    .auth-form {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .auth-redirect {
-        text-align: center;
-        margin-top: 24px;
-        color: var(--gray);
-        font-size: 0.85rem;
-    }
-    
-    .auth-redirect a {
-        color: var(--gold);
-        text-decoration: none;
-    }
+.auth-section {
+    padding: 60px 0;
+    background: var(--black);
+}
+
+.auth-box {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--dark);
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 40px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-redirect {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--gray);
+    font-size: 0.85rem;
+}
+
+.auth-redirect a {
+    color: var(--gold);
+    text-decoration: none;
+}
 </style>
 
 {% endblock %}
