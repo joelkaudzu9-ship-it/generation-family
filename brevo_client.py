@@ -211,7 +211,7 @@ def send_group_approval_email(email, name, group_name):
             <p style="text-align:center; font-size:16px; color:#ccc;">Hi {name},</p>
             <p style="text-align:center; font-size:16px; color:#ccc;">Your request to join <strong style="color:#D4AF37;">{group_name}</strong> has been approved. You are now part of the family!</p>
             <div style="text-align:center; margin:30px 0;">
-                <a href="https://generation-family.onrender.com/family-groups" style="background:#D4AF37; color:#000; padding:12px 30px; text-decoration:none; border-radius:50px; font-weight:bold;">View Your Groups</a>
+                <a href="https://generation.fly.dev/family-groups" style="background:#D4AF37; color:#000; padding:12px 30px; text-decoration:none; border-radius:50px; font-weight:bold;">View Your Groups</a>
             </div>
             <p style="color:#666; font-size:12px; text-align:center;">The Generation Family — Revival in me. Awakening through us.</p>
         </div>

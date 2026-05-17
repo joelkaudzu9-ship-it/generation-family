@@ -96,7 +96,36 @@ def home():
         next_event=next_event
     )
 
-
+@app.route('/debug-email')
+def debug_email():
+    import requests
+    import json
+    
+    # Test Brevo API directly
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": os.getenv('BREVO_API_KEY'),
+        "content-type": "application/json"
+    }
+    
+    data = {
+        "sender": {"name": "Test", "email": "gizmokzu@gmail.com"},
+        "to": [{"email": "gizmokzu@gmail.com"}],
+        "subject": "Test Email from Fly.io",
+        "htmlContent": "<h1>Test</h1><p>This is a test email from Fly.io deployment.</p>"
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        return f"""
+        <h2>Email Test Results</h2>
+        <p>Status Code: {response.status_code}</p>
+        <p>Response: {response.text}</p>
+        <p>Headers: {dict(response.headers)}</p>
+        """
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 @app.route('/podcast.xml')
 def podcast_rss():
@@ -107,7 +136,7 @@ def podcast_rss():
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
     <title>The Generation Family Sermons</title>
-    <link>https://generation-family.onrender.com</link>
+    <link>https://generation.fly.dev</link>
     <description>Life-changing messages from The Generation Family. A spiritual and growth family raising a generation rooted in faith.</description>
     <language>en</language>
     <itunes:author>The Generation Family</itunes:author>
